@@ -1,1 +1,11 @@
-<p>login-view works!</p>
+<div class="login-form">
+  <form>
+    <label for="username">Username:</label>
+    <input type="text" id="username" [(ngModel)]="username" placeholder="Enter your username">
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" [(ngModel)]="password" placeholder="Enter your password">
+
+    <button type="submit" (click)="login()">Login</button>
+  </form>
+</div>
