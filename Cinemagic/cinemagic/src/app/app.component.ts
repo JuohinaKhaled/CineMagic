@@ -11,9 +11,9 @@ import {Router, NavigationEnd, RouterOutlet} from '@angular/router';
 })
 export class AppComponent {
   showHeaderAndFooter: boolean = true;
+  title: 'Cinemagic' | undefined;
 
   constructor(private router: Router) {
-    // Ausblenden von Header und Footer auf der Login-Seite
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.showHeaderAndFooter = !event.url.includes('/login');

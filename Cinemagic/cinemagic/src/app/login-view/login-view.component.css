@@ -10,13 +10,13 @@
 form {
   display: flex;
   flex-direction: column;
-  align-items: center;     /* Zentriert alle Kinder horizontal im Formular */
+  align-items: center;
   background: white;
   padding: 40px;
   border-radius: 5px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  max-width: 300px;        /* Beschränkt die maximale Breite des Formulars */
-  width: 100%;             /* Erlaubt dem Formular, sich auf bis zu 300px zu erweitern */
+  max-width: 300px;
+  width: 100%;
 }
 
 

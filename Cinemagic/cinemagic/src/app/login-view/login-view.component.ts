@@ -19,6 +19,5 @@ export class LoginViewComponent {
 
   login() {
     console.log("Username: ", this.username, "Password: ", this.password);
-    // Login-Logik hier
   }
 }
