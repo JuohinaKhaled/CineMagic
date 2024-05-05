@@ -1,6 +1,6 @@
-import { Component, input, computed } from '@angular/core';
-import {FormsModule} from "@angular/forms";
-import {RouterOutlet} from "@angular/router";
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-login-view',
@@ -9,15 +9,20 @@ import {RouterOutlet} from "@angular/router";
   styleUrls: ['./login-view.component.css'],
   imports: [
     FormsModule,
-    RouterOutlet
+    RouterOutlet,
+    RouterLink
   ]
 })
 export class LoginViewComponent {
-  username = input<string>();
-  password = input<string>();
-
+  email: string = '';
+  password: string = '';
 
   login() {
-    console.log("Username: ", this.username, "Password: ", this.password);
+    const loginData = {
+      email: this.email,
+      password: this.password
+    };
+
+    console.log('Login-Daten:', loginData);
   }
 }
