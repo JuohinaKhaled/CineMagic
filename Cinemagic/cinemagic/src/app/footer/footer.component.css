@@ -1,0 +1,19 @@
+a{
+  color: white;
+}
+
+a:hover{
+  color: var(--bs-danger);
+}
+
+hr{
+  border: 1px solid white;
+  opacity: 100%;
+  margin: auto;
+  width: 325px;
+}
+
+.footer{
+  text-align: center;
+  color: white;
+}

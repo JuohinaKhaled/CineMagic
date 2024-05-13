@@ -1,0 +1,38 @@
+a:hover, li:hover svg{
+  color: var(--bs-danger);
+  transform: scale(1.2);
+}
+
+li a:hover{
+  border-bottom: 2px solid var(--bs-danger);
+}
+
+a, li svg{
+  color: white;
+}
+
+.navbar{
+  height: 100px;
+}
+
+button:hover svg{
+  fill: white;
+}
+
+.iconLogout{
+  display: none;
+}
+
+.textLogout{
+  display: block;
+}
+
+@media only screen and (max-width: 650px) {
+  .iconLogout{
+    display: block;
+  }
+
+  .textLogout{
+    display: none;
+  }
+}
