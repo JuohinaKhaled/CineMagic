@@ -1,0 +1,67 @@
+a:hover, li:hover svg{
+  color: var(--bs-danger);
+  transform: scale(1.2);
+}
+
+li a:hover{
+  border-bottom: 2px solid var(--bs-danger);
+}
+
+a, li svg{
+  color: white;
+}
+
+.navbar{
+  height: 100px;
+}
+
+button:hover svg{
+  fill: white;
+}
+
+.iconLogout{
+  display: none;
+}
+
+.textLogout{
+  display: block;
+}
+
+@media only screen and (max-width: 650px) {
+  .iconLogout{
+    display: block;
+  }
+
+  .textLogout{
+    display: none;
+  }
+}
+
+/* Additional styles for the login page */
+.login-container {
+  width: 300px;
+  margin: 100px auto;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn {
+  background-color: var(--bs-danger);
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
