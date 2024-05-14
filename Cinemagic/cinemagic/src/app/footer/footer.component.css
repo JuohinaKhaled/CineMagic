@@ -15,10 +15,10 @@ html, body {
 
 .footer {
   text-align: center;
-  color: #FFD700; /* Gold */
-  background-color: #000000; /* Black */
-  padding: 10px; /* Reduce padding */
-  font-size: 14px; /* Reduce font size */
+  color: #FFD700;
+  background-color: #000000;
+  padding: 10px;
+  font-size: 14px;
   position: relative;
   bottom: 0;
   width: 100%;
@@ -32,15 +32,15 @@ html, body {
 }
 
 a, li a, .footer a {
-  color: #FFD700 !important; /* Gold with !important to override other styles */
-  text-decoration: none; /* Remove underline */
+  color: #FFD700 !important;
+  text-decoration: none;
 }
 
 a:hover, li a:hover, .footer a:hover {
-  color: #FF4500 !important; /* OrangeRed with !important to override other styles */
+  color: #FF4500 !important;
   transform: scale(1.2);
 }
 
 li a:hover {
-  border-bottom: 2px solid #FF4500; /* OrangeRed */
+  border-bottom: 2px solid #FF4500;
 }

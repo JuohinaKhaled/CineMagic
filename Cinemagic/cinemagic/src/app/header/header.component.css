@@ -1,14 +1,14 @@
 a, li svg{
-  color: #FFD700; /* Gold */
+  color: #FFD700;
 }
 
 a:hover, li:hover svg{
-  color: #FF4500; /* OrangeRed */
+  color: #FF4500;
   transform: scale(1.2);
 }
 
 li a:hover{
-  border-bottom: 2px solid #FF4500; /* OrangeRed */
+  border-bottom: 2px solid #FF4500;
 }
 
 .navbar{
@@ -16,7 +16,7 @@ li a:hover{
 }
 
 button:hover svg{
-  fill: #FFD700; /* Gold */
+  fill: #FFD700;
 }
 
 .iconLogout{
@@ -29,8 +29,8 @@ button:hover svg{
 
 .footer{
   text-align: center;
-  color: #FFD700; /* Gold */
-  background-color: #000000; /* Black */
+  color: #FFD700;
+  background-color: #000000;
   padding: 20px;
 }
 
@@ -45,7 +45,7 @@ button:hover svg{
 }
 
 hr{
-  border: 1px solid #FFD700; /* Gold */
+  border: 1px solid #FFD700;
   opacity: 100%;
   margin: auto;
   width: 325px;

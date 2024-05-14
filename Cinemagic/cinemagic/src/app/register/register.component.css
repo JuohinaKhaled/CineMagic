@@ -3,8 +3,8 @@
   margin: 100px auto;
   padding: 20px;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
-  background-color: #000000; /* Black */
-  color: #FFD700; /* Gold */
+  background-color: #000000;
+  color: #FFD700;
 }
 
 .form-group {
@@ -16,12 +16,12 @@
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  background-color: #333333; /* Dark Grey */
-  color: #FFD700; /* Gold */
+  background-color: #333333;
+  color: #FFD700;
 }
 
 .btn {
-  background-color: #FF4500; /* OrangeRed */
+  background-color: #FF4500;
   color: white;
   padding: 10px 15px;
   border: none;
