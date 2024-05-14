@@ -1,19 +1,46 @@
-a{
-  color: white;
+html, body {
+  height: 100%;
+  margin: 0;
 }
 
-a:hover{
-  color: var(--bs-danger);
+.wrapper {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-hr{
-  border: 1px solid white;
+.content {
+  flex: 1;
+}
+
+.footer {
+  text-align: center;
+  color: #FFD700; /* Gold */
+  background-color: #000000; /* Black */
+  padding: 10px; /* Reduce padding */
+  font-size: 14px; /* Reduce font size */
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer-content hr {
+  border: 1px solid #FFD700; /* Gold */
   opacity: 100%;
   margin: auto;
   width: 325px;
 }
 
-.footer{
-  text-align: center;
-  color: white;
+a, li a, .footer a {
+  color: #FFD700 !important; /* Gold with !important to override other styles */
+  text-decoration: none; /* Remove underline */
+}
+
+a:hover, li a:hover, .footer a:hover {
+  color: #FF4500 !important; /* OrangeRed with !important to override other styles */
+  transform: scale(1.2);
+}
+
+li a:hover {
+  border-bottom: 2px solid #FF4500; /* OrangeRed */
 }

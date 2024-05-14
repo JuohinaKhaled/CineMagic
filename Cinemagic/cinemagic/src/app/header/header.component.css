@@ -1,14 +1,14 @@
+a, li svg{
+  color: #FFD700; /* Gold */
+}
+
 a:hover, li:hover svg{
-  color: var(--bs-danger);
+  color: #FF4500; /* OrangeRed */
   transform: scale(1.2);
 }
 
 li a:hover{
-  border-bottom: 2px solid var(--bs-danger);
-}
-
-a, li svg{
-  color: white;
+  border-bottom: 2px solid #FF4500; /* OrangeRed */
 }
 
 .navbar{
@@ -16,7 +16,7 @@ a, li svg{
 }
 
 button:hover svg{
-  fill: white;
+  fill: #FFD700; /* Gold */
 }
 
 .iconLogout{
@@ -27,6 +27,13 @@ button:hover svg{
   display: block;
 }
 
+.footer{
+  text-align: center;
+  color: #FFD700; /* Gold */
+  background-color: #000000; /* Black */
+  padding: 20px;
+}
+
 @media only screen and (max-width: 650px) {
   .iconLogout{
     display: block;
@@ -35,4 +42,11 @@ button:hover svg{
   .textLogout{
     display: none;
   }
+}
+
+hr{
+  border: 1px solid #FFD700; /* Gold */
+  opacity: 100%;
+  margin: auto;
+  width: 325px;
 }

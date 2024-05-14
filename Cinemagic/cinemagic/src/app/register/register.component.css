@@ -1,0 +1,31 @@
+.register-container {
+  width: 300px;
+  margin: 100px auto;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  background-color: #000000; /* Black */
+  color: #FFD700; /* Gold */
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #333333; /* Dark Grey */
+  color: #FFD700; /* Gold */
+}
+
+.btn {
+  background-color: #FF4500; /* OrangeRed */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}

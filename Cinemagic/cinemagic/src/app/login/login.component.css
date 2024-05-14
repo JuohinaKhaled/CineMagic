@@ -1,14 +1,14 @@
+a, li svg{
+  color: #FFD700; /* Gold */
+}
+
 a:hover, li:hover svg{
-  color: var(--bs-danger);
+  color: #FF4500; /* OrangeRed */
   transform: scale(1.2);
 }
 
 li a:hover{
-  border-bottom: 2px solid var(--bs-danger);
-}
-
-a, li svg{
-  color: white;
+  border-bottom: 2px solid #FF4500; /* OrangeRed */
 }
 
 .navbar{
@@ -16,7 +16,7 @@ a, li svg{
 }
 
 button:hover svg{
-  fill: white;
+  fill: #FFD700; /* Gold */
 }
 
 .iconLogout{
@@ -37,12 +37,28 @@ button:hover svg{
   }
 }
 
+.footer{
+  text-align: center;
+  color: #FFD700; /* Gold */
+  background-color: #000000; /* Black */
+  padding: 20px;
+}
+
+hr{
+  border: 1px solid #FFD700; /* Gold */
+  opacity: 100%;
+  margin: auto;
+  width: 325px;
+}
+
 /* Additional styles for the login page */
 .login-container {
   width: 300px;
   margin: 100px auto;
   padding: 20px;
   box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  background-color: #000000; /* Black */
+  color: #FFD700; /* Gold */
 }
 
 .form-group {
@@ -54,14 +70,27 @@ button:hover svg{
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  background-color: #333333; /* Dark Grey */
+  color: #FFD700; /* Gold */
 }
 
 .btn {
-  background-color: var(--bs-danger);
+  background-color: #FF4500; /* OrangeRed */
   color: white;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
+}
+
+.register-link {
+  display: block;
+  margin-top: 10px;
+  color: #FFD700; /* Gold */
+  text-align: center;
+}
+
+.register-link:hover {
+  color: #FF4500; /* OrangeRed */
 }
