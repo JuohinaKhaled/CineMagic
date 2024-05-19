@@ -8,25 +8,42 @@ const app = express();
 const port = 4200;
 const server = http.createServer(app);
 
+
+bodyParser = require('body-parser');
+
+
+// support parsing of application/json type post data
+app.use(bodyParser.json());
+
+//support parsing of application/x-www-form-urlencoded post data
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// configuration =================
+app.use(express.static(path.join(__dirname, '/dist/my-new-angular-app')));
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, '/dist/cingemagic')));
+app.use(express.static(path.join(__dirname, '/dist/cinemagic')));
+
+server.listen(port, () => {
+  console.log("Server is running on " + port);
+});
+
 
 // MySQL connection
 const con = mysql.createConnection({
+  database: "24_IT_Grp1",
   host: "192.168.110.94",
   port: "3306",
   user: "24_IT_Grp1",
-  password: "uCbEKPQp3SpRxXXkwRr5",
-  database: "24_IT_Gruppe1"
+  password: "uCbEKPQp3SpRxXXkwRr5"
 });
 
 // Test connection
-con.connect(err => {
+/*con.connect(err => {
   if (err) throw err;
   console.log('Connected to the database');
-});
+});*/
 
 // Routes
 
@@ -60,6 +77,3 @@ app.post('/register', (req, res) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
