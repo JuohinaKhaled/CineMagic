@@ -9,8 +9,8 @@ import { FooterComponent } from './footer/footer.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
-import { AuthService } from './auth/auth.service';
-import { AuthGuard } from './auth/auth.guard';
+//import { AuthService } from './auth/auth.service';
+//import { AuthGuard } from './auth/auth.guard';
 
 @NgModule({
   declarations: [
@@ -27,7 +27,8 @@ import { AuthGuard } from './auth/auth.guard';
         FormsModule,
         ReactiveFormsModule
     ],
-  providers: [AuthService, AuthGuard],
+  providers: [],
+  //providers: [AuthService, AuthGuard],
   bootstrap: [AppComponent]
 })
   export class AppModule { }

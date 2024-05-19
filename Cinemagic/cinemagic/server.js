@@ -39,16 +39,9 @@ const con = mysql.createConnection({
   password: "uCbEKPQp3SpRxXXkwRr5"
 });
 
-// Test connection
-/*con.connect(err => {
-  if (err) throw err;
-  console.log('Connected to the database');
-});*/
-
 // Routes
-
 // Login endpoint
-app.post('/login', (req, res) => {
+app.post('/loginKunde', (req, res) => {
   const { email, password } = req.body;
   const kundeQuery = 'SELECT * FROM Kunden WHERE Email = ? AND Passwort = ?';
 
@@ -67,7 +60,7 @@ app.post('/login', (req, res) => {
 });
 
 // Create a new Kunde
-app.post('/register', (req, res) => {
+app.post('/registerKunde', (req, res) => {
   const { Name, Email, Telefonnummer, Passwort } = req.body;
   const query = 'INSERT INTO Kunden (Name, Email, Telefonnummer, Passwort) VALUES (?, ?, ?, ?)';
 

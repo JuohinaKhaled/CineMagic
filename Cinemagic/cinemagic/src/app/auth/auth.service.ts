@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -14,11 +15,12 @@ export class AuthService {
   name: string | null = null;
   email: string | null = null;
   telefonnummer: string | null = null;
+  passwort: string | null = null;
 
   constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>('/loginKunde', { email, password }).pipe(
+    return this.http.post<any>('/login', { email, password }).pipe(
       tap(response => {
         if (response.status === 'success') {
           this.isLoggedIn = true;
@@ -26,14 +28,16 @@ export class AuthService {
           this.name = response.data.Name;
           this.email = response.data.Email;
           this.telefonnummer = response.data.Telefonnummer;
-          console.log('Login successful:', response.data);
-          this.router.navigate(['/home']);
+          this.passwort = response.data.Passwort;
+          console.log('Login erfolgreich, Name: ', this.name);
+          const redirect = this.redirectUrl ? this.router.parseUrl(this.redirectUrl) : '/home';
+          this.router.navigate([redirect]);
         } else {
-          console.log('Login failed, response:', response);
+          console.log('Login fehlgeschlagen, Antwort: ', response);
         }
       }),
       catchError(err => {
-        console.log('Error during login:', err);
+        console.log('Fehler beim Login: ', err);
         return throwError(err);
       })
     );
@@ -41,14 +45,27 @@ export class AuthService {
 
   logout(): void {
     this.isLoggedIn = false;
-    this.kundenID = null;
-    this.name = null;
-    this.email = null;
-    this.telefonnummer = null;
-    this.router.navigate(['/login']);
+    this.email = '';
+    this.router.navigate(['/home']);
   }
 
-  isAuthenticated(): boolean {
-    return this.isLoggedIn;
+  getKundenID(): number | null {
+    return this.kundenID;
+  }
+
+  getName(): string | null {
+    return this.name;
+  }
+
+  getEmail(): string | null {
+    return this.email;
+  }
+
+  getTelefonnummer(): string | null {
+    return this.telefonnummer;
+  }
+
+  getPasswort(): string | null {
+    return this.passwort;
   }
 }

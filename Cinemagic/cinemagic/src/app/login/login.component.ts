@@ -13,7 +13,12 @@ export class LoginComponent {
     password: ''
   };
 
-  constructor(private authService: AuthService, private router: Router) {}
+
+  onSubmit() {
+    console.log(this.user); // Here you would handle the login logic
+  }
+
+  /*constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
     this.authService.login(this.user.email, this.user.password).subscribe(
@@ -30,5 +35,5 @@ export class LoginComponent {
         console.log('Error during login:', error);
       }
     );
-  }
+  }*/
 }
