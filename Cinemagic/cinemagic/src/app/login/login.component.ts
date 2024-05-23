@@ -1,3 +1,4 @@
+// login.component.ts
 import { Component } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
@@ -13,27 +14,25 @@ export class LoginComponent {
     password: ''
   };
 
+  loginFailed = false;
 
-  onSubmit() {
-    console.log(this.user); // Here you would handle the login logic
-  }
-
-  /*constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
     this.authService.login(this.user.email, this.user.password).subscribe(
       response => {
-        if (response) {
+        if (response.status === 'success') {
           console.log('Login successful');
           this.router.navigate(['/home']);
         } else {
           console.log('Login failed');
+          this.loginFailed = true;
         }
       },
       error => {
-        // Handle error
         console.log('Error during login:', error);
+        this.loginFailed = true;
       }
     );
-  }*/
+  }
 }

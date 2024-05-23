@@ -11,17 +11,15 @@ export class AuthGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(
-    _next: ActivatedRouteSnapshot,
+    next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
     console.log('Auth Guard can Activate called');
 
-    // User ist angemeldet
     if (this.authService.isLoggedIn) {
       return true;
     }
 
-    // User ist nicht angemeldet
     this.authService.redirectUrl = state.url;
     return this.router.parseUrl('/login');
   }
