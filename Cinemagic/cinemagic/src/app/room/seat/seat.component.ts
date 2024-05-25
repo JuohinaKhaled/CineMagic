@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
 
 @Component({
   selector: 'app-seat',
@@ -6,5 +6,22 @@ import { Component } from '@angular/core';
   styleUrl: './seat.component.css'
 })
 export class SeatComponent {
+  @Input() seat: any;
+
+  isAccssible() {
+
+  }
+
+  isPremium() {
+
+  }
+
+  isStandard() {
+
+  }
+
+  isOccupied() {
+
+  }
 
 }
