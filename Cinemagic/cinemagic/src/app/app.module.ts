@@ -9,6 +9,8 @@ import { FooterComponent } from './footer/footer.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
+import { RoomComponent } from './room/room.component';
+import { SeatComponent } from './room/seat/seat.component';
 //import { AuthService } from './auth/auth.service';
 //import { AuthGuard } from './auth/auth.guard';
 
@@ -19,7 +21,9 @@ import { HomeComponent } from './home/home.component';
     FooterComponent,
     LoginComponent,
     RegisterComponent,
-    HomeComponent
+    HomeComponent,
+    RoomComponent,
+    SeatComponent
   ],
     imports: [
         BrowserModule,
