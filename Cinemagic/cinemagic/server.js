@@ -32,7 +32,7 @@ server.listen(port, () => {
 
 // MySQL connection
 const con = mysql.createConnection({
-  database: "24_IT_Grp1",
+  database: "24_IT_Gruppe1",
   host: "192.168.110.94",
   port: "3306",
   user: "24_IT_Grp1",
