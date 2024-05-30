@@ -19,11 +19,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // configuration =================
-app.use(express.static(path.join(__dirname, '/dist/my-new-angular-app')));
+// app.use(express.static(path.join(__dirname, '/dist/my-new-angular-app')));
 // Middleware
 app.use(express.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, '/dist/cinemagic')));
+app.use(express.static(path.join(__dirname, '/dist/cinemagic/browser')));
 
 server.listen(port, () => {
   console.log("Server is running on " + port);
@@ -32,11 +32,14 @@ server.listen(port, () => {
 
 // MySQL connection
 const con = mysql.createConnection({
-  database: "24_IT_Grp1",
+  database: "24_IT_Gruppe1",
   host: "192.168.110.94",
   port: "3306",
   user: "24_IT_Grp1",
-  password: "uCbEKPQp3SpRxXXkwRr5"
+  password: "uCbEKPQp3SpRxXXkwRr5",
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 // Routes
