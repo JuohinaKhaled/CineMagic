@@ -73,3 +73,22 @@ app.post('/registerKunde', (req, res) => {
   });
 });
 
+app.get('/filme', (req, res) => {
+  const query = `
+    SELECT f.FilmID, f.Titel, f.Beschreibung, f.Dauer, f.Altersfreigabe, f.Genre, f.Regisseur, f.Erscheinungsdatum, b.PfadGrossesBild, b.PfadKleinesBild
+    FROM Filme f
+    LEFT JOIN Bilder b ON f.FilmID = b.FilmID`;
+
+  con.query(query, (error, results) => {
+    if (error) {
+      console.error("Error fetching films:", error);
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      console.log("Films fetched successfully:", results);
+      res.json(results);
+    }
+  });
+});
+
+
+

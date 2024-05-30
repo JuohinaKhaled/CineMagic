@@ -1,9 +1,22 @@
 .card {
   background-color: #000000;
   color: #FFD700;
+  height: 100%;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-img-top {
-  height: 300px;
+  width: 100%;
+  height: auto;
+  max-height: 500px;
   object-fit: cover;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex-grow: 1;
 }
