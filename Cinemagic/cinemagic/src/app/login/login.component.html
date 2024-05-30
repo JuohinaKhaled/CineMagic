@@ -11,4 +11,5 @@
     <button type="submit" class="btn" [disabled]="!loginForm.valid">Login</button>
   </form>
   <a routerLink="/register" class="register-link">Don't have an account? Sign up now</a>
+  <div *ngIf="loginFailed" style="color:red;">Login failed. Please try again.</div>
 </div>
