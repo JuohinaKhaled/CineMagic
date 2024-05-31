@@ -8,20 +8,20 @@ import {Component, Input} from '@angular/core';
 export class SeatComponent {
   @Input() seat: any;
 
-  isAccssible() {
-
+  isAccessible() {
+    return this.seat.Sitztyp === 'Barrierefrei';
   }
 
   isPremium() {
-
+    return this.seat.Sitztyp === 'Premium';
   }
 
   isStandard() {
-
+    return this.seat.Sitztyp === 'Standard';
   }
 
   isOccupied() {
-
+    return this.seat.Buchungsstatus === 'Besetzt';
   }
 
 }

@@ -14,7 +14,8 @@ import { RoomComponent } from './room/room.component';
 import { SeatComponent } from './room/seat/seat.component';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
-import {MovieService} from "./movie/movie.service";
+import { MovieService } from "./movie/movie.service";
+import {RoomService} from "./room/room.service";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,7 @@ import {MovieService} from "./movie/movie.service";
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [AuthService, AuthGuard, MovieService],
+  providers: [AuthService, AuthGuard, MovieService, RoomService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

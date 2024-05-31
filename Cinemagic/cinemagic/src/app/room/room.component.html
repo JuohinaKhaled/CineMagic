@@ -1,1 +1,5 @@
-<p>room works!</p>
+<div *ngIf="seats">
+  <div *ngFor="let seat of seats" class="grid" [ngStyle]="{'--bs-rows': capacity}">
+    <app-seat [seat]="seat" [ngClass]="getSeatClasses(seat)"></app-seat>
+   </div>
+</div>
