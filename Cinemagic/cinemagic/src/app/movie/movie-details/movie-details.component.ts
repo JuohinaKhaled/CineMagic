@@ -20,6 +20,7 @@ export class MovieDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.getMovieID();
     this.getMovie();
+    this.getEvents();
   }
 
 

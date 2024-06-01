@@ -16,8 +16,8 @@ export class MovieService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  getMovieDetails(movieID: number): Observable<any[]> {
-    return this.http.post<any[]>('/movieDetails', { movieID }).pipe(
+  getMovieDetails(movieID: number): Observable<any> {
+    return this.http.post<any>('/movieDetails', { movieID }).pipe(
       tap(response => {
         if (response.length > 0) {
           console.log('Film-Details abgerufen: ', response);

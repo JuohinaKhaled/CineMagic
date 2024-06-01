@@ -180,7 +180,7 @@ app.post('/room/capacity', (req, res) => {
   });
 });
 
-app.post('/events'), (req, res) => {
+app.post('/events', (req, res) => {
   const {movieID} = req.body;
   const query = `SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit
                  FROM Vorfuehrungen v
@@ -194,4 +194,4 @@ app.post('/events'), (req, res) => {
       res.json(results);
     }
   });
-}
+});

@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import {RoomComponent} from "./room/room.component";
 import {MovieDetailsComponent} from "./movie/movie-details/movie-details.component";
+import {EventComponent} from "./event/event.component";
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -12,7 +13,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'room/:eventID', component: RoomComponent },
-  { path: 'movie-details/:movieID', component: MovieDetailsComponent }
+  { path: 'movie-details/:movieID', component: MovieDetailsComponent },
+  { path: 'event/', component: EventComponent }
 ];
 
 @NgModule({
