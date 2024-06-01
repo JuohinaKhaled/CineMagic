@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {RoomService} from "./room.service";
+import {RoomService} from "./service/room.service";
 import {ActivatedRoute} from "@angular/router";
 import {forkJoin, switchMap} from "rxjs";
 

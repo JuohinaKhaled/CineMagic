@@ -15,7 +15,10 @@ import { SeatComponent } from './room/seat/seat.component';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
 import { MovieService } from "./movie/movie.service";
-import {RoomService} from "./room/room.service";
+import {RoomService} from "./room/service/room.service";
+import { MovieDetailsComponent } from './movie/movie-details/movie-details.component';
+import { EventComponent } from './event/event.component';
+import {EventService} from "./event/service/event.service";
 
 @NgModule({
   declarations: [
@@ -26,7 +29,9 @@ import {RoomService} from "./room/room.service";
     RegisterComponent,
     HomeComponent,
     RoomComponent,
-    SeatComponent
+    SeatComponent,
+    MovieDetailsComponent,
+    EventComponent
   ],
   imports: [
     BrowserModule,
@@ -35,7 +40,7 @@ import {RoomService} from "./room/room.service";
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [AuthService, AuthGuard, MovieService, RoomService],
+  providers: [AuthService, AuthGuard, MovieService, RoomService, EventService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -21,7 +21,7 @@
   <!-- Film Panels -->
   <div class="row mt-4" *ngIf="films.length > 0">
     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let film of films"> <!-- Responsive columns -->
-      <div class="card h-100">
+      <div class="card h-100" (click)="routeMovieDetails(film.FilmID)">
         <img [src]="film.PfadKleinesBild" class="card-img-top" [alt]="film.Titel">
         <div class="card-body">
           <h5 class="card-title">{{ film.Titel }}</h5>

@@ -73,7 +73,7 @@ app.post('/registerKunde', (req, res) => {
   });
 });
 
-app.get('/filme', (req, res) => {
+app.get('/movies', (req, res) => {
   const query = `
     SELECT f.FilmID, f.Titel, f.Beschreibung, f.Dauer, f.Altersfreigabe, f.Genre, f.Regisseur, f.Erscheinungsdatum, b.PfadGrossesBild, b.PfadKleinesBild
     FROM Filme f
@@ -85,6 +85,25 @@ app.get('/filme', (req, res) => {
       res.status(500).json({ error: 'Database query error' });
     } else {
       console.log("Films fetched successfully:", results);
+      res.json(results);
+    }
+  });
+});
+
+app.post('/movieDetails', (req, res) => {
+  const { movieID } = req.body;
+  const query = `
+    SELECT f.FilmID, f.Titel, f.Beschreibung, f.Dauer, f.Altersfreigabe, f.Genre, f.Regisseur, f.Erscheinungsdatum, b.PfadGrossesBild, b.PfadKleinesBild
+    FROM Filme f
+    LEFT JOIN Bilder b ON f.FilmID = b.FilmID
+    WHERE f.FilmID = ?`;
+
+  con.query(query, [movieID], (error, results) => {
+    if (error) {
+      console.error("Error fetching film:", error);
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      console.log("Film fetched successfully:", results);
       res.json(results);
     }
   });
@@ -134,3 +153,18 @@ app.post('/room/capacity', (req, res) => {
   });
 });
 
+app.post('/events'), (req, res) => {
+  const {movieID} = req.body;
+  const query = `SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit
+                 FROM Vorfuehrungen v
+                 WHERE FilmID = ?`;
+  con.query(query, [movieID], (error, results) => {
+    if (error) {
+      console.error("Error fetching events:", error);
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      console.log("Events fetched successfully:", results);
+      res.json(results);
+    }
+  });
+}
