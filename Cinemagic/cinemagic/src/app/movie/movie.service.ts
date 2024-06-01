@@ -20,13 +20,13 @@ export class MovieService {
     return this.http.post<any[]>('/movieDetails', { movieID }).pipe(
       tap(response => {
         if (response.length > 0) {
-          console.log('Vorfuehrungen abgerufen: ', response);
+          console.log('Film-Details abgerufen: ', response);
         } else {
-          console.log('Keine Vorfuehrungen gefunden, Antwort: ', response);
+          console.log('Keine Film-Details gefunden, Antwort: ', response);
         }
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Vorfuehrungen: ', err);
+        console.log('Fehler beim Abrufen der Film-Details: ', err);
         return throwError(err);
       })
     );

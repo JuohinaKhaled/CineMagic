@@ -27,7 +27,7 @@ export class RoomComponent implements OnInit{
 
     this.route.params.pipe(
       switchMap(params => {
-        this.eventID = params['eventID'];
+        this.eventID = +this.route.snapshot.paramMap.get('eventID')!;
         return forkJoin([
           this.roomService.getSaal(this.eventID),
           this.roomService.getRoomCapacity(this.eventID)

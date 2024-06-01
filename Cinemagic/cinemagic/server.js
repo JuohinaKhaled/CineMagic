@@ -125,12 +125,12 @@ app.post('/movieDetails', (req, res) => {
     LEFT JOIN Bilder b ON f.FilmID = b.FilmID
     WHERE f.FilmID = ?`;
 
-  con.query(query, [movieID], (error, results) => {
+  con.query(query, [movieID], function(error, results) {
     if (error) {
       console.error("Error fetching film:", error);
       res.status(500).json({ error: 'Database query error' });
     } else {
-      console.log("Film fetched successfully:", results);
+      console.log("Film fetched successfully:", results[0]);
       res.json(results);
     }
   });
@@ -145,7 +145,7 @@ app.post('/room', (req, res) => {
            LEFT JOIN buchtTicket bt ON sp.SitzplatzID = bt.SitzplatzID AND bt.VorfuehrungsID = ?
     WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)`;
 
-  con.query(query, [eventID], (error, results) => {
+  con.query(query, [eventID], function(error, results) {
     if (error) {
       console.error("Error fetching rooms:", error);
       res.status(500).json({ error: 'Database query error' });

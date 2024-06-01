@@ -1,3 +1,8 @@
 <p>Hallo Juohina, ich brauchte die Detailseite, um auf die Events bzw. Vorführungen zugreifen zu können.</p>
 <p>Habe sie deshalb eben schnell erstellt. Damit du Bescheid weißt, wieso.</p>
 
+<p *ngFor="let m of movie">{{m.Titel}}</p>
+<div *ngFor="let event of events">
+  <app-event [event]="event"></app-event>
+</div>
+
