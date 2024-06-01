@@ -19,6 +19,7 @@ import {RoomService} from "./room/service/room.service";
 import { MovieDetailsComponent } from './movie/movie-details/movie-details.component';
 import { EventComponent } from './event/event.component';
 import {EventService} from "./event/service/event.service";
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,7 @@ import {EventService} from "./event/service/event.service";
     ReactiveFormsModule,
     HttpClientModule
   ],
-  providers: [AuthService, AuthGuard, MovieService, RoomService, EventService],
+  providers: [AuthService, AuthGuard, MovieService, RoomService, EventService, provideAnimationsAsync()],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

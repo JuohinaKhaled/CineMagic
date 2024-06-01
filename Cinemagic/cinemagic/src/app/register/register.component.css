@@ -29,3 +29,12 @@
   cursor: pointer;
   width: 100%;
 }
+
+.has-error input {
+  border-color: red;
+}
+
+.has-error .form-control:focus {
+  box-shadow: 0 0 5px red;
+}
+

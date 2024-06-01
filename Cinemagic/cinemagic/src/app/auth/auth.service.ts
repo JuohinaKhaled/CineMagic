@@ -19,7 +19,7 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>('/loginKunde', { email, password }).pipe(
+    return this.http.post<any>('/loginCustomer', { email, password }).pipe(
       tap(response => {
         if (response.status === 'success') {
           this.isLoggedIn = true;
@@ -42,6 +42,18 @@ export class AuthService {
     this.isLoggedIn = false;
     this.email = null;
     this.router.navigate(['/home']);
+  }
+
+  registerCustomer(data: any): Observable<any> {
+    return this.http.post('/registerCustomer', data).pipe(
+      tap(response => {
+        console.log('Register response:', response);
+      }),
+      catchError(err => {
+        console.error('Error during registration:', err);
+        return throwError(err);
+      })
+    );
   }
 
   getKundenID(): number | null {

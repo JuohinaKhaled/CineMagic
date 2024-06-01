@@ -44,7 +44,7 @@ const con = mysql.createConnection({
 
 // Routes
 // Login endpoint
-app.post('/loginKunde', (req, res) => {
+app.post('/loginCustomer', (req, res) => {
   const { email, password } = req.body;
   const kundeQuery = 'SELECT * FROM Kunden WHERE Email = ? AND Passwort = ?';
 
@@ -63,16 +63,42 @@ app.post('/loginKunde', (req, res) => {
 });
 
 // Create a new Kunde
-app.post('/registerKunde', (req, res) => {
-  const { Name, Email, Telefonnummer, Passwort } = req.body;
-  const query = 'INSERT INTO Kunden (Name, Email, Telefonnummer, Passwort) VALUES (?, ?, ?, ?)';
+app.post('/registerCustomer', (req, res) => {
+  const { Vorname, Nachname, Email, Telefonnummer, Passwort } = req.body;
+  const checkQuery = 'SELECT * FROM Kunden WHERE Email = ? OR Telefonnummer = ?';
 
-  con.query(query, [Name, Email, Telefonnummer, Passwort], (error, results) => {
-    if (error) throw error;
-    res.status(201).json({ message: 'Kunde created', kundenID: results.insertId });
+  con.query(checkQuery, [Email, Telefonnummer], (checkError, checkResults) => {
+    if (checkError) {
+      console.error('Error checking customer existence:', checkError);
+      res.status(500).json({ status: 'error', message: 'Error checking customer existence' });
+      return;
+    }
+
+    if (checkResults.length > 0) {
+      const existingCustomer = checkResults[0];
+      if (existingCustomer.Email === Email) {
+        res.status(400).json({ status: 'fail', message: 'Customer already exists with this email' });
+      } else if (existingCustomer.Telefonnummer === Telefonnummer) {
+        res.status(400).json({ status: 'fail', message: 'Customer already exists with this phone number' });
+      }
+      return;
+    }
+
+    const query = 'INSERT INTO Kunden (Vorname, Nachname, Email, Telefonnummer, Passwort) VALUES (?, ?, ?, ?, ?)';
+
+    con.query(query, [Vorname, Nachname, Email, Telefonnummer, Passwort], (error, results) => {
+      if (error) {
+        console.error('Error inserting customer:', error);
+        res.status(500).json({ status: 'error', message: 'Error inserting customer' });
+        return;
+      }
+      res.status(201).json({ status: 'success', message: 'Kunde created', kundenID: results.insertId });
+    });
   });
 });
 
+
+//Display movies
 app.get('/movies', (req, res) => {
   const query = `
     SELECT f.FilmID, f.Titel, f.Beschreibung, f.Dauer, f.Altersfreigabe, f.Genre, f.Regisseur, f.Erscheinungsdatum, b.PfadGrossesBild, b.PfadKleinesBild
@@ -90,6 +116,7 @@ app.get('/movies', (req, res) => {
   });
 });
 
+//Display Movie Details
 app.post('/movieDetails', (req, res) => {
   const { movieID } = req.body;
   const query = `
