@@ -84,7 +84,7 @@ app.post('/registerCustomer', (req, res) => {
       return;
     }
 
-    const query = 'INSERT INTO Kunden (Vorname, Nachname, Email, Telefonnummer, Passwort) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO Kunden (Name, Email, Telefonnummer, Passwort) VALUES (?, ?, ?, ?, ?)';
 
     con.query(query, [Vorname, Nachname, Email, Telefonnummer, Passwort], (error, results) => {
       if (error) {
