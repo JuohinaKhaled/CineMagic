@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {RoomService} from "./service/room.service";
 import {ActivatedRoute} from "@angular/router";
-import {forkJoin, switchMap} from "rxjs";
+import {MovieService} from "../movie/movie.service";
 
 @Component({
   selector: 'app-room',
@@ -9,51 +9,91 @@ import {forkJoin, switchMap} from "rxjs";
   styleUrl: './room.component.css'
 })
 export class RoomComponent implements OnInit{
-  seats!: any[];
-  capacity!: number;
-  eventID!: number;
-  /*seats: any[] = [];
-  eventID: bigint = BigInt(0);*/
+  room: any;
+  movie: any;
+  seats: any[] = [];
+  groupedSeats: any[][] = [];
+  eventID: number = 0;
+  movieID: number = 0;
 
-  constructor(private roomService : RoomService, private route: ActivatedRoute) {
 
-  }
+  constructor(private roomService : RoomService, private route: ActivatedRoute,
+              private movieService: MovieService) {}
 
   ngOnInit(): void {
-    /*this.route.params.subscribe(params => {
-      this.eventID = BigInt(params['eventID']);
-      this.getRoomData();
-    });*/
-
-    this.route.params.pipe(
-      switchMap(params => {
-        this.eventID = +this.route.snapshot.paramMap.get('eventID')!;
-        return forkJoin([
-          this.roomService.getSaal(this.eventID),
-          this.roomService.getRoomCapacity(this.eventID)
-        ]);
-      })
-    ).subscribe(([seats, capacity]) => {
-      this.seats = seats;
-      this.capacity = capacity;
-    });
+    this.getEventID();
+    this.getMovieID();
+    this.getRoom();
+    this.getRoomData();
+    this.getMovie();
   }
 
-  /*getRoomData(){
-    this.roomService.getSaal(this.eventID).subscribe(
-      (data: any[]) => {
+  getEventID() {
+    this.eventID = +this.route.snapshot.paramMap.get('eventID')!;
+    console.log('Movie ID:', this.eventID);
+
+    if (!this.eventID) {
+      console.error('No event data found in state.');
+    } else {
+      console.log('Event data loaded:', this.eventID);
+    }
+  }
+
+  getMovieID() {
+    this.movieID = +this.route.snapshot.paramMap.get('movieID')!;
+    console.log('Movie ID:', this.movieID);
+
+    if (!this.movieID) {
+      console.error('No movie data found in state.');
+    } else {
+      console.log('Event data loaded:', this.movieID);
+    }
+  }
+
+  getRoom(){
+    this.roomService.getRoom(this.eventID).subscribe(
+      (data) =>{
+        this.room = data;
+        console.log("Room loaded:", this.room);
+      },
+      (error) => {
+        console.error("Error loading room:", error);
+      }
+    );
+  }
+
+  getRoomData(){
+    this.roomService.getSeats(this.eventID).subscribe(
+      (data) => {
         this.seats = data;
         console.log("Seats loaded:", this.seats);
+        this.groupSeatsByRow();
       },
       (error) => {
         console.error("Error loading seats:", error);
       }
     );
-  }*/
-  getSeatClasses(seat: any) {
-    return {
-      ['g-col-' + seat.Reihennummer]: true,
-      ['g-col-md-' + seat.Sitznummer]: true
-    };
+  }
+
+  groupSeatsByRow(): void {
+    let rowIndex = 0;
+    let i = 0
+    this.groupedSeats = [];
+    for (let i = 0; i < this.seats.length; i += 10) {
+      this.groupedSeats[rowIndex] = this.seats.slice(i, i + 10);
+      rowIndex++;
+    }
+  }
+
+  getMovie(){
+    this.movieService.getMovieDetails(this.movieID).subscribe(
+      (data) => {
+        this.movie = data;
+        console.log("Movie loaded:", this.movie);
+      },
+      (error) => {
+        console.error("Error fetching movie details:", error);
+      }
+    );
   }
 }

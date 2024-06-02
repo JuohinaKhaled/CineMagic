@@ -136,7 +136,7 @@ app.post('/movieDetails', (req, res) => {
   });
 });
 
-app.post('/room', (req, res) => {
+app.post('/seats', (req, res) => {
   const { eventID } = req.body;
   const query =`
     SELECT sp.SitzplatzID, sp.SaalID, sp.Reihennummer, sp.Sitznummer, sp.Sitztyp,
@@ -145,36 +145,40 @@ app.post('/room', (req, res) => {
            LEFT JOIN buchtTicket bt ON sp.SitzplatzID = bt.SitzplatzID AND bt.VorfuehrungsID = ?
     WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)`;
 
-  con.query(query, [eventID], function(error, results) {
+  con.query(query, [eventID, eventID], function(error, results) {
     if (error) {
-      console.error("Error fetching rooms:", error);
+      console.error("Error fetching seats:", error);
       res.status(500).json({ error: 'Database query error' });
     } else {
-      console.log("Rooms fetched successfully:", results);
+      if (results.length > 0) {
+      console.log("Seats fetched successfully:", results);
       res.json(results);
+      } else {
+        console.error("Seats not found for event ID:", eventID);
+        res.status(404).json({ error: 'Seats not found' });
+      }
     }
   });
 });
 
-app.post('/room/capacity', (req, res) => {
+app.post('/room', (req, res) => {
   const { eventID } = req.body;
   const query = `
-    SELECT AnzahlSitzplaetze
-    FROM Saele
+    SELECT s.SaalID, s.Saalname, s.AnzahlSitzplaetze, s.Saaltyp
+    FROM Saele s
     WHERE SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ? )`;
 
   con.query(query, [eventID], (error, results) => {
     if (error) {
-      console.error("Error fetching room capacity:", error);
+      console.error("Error fetching room:", error);
       res.status(500).json({ error: 'Database query error' });
     } else {
       if (results.length > 0) {
-        const capacity = results[0].AnzahlSitzplaetze;
-        console.log("Room capacity fetched successfully:", capacity);
-        res.json(capacity);
+        console.log("Room fetched successfully:", results);
+        res.json(results);
       } else {
-        console.error("Room capacity not found for event ID:", eventID);
-        res.status(404).json({ error: 'Room capacity not found' });
+        console.error("Room not found for event ID:", eventID);
+        res.status(404).json({ error: 'Room not found' });
       }
     }
   });

@@ -1,1 +1,8 @@
-<div [ngClass]="{'accessible': isAccessible(), 'premium': isPremium(), 'standard' : isStandard(), 'occupied' : isOccupied() }" class="seat"></div>
+<div [ngClass]="{'accessible': isAccessible() && !isOccupied(),
+                 'premium': isPremium() && !isOccupied(),
+                 'standard' : isStandard() && !isOccupied(),
+                 'accessible-occupied' : isAccessible() && isOccupied(),
+                 'premium-occupied': isPremium() && isOccupied(),
+                 'standard-occupied' : isStandard() && isOccupied()}"
+                  class="seat rounded-1">
+</div>

@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './header/header.component';
@@ -20,6 +21,7 @@ import { MovieDetailsComponent } from './movie/movie-details/movie-details.compo
 import { EventComponent } from './event/event.component';
 import {EventService} from "./event/service/event.service";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { CounterComponent } from './room/counter/counter.component';
 
 @NgModule({
   declarations: [
@@ -32,14 +34,15 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     RoomComponent,
     SeatComponent,
     MovieDetailsComponent,
-    EventComponent
+    EventComponent,
+    CounterComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   providers: [AuthService, AuthGuard, MovieService, RoomService, EventService, provideAnimationsAsync()],
   bootstrap: [AppComponent]

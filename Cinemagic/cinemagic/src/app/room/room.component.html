@@ -1,5 +1,36 @@
-<div *ngIf="seats">
-  <div *ngFor="let seat of seats" class="grid" [ngStyle]="{'--bs-rows': capacity}">
-    <app-seat [seat]="seat" [ngClass]="getSeatClasses(seat)"></app-seat>
-   </div>
+<div class="container justify-content-center align-items-center d-flex flex-column">
+  <div *ngFor="let r of room" class="row mb-5 d-flex flex-column">
+    <h1 class="align-self-center">{{r.Saalname}}</h1>
+    <span class="badge bg-danger">{{r.Saaltyp}}</span>
+  </div>
+  <div class="row justify-content-center d-flex mt-2">
+
+    <div class="col-auto justify-content-center d-flex">
+      <app-counter [headline]="'Adult'" ></app-counter>
+      <app-counter [headline]="'Student'" ></app-counter>
+      <app-counter [headline]="'Child'" ></app-counter>
+    </div>
+    <div class="col-auto justify-content-center d-flex">
+      <app-counter [headline]="'Adult'" ></app-counter>
+      <app-counter [headline]="'Student'" ></app-counter>
+      <app-counter [headline]="'Child'" ></app-counter>
+    </div>
+    <div class="col-auto justify-content-center d-flex">
+      <app-counter [headline]="'Adult'" ></app-counter>
+      <app-counter [headline]="'Student'" ></app-counter>
+      <app-counter [headline]="'Child'" ></app-counter>
+    </div>
+    <div *ngIf="groupedSeats" class="col-auto container justify-content-center d-flex flex-column">
+      <img src="/assets/images/screen.svg" alt="screen" class="screen row align-self-center w-75">
+      <h2 class="row align-self-center">Screen</h2>
+      <div *ngFor="let row of groupedSeats; let i = index" class="row justify-content-center align-items-center">
+        <h5 class="col-1">{{ row[0]?.Reihennummer }}</h5>
+        <div *ngFor="let seat of row" class="col-1 d-flex justify-content-center">
+          <!--<p>Reihe {{ seat.Reihennummer }}, Sitz {{ seat.Sitznummer }}</p>-->
+          <app-seat [seat]="seat"></app-seat>
+       </div>
+      </div>
+      <button class="row btn btn-danger align-self-center">Add to cart</button>
+    </div>
+  </div>
 </div>

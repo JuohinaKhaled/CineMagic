@@ -11,8 +11,8 @@ export class EventComponent {
 
   constructor(private router : Router) {}
 
-  routeRoom(VorfuehrungsID: any) {
-    console.log('Navigating to room with event: ' + VorfuehrungsID);
-    this.router.navigate(['/room', VorfuehrungsID]);
+  routeRoom(VorfuehrungsID: any, FilmID: any) {
+    console.log('Navigating to room with event: ' + VorfuehrungsID + 'and film:' + FilmID );
+    this.router.navigate(['/room', VorfuehrungsID, FilmID]);
   }
 }

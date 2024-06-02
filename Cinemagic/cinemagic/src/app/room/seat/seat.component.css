@@ -1,20 +1,37 @@
 .seat{
-  width:50px;
-  height:50px;
-  background-color: darkred;
+  width:20px;
+  height:20px;
+  margin-bottom: 5px;
 }
 
 .accessible, .standard{
-  background-color: dimgrey;
+  background-color: white;
+}
+
+.accessible{
+  background-image: url("/assets/images/SitzplatzBarrierefreiSchwarz.svg");
+}
+
+.accessible, .accessible-occupied{
+  margin-top: 25px;
+}
+
+.accessible:hover, .premium:hover, .standard:hover{
+  transform: scale(1.2);
 }
 
 .premium{
-  background-color: darkred;
+  background-color: var(--bs-danger);
 }
 
-.occupied{
+.premium, .premium-occupied{
+  width:25px;
+  height:25px;
+}
+
+.accessible-occupied, .premium-occupied, .standard-occupied{
   background-color: #333333;
-  background-image: url("/assets/images/SitzplatzBarrierefreiWeiss.svg");
+  background-image: url("/assets/images/SitzplatzBesetztWeiss.svg");
 }
 
 
