@@ -7,11 +7,11 @@
           <img [src]="film.PfadGrossesBild" class="d-block w-100" [alt]="film.Titel">
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" data-bs-target="#filmCarousel" data-bs-slide="prev">
+      <button id="prevBtn" class="carousel-control-prev" type="button" data-bs-target="#filmCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button class="carousel-control-next" type="button" data-bs-target="#filmCarousel" data-bs-slide="next">
+      <button id="nextBtn" class="carousel-control-next" type="button" data-bs-target="#filmCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
@@ -34,3 +34,48 @@
     <p>No films available.</p>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var carouselElement = document.querySelector('#filmCarousel');
+    var carousel = new bootstrap.Carousel(carouselElement, {
+      interval: 2000,
+      wrap: true
+    });
+
+    var prevBtn = document.getElementById('prevBtn');
+    var nextBtn = document.getElementById('nextBtn');
+    var autoSlideInterval;
+
+    function startAutoSlide() {
+      autoSlideInterval = setInterval(function () {
+        carousel.next();
+      }, 2000);
+    }
+
+    function stopAutoSlide() {
+      clearInterval(autoSlideInterval);
+    }
+
+    // Start auto sliding immediately
+    startAutoSlide();
+
+    prevBtn.addEventListener('click', function () {
+      stopAutoSlide();
+      carousel.prev();
+      setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+    });
+
+    nextBtn.addEventListener('click', function () {
+      stopAutoSlide();
+      carousel.next();
+      setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+    });
+
+    // Pause the carousel on mouse hover
+    carouselElement.addEventListener('mouseover', stopAutoSlide);
+    carouselElement.addEventListener('mouseleave', function () {
+      setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
+    });
+  });
+</script>

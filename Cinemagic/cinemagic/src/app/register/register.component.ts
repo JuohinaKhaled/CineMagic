@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { strongPasswordValidator } from './strong-password.validator';
+import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
 
 @Component({
   selector: 'app-register',
@@ -41,24 +42,34 @@ export class RegisterComponent {
       this.authService.registerCustomer(formData).subscribe(
         response => {
           if (response.status === 'success') {
-            this.snackBar.open('Registration successful!', 'Close', { duration: 3000 });
+            this.openSnackBar('Registration successful!');
             this.registerForm.reset();
-            this.router.navigate(['/home']);
+            this.router.navigate(['/login']);
           } else {
-            this.snackBar.open(response.message, 'Close', { duration: 3000 });
+            this.openSnackBar(response.message);
           }
         },
         error => {
           console.error('Error during registration:', error);
           if (error.error && error.error.message) {
-            this.snackBar.open(error.error.message, 'Close', { duration: 3000 });
+            this.openSnackBar(error.error.message);
           } else {
-            this.snackBar.open('Registration failed!', 'Close', { duration: 3000 });
+            this.openSnackBar('Registration failed!');
           }
         }
       );
     } else {
-      this.snackBar.open('Please fill all fields correctly.', 'Close', { duration: 3000 });
+      this.openSnackBar('Please fill all fields correctly.');
     }
+  }
+
+  openSnackBar(message: string) {
+    this.snackBar.openFromComponent(CustomSnackbarComponent, {
+      data: { message: message },
+      duration: 5000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: 'custom-snackbar'
+    });
   }
 }
