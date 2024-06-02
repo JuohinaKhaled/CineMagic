@@ -2,7 +2,7 @@
   width: 300px;
   margin: 100px auto;
   padding: 20px;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   background-color: #000000;
   color: #FFD700;
 }
@@ -30,13 +30,26 @@
   width: 100%;
 }
 
-.register-link {
-  display: block;
-  margin-top: 10px;
-  color: #FFD700;
+.btn[disabled] {
+  background-color: #555555;
+}
+
+.register-link-container {
   text-align: center;
+  margin-top: 15px;
+}
+
+.register-link {
+  color: #FFD700;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.3s ease;
 }
 
 .register-link:hover {
   color: #FF4500;
+}
+
+.register-link span {
+  font-weight: bold;
 }

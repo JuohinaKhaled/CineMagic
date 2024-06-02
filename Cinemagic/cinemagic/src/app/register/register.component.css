@@ -30,6 +30,10 @@
   width: 100%;
 }
 
+.btn[disabled] {
+  background-color: #555555;
+}
+
 .has-error input {
   border-color: red;
 }
