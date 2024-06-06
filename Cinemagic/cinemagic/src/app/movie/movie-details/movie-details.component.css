@@ -1,0 +1,93 @@
+.movie-details-container {
+  padding: 20px;
+  color: #FFD700;
+}
+
+.movie-header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.movie-poster {
+  flex: 0 0 700px;
+  margin-right: 20px;
+}
+
+.movie-poster img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.movie-info {
+  flex: 1;
+}
+
+.movie-info h1 {
+  margin-top: 0;
+}
+
+.showtimes {
+  margin-top: 30px;
+}
+
+.showtimes h2 {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.event-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.event-button-wrapper {
+  flex: 0 0 auto;
+}
+
+.event-button {
+  background-color: #333;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  font-size: 16px;
+  transition: background-color 0.3s, color 0.3s;
+  margin: 5px;
+}
+
+.event-button .time {
+  font-size: 16px;
+}
+
+.event-button:hover {
+  background-color: #FFD700;
+  color: #333;
+}
+
+.more-button {
+  background-color: transparent;
+  color: #FFD700;
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.more-button:hover {
+  color: #333;
+  background-color: #FFD700;
+}

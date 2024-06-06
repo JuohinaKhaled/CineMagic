@@ -1,8 +1,30 @@
-<p>Hallo Juohina, ich brauchte die Detailseite, um auf die Events bzw. Vorführungen zugreifen zu können.</p>
-<p>Habe sie deshalb eben schnell erstellt. Damit du Bescheid weißt, wieso.</p>
-
-<p *ngFor="let m of movie">{{m.Titel}}</p>
-<div *ngFor="let event of events">
-  <app-event [event]="event"></app-event>
+<div *ngIf="film" class="movie-details-container">
+  <div class="movie-header">
+    <div class="movie-poster">
+      <img [src]="film.PfadGrossesBild" alt="{{ film.Titel }}" class="img-fluid"/>
+    </div>
+    <div class="movie-info">
+      <h1>{{ film.Titel }}</h1>
+      <p>{{ film.Beschreibung }}</p>
+      <p>Duration: {{ film.Dauer }} minutes</p>
+      <p>Age rating: {{ film.Altersfreigabe }}</p>
+      <p>Genre: {{ film.Genre }}</p>
+      <p>Director: {{ film.Regisseur }}</p>
+      <p>Release date: {{ film.Erscheinungsdatum | date }}</p>
+    </div>
+  </div>
+  <div *ngIf="groupedEvents.length > 0" class="showtimes">
+    <h2>Showtimes</h2>
+    <div *ngFor="let group of groupedEvents">
+      <h3>{{ group.date | date:'fullDate' }}</h3>
+      <div class="event-buttons">
+        <div *ngFor="let event of group.eventsToShow" class="event-button-wrapper">
+          <button class="event-button" (click)="goToRoom(event.VorfuehrungsID)">
+            <div class="time">{{ event.Vorfuehrungszeit }}</div>
+          </button>
+        </div>
+      </div>
+      <button *ngIf="group.eventsToShow.length < group.events.length" class="more-button" (click)="showMore(group.date)">+ more</button>
+    </div>
+  </div>
 </div>
-

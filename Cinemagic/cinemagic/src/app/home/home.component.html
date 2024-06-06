@@ -23,9 +23,11 @@
     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let film of films"> <!-- Responsive columns -->
       <div class="card h-100" (click)="routeMovieDetails(film.FilmID)">
         <img [src]="film.PfadKleinesBild" class="card-img-top" [alt]="film.Titel">
+        <div class="overlay">
+          <div class="overlay-text">More Info</div>
+        </div>
         <div class="card-body">
           <h5 class="card-title">{{ film.Titel }}</h5>
-          <p class="card-text">{{ film.Beschreibung }}</p>
         </div>
       </div>
     </div>
@@ -34,48 +36,3 @@
     <p>No films available.</p>
   </div>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var carouselElement = document.querySelector('#filmCarousel');
-    var carousel = new bootstrap.Carousel(carouselElement, {
-      interval: 2000,
-      wrap: true
-    });
-
-    var prevBtn = document.getElementById('prevBtn');
-    var nextBtn = document.getElementById('nextBtn');
-    var autoSlideInterval;
-
-    function startAutoSlide() {
-      autoSlideInterval = setInterval(function () {
-        carousel.next();
-      }, 2000);
-    }
-
-    function stopAutoSlide() {
-      clearInterval(autoSlideInterval);
-    }
-
-    // Start auto sliding immediately
-    startAutoSlide();
-
-    prevBtn.addEventListener('click', function () {
-      stopAutoSlide();
-      carousel.prev();
-      setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
-    });
-
-    nextBtn.addEventListener('click', function () {
-      stopAutoSlide();
-      carousel.next();
-      setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
-    });
-
-    // Pause the carousel on mouse hover
-    carouselElement.addEventListener('mouseover', stopAutoSlide);
-    carouselElement.addEventListener('mouseleave', function () {
-      setTimeout(startAutoSlide, 10000); // Resume after 10 seconds
-    });
-  });
-</script>
