@@ -71,8 +71,8 @@
 }
 
 .event-button:hover {
-  background-color: #FFD700;
-  color: #333;
+  background-color: red;
+  color: #FFD700;
 }
 
 .more-button {
