@@ -1,8 +1,11 @@
-<div [ngClass]="{'accessible': isAccessible() && !isOccupied(),
-                 'premium': isPremium() && !isOccupied(),
-                 'standard' : isStandard() && !isOccupied(),
-                 'accessible-occupied' : isAccessible() && isOccupied(),
-                 'premium-occupied': isPremium() && isOccupied(),
-                 'standard-occupied' : isStandard() && isOccupied()}"
-                  class="seat rounded-1">
+<div [ngClass]="{
+        'accessible': isAccessible() && !isOccupied(),
+        'premium': isPremium() && !isOccupied(),
+        'standard' : isStandard() && !isOccupied(),
+        'accessible-occupied' : isAccessible() && isOccupied(),
+        'premium-occupied': isPremium() && isOccupied(),
+        'standard-occupied' : isStandard() && isOccupied(),
+        'selected': seat.selected }"
+     (click)="selectSeat()"
+     class="seat rounded-1">
 </div>

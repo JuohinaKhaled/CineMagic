@@ -19,8 +19,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // configuration =================
-// app.use(express.static(path.join(__dirname, '/dist/my-new-angular-app')));
-// Middleware
 app.use(express.json());
 app.use(cors());
 app.use(express.static(path.join(__dirname, '/dist/cinemagic/browser')));
@@ -198,4 +196,8 @@ app.post('/events', (req, res) => {
       res.json(results);
     }
   });
+});
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));
 });

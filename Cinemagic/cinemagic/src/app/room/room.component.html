@@ -1,25 +1,32 @@
 <div class="container justify-content-center align-items-center d-flex flex-column">
+
   <div *ngFor="let r of room" class="row mb-5 d-flex flex-column">
     <h1 class="align-self-center">{{r.Saalname}}</h1>
     <span class="badge bg-danger">{{r.Saaltyp}}</span>
   </div>
+
   <div class="row justify-content-center d-flex mt-2">
 
-    <div class="col-auto justify-content-center d-flex">
-      <app-counter [headline]="'Adult'" ></app-counter>
-      <app-counter [headline]="'Student'" ></app-counter>
-      <app-counter [headline]="'Child'" ></app-counter>
+    <div *ngFor="let m of movie" class="col-auto justify-content-start d-flex flex-column">
+      <h1 class="align-self-center mb-2">{{m.Titel}}</h1>
+      <div class="col-auto justify-content-center d-flex mb-2">
+        <app-counter [headline]="'Adult'" (counterValueChanged)="onCounterValueChanged('Adult', $event)"></app-counter>
+        <app-counter [headline]="'Student'" (counterValueChanged)="onCounterValueChanged('Student', $event)"></app-counter>
+        <app-counter [headline]="'Child'" (counterValueChanged)="onCounterValueChanged('Child', $event)"></app-counter>
+      </div>
+      <div class="selected-seats">
+        <div *ngFor="let seat of selectedSeats">
+          <p> Reihe: {{ seat.Reihennummer }} Sitz: {{ seat.Sitznummer }}</p>
+          <button class="btn btn-outline-light btn-close-white" (click)="removeSeat(seat)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button class="row btn btn-danger align-self-center">Add to cart</button>
     </div>
-    <div class="col-auto justify-content-center d-flex">
-      <app-counter [headline]="'Adult'" ></app-counter>
-      <app-counter [headline]="'Student'" ></app-counter>
-      <app-counter [headline]="'Child'" ></app-counter>
-    </div>
-    <div class="col-auto justify-content-center d-flex">
-      <app-counter [headline]="'Adult'" ></app-counter>
-      <app-counter [headline]="'Student'" ></app-counter>
-      <app-counter [headline]="'Child'" ></app-counter>
-    </div>
+
     <div *ngIf="groupedSeats" class="col-auto container justify-content-center d-flex flex-column">
       <img src="/assets/images/screen.svg" alt="screen" class="screen row align-self-center w-75">
       <h2 class="row align-self-center">Screen</h2>
@@ -27,10 +34,11 @@
         <h5 class="col-1">{{ row[0]?.Reihennummer }}</h5>
         <div *ngFor="let seat of row" class="col-1 d-flex justify-content-center">
           <!--<p>Reihe {{ seat.Reihennummer }}, Sitz {{ seat.Sitznummer }}</p>-->
-          <app-seat [seat]="seat"></app-seat>
-       </div>
+          <app-seat [seat]="seat" (seatSelected)="onSeatSelected($event)"></app-seat>
+        </div>
       </div>
-      <button class="row btn btn-danger align-self-center">Add to cart</button>
     </div>
+
   </div>
+
 </div>

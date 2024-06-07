@@ -34,6 +34,9 @@
   background-image: url("/assets/images/SitzplatzBesetztWeiss.svg");
 }
 
-
+.selected{
+  background-color: darkgreen;
+  background-image: url("/assets/images/SitzplatzBesetztWeiss.svg");
+}
 
 

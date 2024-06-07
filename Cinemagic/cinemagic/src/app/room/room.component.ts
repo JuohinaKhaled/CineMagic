@@ -15,6 +15,10 @@ export class RoomComponent implements OnInit{
   groupedSeats: any[][] = [];
   eventID: number = 0;
   movieID: number = 0;
+  adultCounterValue: number = 0;
+  studentCounterValue: number = 0;
+  childCounterValue: number = 0;
+  selectedSeats: any[] = [];
 
 
   constructor(private roomService : RoomService, private route: ActivatedRoute,
@@ -24,7 +28,7 @@ export class RoomComponent implements OnInit{
     this.getEventID();
     this.getMovieID();
     this.getRoom();
-    this.getRoomData();
+    this.getSeats();
     this.getMovie();
   }
 
@@ -62,7 +66,7 @@ export class RoomComponent implements OnInit{
     );
   }
 
-  getRoomData(){
+  getSeats(){
     this.roomService.getSeats(this.eventID).subscribe(
       (data) => {
         this.seats = data;
@@ -77,7 +81,6 @@ export class RoomComponent implements OnInit{
 
   groupSeatsByRow(): void {
     let rowIndex = 0;
-    let i = 0
     this.groupedSeats = [];
     for (let i = 0; i < this.seats.length; i += 10) {
       this.groupedSeats[rowIndex] = this.seats.slice(i, i + 10);
@@ -95,5 +98,110 @@ export class RoomComponent implements OnInit{
         console.error("Error fetching movie details:", error);
       }
     );
+  }
+
+  onCounterValueChanged(type: string, value: number) {
+    switch (type) {
+      case 'Adult':
+        this.adultCounterValue = value;
+        break;
+      case 'Student':
+        this.studentCounterValue = value;
+        break;
+      case 'Child':
+        this.childCounterValue = value;
+        break;
+      default:
+        break;
+    }
+    this.updateSelectedSeats();
+  }
+
+  updateSelectedSeats() {
+    const totalSeats = this.getTotalCount();
+    if (this.selectedSeats.length > totalSeats) {
+      this.selectedSeats.splice(totalSeats).forEach(seat => {
+        const seatToDeselect = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+        if (seatToDeselect) {
+          seatToDeselect.selected = false;
+        }
+      });
+    }
+  }
+
+  getTotalCount(): number {
+    return this.adultCounterValue + this.studentCounterValue + this.childCounterValue;
+  }
+
+  canSelectMoreSeats(): boolean {
+    return this.selectedSeats.length < this.getTotalCount();
+  }
+
+  getPersonType(index: number): string {
+    let totalAdults = this.adultCounterValue;
+    let totalStudents = this.studentCounterValue;
+    if (index < totalAdults) {
+      return 'Adult';
+    } else if (index < totalAdults + totalStudents) {
+      return 'Student';
+    } else {
+      return 'Child';
+    }
+  }
+
+  getPrice(personType: string): number {
+    switch (personType) {
+      case 'Adult':
+        return 12.3;
+      case 'Student':
+        return 10;
+      case 'Child':
+        return 8;
+      default:
+        return 0;
+    }
+  }
+
+  onSeatSelected(seat: any) {
+    console.log("Seat selected: ", seat);
+    if (this.isSeatAlreadySelected(seat)) {
+      console.log("Seat already selected, removing...");
+      this.removeSeat(seat);
+      console.log("delete : ", seat)
+    } else {
+      if (this.canSelectMoreSeats()) {
+          seat.selected = true;
+          const personType = this.getPersonType(this.selectedSeats.length);
+          const price = this.getPrice(personType);
+          this.selectedSeats.push({
+            Reihennummer: seat.Reihennummer,
+            Sitznummer: seat.Sitznummer,
+            personType,
+            price
+          });
+      } else {
+        alert('You have selected the maximum number of seats allowed.');
+      }
+    }
+  }
+
+  isSeatAlreadySelected(seat: any): boolean {
+    return this.selectedSeats.some(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+  }
+  removeSeat(seat: any) {
+    console.log("Removing seat: ", seat);
+    console.log(seat);
+    const index = this.selectedSeats.findIndex(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+    if (index > -1) {
+      console.log("Seat found at index: ", index);
+      const seatToDeselect = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+      this.selectedSeats.splice(index, 1);
+      if (seatToDeselect) {
+        seatToDeselect.selected = false;
+      }
+      console.log('Seat removed:', seat);
+    } else {
+      console.log('Seat not found in selectedSeats:', seat);
+    }
   }
 }
