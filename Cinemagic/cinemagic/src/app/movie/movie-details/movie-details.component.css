@@ -57,17 +57,20 @@
   padding: 10px;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   font-size: 16px;
   transition: background-color 0.3s, color 0.3s;
   margin: 5px;
 }
 
-.event-button .time {
-  font-size: 16px;
+.event-button .cinema-info,
+.event-button .time,
+.event-button .saal-type {
+  margin: 2px 0;
 }
 
 .event-button:hover {

@@ -183,10 +183,13 @@ app.post('/room', (req, res) => {
 });
 
 app.post('/events', (req, res) => {
-  const {movieID} = req.body;
-  const query = `SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit
-                 FROM Vorfuehrungen v
-                 WHERE FilmID = ?`;
+  const { movieID } = req.body;
+  const query = `
+    SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
+    FROM Vorfuehrungen v
+    JOIN Saele s ON v.SaalID = s.SaalID
+    WHERE v.FilmID = ?`;
+
   con.query(query, [movieID], (error, results) => {
     if (error) {
       console.error("Error fetching events:", error);
@@ -197,6 +200,7 @@ app.post('/events', (req, res) => {
     }
   });
 });
+
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));

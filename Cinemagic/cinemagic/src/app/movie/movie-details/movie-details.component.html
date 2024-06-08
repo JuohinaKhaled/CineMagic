@@ -20,7 +20,9 @@
       <div class="event-buttons">
         <div *ngFor="let event of group.eventsToShow" class="event-button-wrapper">
           <button class="event-button" (click)="goToRoom(event.VorfuehrungsID)">
+            <div class="cinema-info">{{ event.Saalname }}</div>
             <div class="time">{{ event.Vorfuehrungszeit }}</div>
+            <div class="saal-type">{{ event.Saaltyp }}</div>
           </button>
         </div>
       </div>
