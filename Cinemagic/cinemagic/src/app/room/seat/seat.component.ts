@@ -11,7 +11,7 @@ export class SeatComponent {
   @Output() seatSelected = new EventEmitter<any>();
 
   isAccessible() {
-    return this.seat.Sitztyp === 'Barrierefrei';
+    return this.seat.Sitztyp === 'Accessible';
   }
 
   isPremium() {
@@ -23,7 +23,7 @@ export class SeatComponent {
   }
 
   isOccupied() {
-    return this.seat.Buchungsstatus === 'Besetzt';
+    return this.seat.Buchungsstatus === 'Occupied';
   }
 
   selectSeat() {

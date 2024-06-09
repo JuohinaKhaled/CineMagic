@@ -138,7 +138,7 @@ app.post('/seats', (req, res) => {
   const { eventID } = req.body;
   const query =`
     SELECT sp.SitzplatzID, sp.SaalID, sp.Reihennummer, sp.Sitznummer, sp.Sitztyp,
-           CASE WHEN bt.SitzplatzID IS NOT NULL THEN 'Besetzt' ELSE 'Frei' END AS Buchungsstatus
+           CASE WHEN bt.SitzplatzID IS NOT NULL THEN 'Occupied' ELSE 'Free' END AS Buchungsstatus
     FROM Sitzplaetze sp
            LEFT JOIN buchtTicket bt ON sp.SitzplatzID = bt.SitzplatzID AND bt.VorfuehrungsID = ?
     WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)`;
