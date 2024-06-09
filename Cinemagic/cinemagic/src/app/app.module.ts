@@ -23,6 +23,7 @@ import {EventService} from "./event/service/event.service";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CounterComponent } from './room/counter/counter.component';
 import { CustomSnackbarComponent } from './custom-snackbar/custom-snackbar.component';
+import { TicketComponent } from './ticket/ticket.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { CustomSnackbarComponent } from './custom-snackbar/custom-snackbar.compo
     MovieDetailsComponent,
     EventComponent,
     CounterComponent,
-    CustomSnackbarComponent
+    CustomSnackbarComponent,
+    TicketComponent
   ],
   imports: [
     BrowserModule,

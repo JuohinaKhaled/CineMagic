@@ -164,7 +164,7 @@ app.post('/room', (req, res) => {
   const query = `
     SELECT s.SaalID, s.Saalname, s.AnzahlSitzplaetze, s.Saaltyp
     FROM Saele s
-    WHERE SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ? )`;
+    WHERE s.SaalID = (SELECT v.SaalID FROM Vorfuehrungen v WHERE v.VorfuehrungsID = ? )`;
 
   con.query(query, [eventID], (error, results) => {
     if (error) {
@@ -183,7 +183,7 @@ app.post('/room', (req, res) => {
 });
 
 app.post('/events', (req, res) => {
-  const { movieID } = req.body;
+  const {movieID} = req.body;
   const query = `
     SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
     FROM Vorfuehrungen v
@@ -196,6 +196,24 @@ app.post('/events', (req, res) => {
       res.status(500).json({ error: 'Database query error' });
     } else {
       console.log("Events fetched successfully:", results);
+      res.json(results);
+    }
+  });
+});
+
+
+app.post('/tickets', (req, res) => {
+  const {roomType} = req.body;
+  console.log(roomType);
+  const query = `SELECT t.TicketID, t.Saaltyp, t.Tickettyp, t.Sitztyp, t.PreisNetto, t.PreisBrutto
+                 FROM Tickets t
+                 WHERE t.Saaltyp = ?`;
+  con.query(query, [roomType], (error, results) => {
+    if (error) {
+      console.error("Error fetching tickets:", error);
+      res.status(500).json({ error: 'Database query error' });
+    } else {
+      console.log("Tickets fetched successfully:", results);
       res.json(results);
     }
   });

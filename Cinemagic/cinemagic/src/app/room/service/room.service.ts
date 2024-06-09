@@ -1,7 +1,8 @@
 import {Injectable, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable, throwError} from "rxjs";
+import {map, Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
+import {Room} from "../../models/room";
 
 @Injectable({
   providedIn: 'root'
@@ -26,10 +27,18 @@ export class RoomService {
     );
   }
 
-  getRoom(eventID: number) {
-    return this.http.post<any>('/room', { eventID }).pipe(
+  getRoom(eventID: number): Observable<Room[]> {
+    return this.http.post<any[]>('/room', { eventID }).pipe(
+      map(response => {
+          return response.map(item => ({
+            roomID: item.SaalID,
+            roomName: item.Saalname,
+            roomCapacity: item.AnzahlSitzplaetze,
+            roomType: item.Saaltyp
+          }));
+        }),
       tap(response => {
-        if (response != 0) {
+        if (response.length > 0) {
           console.log('Saal-Daten abgerufen: ', response);
         } else {
           console.log('Fehler beim Abrufen der Saal-Daten, Antwort: ', response);

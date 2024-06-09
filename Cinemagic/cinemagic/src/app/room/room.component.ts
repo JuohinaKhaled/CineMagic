@@ -2,6 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {RoomService} from "./service/room.service";
 import {ActivatedRoute} from "@angular/router";
 import {MovieService} from "../movie/movie.service";
+import {TicketService} from "../ticket/service/ticket.service";
+import {Room} from "../models/room";
+import {of, switchMap} from "rxjs";
+import {catchError, tap} from "rxjs/operators";
+
+
 
 @Component({
   selector: 'app-room',
@@ -9,7 +15,8 @@ import {MovieService} from "../movie/movie.service";
   styleUrl: './room.component.css'
 })
 export class RoomComponent implements OnInit{
-  room: any;
+
+  room?: Room;
   movie: any;
   seats: any[] = [];
   groupedSeats: any[][] = [];
@@ -19,10 +26,13 @@ export class RoomComponent implements OnInit{
   studentCounterValue: number = 0;
   childCounterValue: number = 0;
   selectedSeats: any[] = [];
+  tickets: any[] = [];
 
 
-  constructor(private roomService : RoomService, private route: ActivatedRoute,
-              private movieService: MovieService) {}
+  constructor(private roomService : RoomService,
+              private route: ActivatedRoute,
+              private movieService: MovieService,
+              private ticketService: TicketService) {}
 
   ngOnInit(): void {
     this.getEventID();
@@ -55,15 +65,27 @@ export class RoomComponent implements OnInit{
   }
 
   getRoom(){
-    this.roomService.getRoom(this.eventID).subscribe(
-      (data) =>{
-        this.room = data;
+    this.roomService.getRoom(this.eventID).pipe(
+      tap((data) => {
+        this.room = new Room(data[0].roomID, data[0].roomName, data[0].roomCapacity, data[0].roomType);
         console.log("Room loaded:", this.room);
-      },
-      (error) => {
-        console.error("Error loading room:", error);
+      }), switchMap(()=> {
+        if (this.room) {
+          return this.ticketService.getTickets(this.room.roomType).pipe(
+            tap((data) => {
+              this.tickets = data;
+              console.log('Ticket data loaded:', this.tickets);
+        })
+      );
+      } else {
+        return of([]);
       }
-    );
+      }),
+      catchError(error => {
+        console.error("Error loading room:", error);
+        return of([]);
+      })
+    ).subscribe();
   }
 
   getSeats(){
@@ -101,32 +123,81 @@ export class RoomComponent implements OnInit{
   }
 
   onCounterValueChanged(type: string, value: number) {
+    console.log(type, value);
+
     switch (type) {
       case 'Adult':
+          console.log('Erwachsen:' + this.adultCounterValue, value);
         this.adultCounterValue = value;
         break;
       case 'Student':
+          console.log('Student:' + this.studentCounterValue, value);
         this.studentCounterValue = value;
         break;
       case 'Child':
+          console.log('Child:' + this.childCounterValue, value);
         this.childCounterValue = value;
         break;
       default:
         break;
     }
-    this.updateSelectedSeats();
+    console.log(type);
+    this.updateSelectedSeats(type);
   }
 
-  updateSelectedSeats() {
+  updateSelectedSeats(personType : string) {
     const totalSeats = this.getTotalCount();
     if (this.selectedSeats.length > totalSeats) {
-      this.selectedSeats.splice(totalSeats).forEach(seat => {
-        const seatToDeselect = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+      const seatIndex = this.selectedSeats.findIndex(s => s.personType === personType);
+      // Finde den ersten ausgewählten Sitz mit dem angegebenen Personentyp
+      if (seatIndex !== -1) {
+        // Entferne den ausgewählten Sitz aus den ausgewählten Sitzen
+        const removedSeat = this.selectedSeats.splice(seatIndex, 1)[0];
+        // Aktualisiere den ausgewählten Sitz, um ihn als nicht ausgewählt zu markieren
+        const seatToDeselect = this.seats.find(s => s.Reihennummer === removedSeat.Reihennummer && s.Sitznummer === removedSeat.Sitznummer);
         if (seatToDeselect) {
           seatToDeselect.selected = false;
         }
-      });
+      }
+    } else {
+      const selectedSeatsOfType = this.selectedSeats.filter(s => s.personType === personType).length;
+      // Überprüfe, ob die Anzahl der ausgewählten Sitze kleiner als der entsprechende Counter ist
+
+      if (selectedSeatsOfType > this.getCounterValue(personType)) {
+        const index = this.selectedSeats.findIndex(s => s.personType === personType);
+
+        if (index !== -1) {
+          const oldSeat = this.selectedSeats.splice(index, 1)[0];
+          const newSeat = this.seats.find(s => s.Reihennummer === oldSeat.Reihennummer && s.Sitznummer === oldSeat.Sitznummer);
+
+          const newPersonType = this.getPersonType();
+          const newPriceBrutto = this.getBruttoPrice(newPersonType, newSeat);
+          const newPriceNetto = this.getNettoPrice(newPersonType, newSeat);
+
+          const updatedSeat = { ...oldSeat, personType: newPersonType, priceBrutto: newPriceBrutto, priceNetto: newPriceNetto };
+
+          this.selectedSeats.splice(index, 0, updatedSeat);
+        }
+      }
     }
+  }
+
+  getCounterValue(personType: string){
+    let count: number = 0;
+    switch (personType) {
+      case 'Adult':
+        count = this.adultCounterValue;
+        break;
+      case 'Student':
+        count = this.studentCounterValue;
+        break;
+      case 'Child':
+        count = this.childCounterValue;
+        break;
+      default:
+        break;
+    }
+    return count;
   }
 
   getTotalCount(): number {
@@ -137,28 +208,42 @@ export class RoomComponent implements OnInit{
     return this.selectedSeats.length < this.getTotalCount();
   }
 
-  getPersonType(index: number): string {
-    let totalAdults = this.adultCounterValue;
-    let totalStudents = this.studentCounterValue;
-    if (index < totalAdults) {
-      return 'Adult';
-    } else if (index < totalAdults + totalStudents) {
-      return 'Student';
+  getPersonType(): string {
+    let personType = '';
+    let adult = this.selectedSeats.filter(pt => pt.personType === 'Adult').length;
+    let student = this.selectedSeats.filter(pt => pt.personType === 'Student').length;
+    let child = this.selectedSeats.filter(pt => pt.personType === 'Child').length;
+
+    if (adult < this.adultCounterValue) {
+      personType = 'Adult';
+    } else if (student < this.studentCounterValue) {
+      personType = 'Student';
+    } else if (child < this.childCounterValue) {
+      personType = 'Child';
+    }
+
+    return personType;
+  }
+
+  getBruttoPrice(personType: string, seat: any): number {
+    let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
+    console.log('Ausgewähltes Ticket', priceData);
+    if (priceData) {
+      console.log('Preis: ', priceData.PreisBrutto)
+      return priceData.PreisBrutto;
     } else {
-      return 'Child';
+      return 0;
     }
   }
 
-  getPrice(personType: string): number {
-    switch (personType) {
-      case 'Adult':
-        return 12.3;
-      case 'Student':
-        return 10;
-      case 'Child':
-        return 8;
-      default:
-        return 0;
+  private getNettoPrice(personType: string, seat: any) {
+    let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
+    console.log('Ausgewähltes Ticket', priceData);
+    if (priceData) {
+      console.log('Preis: ', priceData.PreisBrutto)
+      return priceData.PreisNetto;
+    } else {
+      return 0;
     }
   }
 
@@ -171,13 +256,17 @@ export class RoomComponent implements OnInit{
     } else {
       if (this.canSelectMoreSeats()) {
           seat.selected = true;
-          const personType = this.getPersonType(this.selectedSeats.length);
-          const price = this.getPrice(personType);
+          const personType = this.getPersonType();
+          console.log(personType);
+          const priceBrutto = this.getBruttoPrice(personType, seat);
+          const priceNetto = this.getNettoPrice(personType, seat);
           this.selectedSeats.push({
+            Sitztyp: seat.Sitztyp,
             Reihennummer: seat.Reihennummer,
             Sitznummer: seat.Sitznummer,
             personType,
-            price
+            priceBrutto,
+            priceNetto
           });
       } else {
         alert('You have selected the maximum number of seats allowed.');
@@ -188,6 +277,7 @@ export class RoomComponent implements OnInit{
   isSeatAlreadySelected(seat: any): boolean {
     return this.selectedSeats.some(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
   }
+
   removeSeat(seat: any) {
     console.log("Removing seat: ", seat);
     console.log(seat);
@@ -204,4 +294,7 @@ export class RoomComponent implements OnInit{
       console.log('Seat not found in selectedSeats:', seat);
     }
   }
+
+
+
 }

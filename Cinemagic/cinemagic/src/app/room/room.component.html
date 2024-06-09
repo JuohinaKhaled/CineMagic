@@ -1,8 +1,8 @@
 <div class="container justify-content-center align-items-center d-flex flex-column">
 
-  <div *ngFor="let r of room" class="row mb-5 d-flex flex-column">
-    <h1 class="align-self-center">{{r.Saalname}}</h1>
-    <span class="badge bg-danger">{{r.Saaltyp}}</span>
+  <div *ngIf="room" class="row mb-5 d-flex flex-column">
+    <h1 class="align-self-center">{{room.roomName}}</h1>
+    <span class="badge bg-danger">{{room.roomType}}</span>
   </div>
 
   <div class="row justify-content-center d-flex mt-2">
@@ -16,12 +16,7 @@
       </div>
       <div class="selected-seats">
         <div *ngFor="let seat of selectedSeats">
-          <p> Reihe: {{ seat.Reihennummer }} Sitz: {{ seat.Sitznummer }}</p>
-          <button class="btn btn-outline-light btn-close-white" (click)="removeSeat(seat)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-            </svg>
-          </button>
+          <app-ticket [seat]="seat" (remove)="removeSeat($event)"></app-ticket>
         </div>
       </div>
       <button class="row btn btn-danger align-self-center">Add to cart</button>
@@ -33,7 +28,6 @@
       <div *ngFor="let row of groupedSeats; let i = index" class="row justify-content-center align-items-center">
         <h5 class="col-1">{{ row[0]?.Reihennummer }}</h5>
         <div *ngFor="let seat of row" class="col-1 d-flex justify-content-center">
-          <!--<p>Reihe {{ seat.Reihennummer }}, Sitz {{ seat.Sitznummer }}</p>-->
           <app-seat [seat]="seat" (seatSelected)="onSeatSelected($event)"></app-seat>
         </div>
       </div>
