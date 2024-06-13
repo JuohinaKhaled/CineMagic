@@ -7,6 +7,7 @@ import {Room} from "../models/room";
 import {of, switchMap} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {SocketService} from "./service/socket.service";
+import {EventService} from "../event/service/event.service";
 
 
 @Component({
@@ -17,6 +18,7 @@ import {SocketService} from "./service/socket.service";
 export class RoomComponent implements OnInit, OnDestroy {
 
   room?: Room;
+  event: any;
   movie: any;
   seats: any[] = [];
   groupedSeats: any[][] = [];
@@ -25,6 +27,8 @@ export class RoomComponent implements OnInit, OnDestroy {
   adultCounterValue: number = 0;
   studentCounterValue: number = 0;
   childCounterValue: number = 0;
+  totalPriceBrutto: number = 0;
+  totalPriceNetto: number = 0;
   selectedSeats: any[] = [];
   otherSelectedSeats: any[] = [];
   tickets: any[] = [];
@@ -34,7 +38,8 @@ export class RoomComponent implements OnInit, OnDestroy {
               private route: ActivatedRoute,
               private movieService: MovieService,
               private ticketService: TicketService,
-              private socketService: SocketService) {
+              private socketService: SocketService,
+              private eventService: EventService) {
   }
 
   ngOnInit(): void {
@@ -43,6 +48,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.getRoom();
     this.getSeats();
     this.getMovie();
+    this.getEvent();
     this.getOtherClientSeats();
     this.getCurrentClientSeats();
     this.getSeatsReleasedByOtherClient();
@@ -93,6 +99,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.socketService.getCurrentClientSeat().subscribe(
       (data) => {
         this.selectedSeats = data;
+        this.updateTotalPrice();
         console.log("Seats loaded:", this.selectedSeats);
       },
       (error) => {
@@ -110,6 +117,18 @@ export class RoomComponent implements OnInit, OnDestroy {
     } else {
       console.log('Event data loaded:', this.movieID);
     }
+  }
+
+  getEvent() {
+    this.eventService.getEvent(this.eventID).subscribe(
+      (data) => {
+        this.event = data;
+        console.log("Movie loaded:", this.movie);
+      },
+      (error) => {
+        console.error("Error fetching movie details:", error);
+      }
+    );
   }
 
   getRoom() {
@@ -203,7 +222,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         const removedSeat = this.selectedSeats.splice(seatIndex, 1)[0];
         console.log("RemovedSeat", removedSeat);
         const seatToDeselect = this.seats.find(s => s.Reihennummer === removedSeat.Reihennummer && s.Sitznummer === removedSeat.Sitznummer);
-        console.log("SeatToDeselect",seatToDeselect);
+        console.log("SeatToDeselect", seatToDeselect);
         this.socketService.releaseSeat(seatToDeselect);
         if (seatToDeselect) {
           seatToDeselect.selected = false;
@@ -352,7 +371,18 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
   }
 
+  updateTotalPrice(){
+    this.totalPriceBrutto = 0;
+    this.totalPriceNetto = 0;
+    this.selectedSeats.forEach(seat =>{
+      this.totalPriceBrutto += seat.priceBrutto;
+      this.totalPriceNetto += seat.priceNetto;
+    })
+  }
+
   ngOnDestroy(): void {
     this.socketService.disconnect();
   }
+
+
 }

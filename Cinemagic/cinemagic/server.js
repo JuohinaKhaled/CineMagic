@@ -295,6 +295,24 @@ app.post('/events', (req, res) => {
   });
 });
 
+app.post('/event', (req, res) => {
+  const {eventID} = req.body;
+  const query = `
+    SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
+    FROM Vorfuehrungen v
+           JOIN Saele s ON v.SaalID = s.SaalID
+    WHERE v.VorfuehrungsID = ?`;
+
+  con.query(query, [eventID], (error, results) => {
+    if (error) {
+      console.error("Error fetching event:", error);
+      res.status(500).json({error: 'Database query error'});
+    } else {
+      console.log("Event fetched successfully:", results);
+      res.json(results);
+    }
+  });
+});
 
 app.post('/tickets', (req, res) => {
   const {roomType} = req.body;

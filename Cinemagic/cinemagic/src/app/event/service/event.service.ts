@@ -25,4 +25,20 @@ export class EventService {
       })
     );
   }
+
+  getEvent(eventID: number): Observable<any> {
+    return this.http.post<any>('/event', { eventID }).pipe(
+      tap(response => {
+        if (response.length > 0) {
+          console.log('Vorfuehrung abgerufen: ', response);
+        } else {
+          console.log('Keine Vorfuehrung gefunden, Antwort: ', response);
+        }
+      }),
+      catchError(err => {
+        console.log('Fehler beim Abrufen der Vorfuehrung: ', err);
+        return throwError(err);
+      })
+    );
+  }
 }
