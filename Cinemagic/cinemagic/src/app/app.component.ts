@@ -8,6 +8,7 @@ import { filter } from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  title = 'cinemagic';
   constructor(private router: Router) {
     router.events.pipe(
       filter(event => event instanceof NavigationEnd)

@@ -1,40 +1,40 @@
-.seat{
-  width:20px;
-  height:20px;
+.seat {
+  width: 20px;
+  height: 20px;
   margin-bottom: 5px;
 }
 
-.accessible, .standard{
+.accessible, .standard {
   background-color: white;
 }
 
-.accessible{
+.accessible {
   background-image: url("/assets/images/SitzplatzBarrierefreiSchwarz.svg");
 }
 
-.accessible, .accessible-occupied{
+.accessible, .accessible-occupied {
   margin-top: 25px;
 }
 
-.accessible:hover, .premium:hover, .standard:hover{
+.accessible:hover, .premium:hover, .standard:hover {
   transform: scale(1.2);
 }
 
-.premium{
+.premium {
   background-color: var(--bs-danger);
 }
 
-.premium, .premium-occupied{
-  width:25px;
-  height:25px;
+.premium, .premium-occupied {
+  width: 25px;
+  height: 25px;
 }
 
-.accessible-occupied, .premium-occupied, .standard-occupied{
+.accessible-occupied, .premium-occupied, .standard-occupied {
   background-color: #333333;
   background-image: url("/assets/images/SitzplatzBesetztWeiss.svg");
 }
 
-.selected{
+.selected {
   background-color: darkgreen;
   background-image: url("/assets/images/SitzplatzBesetztWeiss.svg");
 }

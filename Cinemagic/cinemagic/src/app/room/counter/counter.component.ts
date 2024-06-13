@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subscription} from "rxjs";
 import {CounterService} from "./service/counter.service";
 
@@ -7,17 +7,18 @@ import {CounterService} from "./service/counter.service";
   templateUrl: './counter.component.html',
   styleUrl: './counter.component.css'
 })
-export class CounterComponent implements OnInit{
+export class CounterComponent implements OnInit, OnDestroy {
   @Input() headline: string = '';
   @Output() counterValueChanged = new EventEmitter<number>();
-  counterValue : number = 0;
+  counterValue: number = 0;
   totalCounterValue: number = 0;
-  private subscription: Subscription = new Subscription();
+  subscription: Subscription = new Subscription();
 
-  constructor(private counterService: CounterService) {}
+  constructor(private counterService: CounterService) {
+  }
 
   increment() {
-    if(this.totalCounterValue < 6) {
+    if (this.totalCounterValue < 6) {
       this.counterValue++;
       this.counterValueChanged.emit(this.counterValue);
       this.counterService.incrementTotal();

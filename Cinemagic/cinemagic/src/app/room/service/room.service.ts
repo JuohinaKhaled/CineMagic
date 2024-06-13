@@ -9,10 +9,11 @@ import {Room} from "../../models/room";
 })
 export class RoomService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   getSeats(eventID: number): Observable<any> {
-    return this.http.post<any>('/seats', { eventID }).pipe(
+    return this.http.post<any>('/seats', {eventID}).pipe(
       tap(response => {
         if (response.length > 0) {
           console.log('Sitzplatz-Daten abgerufen: ', response);
@@ -28,15 +29,15 @@ export class RoomService {
   }
 
   getRoom(eventID: number): Observable<Room[]> {
-    return this.http.post<any[]>('/room', { eventID }).pipe(
+    return this.http.post<any[]>('/room', {eventID}).pipe(
       map(response => {
-          return response.map(item => ({
-            roomID: item.SaalID,
-            roomName: item.Saalname,
-            roomCapacity: item.AnzahlSitzplaetze,
-            roomType: item.Saaltyp
-          }));
-        }),
+        return response.map(item => ({
+          roomID: item.SaalID,
+          roomName: item.Saalname,
+          roomCapacity: item.AnzahlSitzplaetze,
+          roomType: item.Saaltyp
+        }));
+      }),
       tap(response => {
         if (response.length > 0) {
           console.log('Saal-Daten abgerufen: ', response);

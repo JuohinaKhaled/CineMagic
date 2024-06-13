@@ -3,11 +3,22 @@ const http = require('http');
 const path = require('path');
 const mysql = require('mysql');
 const cors = require('cors');
+const socketIO = require('socket.io');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 const app = express();
 const port = 4200;
 const server = http.createServer(app);
 
+const io = socketIO(server);
+
+app.use(session({
+  secret: 'c1n3m4g1c',
+  resave: false,
+  saveUninitialized: true,
+  cookie: {secure: false}
+}));
 
 bodyParser = require('body-parser');
 
@@ -16,7 +27,7 @@ bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
 //support parsing of application/x-www-form-urlencoded post data
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 // configuration =================
 app.use(express.json());
@@ -27,7 +38,7 @@ server.listen(port, () => {
   console.log("Server is running on " + port);
 });
 
-
+app.use(cookieParser());
 // MySQL connection
 const con = mysql.createConnection({
   database: "24_IT_Gruppe1",
@@ -40,44 +51,103 @@ const con = mysql.createConnection({
   }
 });
 
+
+//create WebSocket-Connection
+let reservedSeats = [];
+
+io.on('connection', (socket) => {
+  console.log('Client connected', socket.id);
+
+  setInterval(() => {
+    io.emit('reservedSeats', reservedSeats);
+  }, 1000);
+
+  socket.on('reserveSeat', (seat) => {
+    reservedSeats.push({...seat, id: socket.id});
+    io.emit('reservedSeats', reservedSeats);
+    console.log(reservedSeats);
+  });
+
+  socket.on('releaseSeat', (seat) => {
+    const seatIndex = reservedSeats.findIndex(s =>
+      s.id === socket.id &&
+      s.seat.Sitztyp === seat.seat.Sitztyp &&
+      s.seat.Reihennummer === seat.seat.Reihennummer &&
+      s.seat.Sitznummer === seat.seat.Sitznummer
+    );
+    if (seatIndex !== -1) {
+      socket.broadcast.emit('seatReleased', seat);
+      reservedSeats.splice(seatIndex, 1);
+      io.emit('reservedSeats', reservedSeats);
+    } else {
+      console.log("Seat not found in reservedSeats:", seat);
+    }
+  });
+
+  socket.on('updateSeat', (seat) => {
+    const existingSeatIndex = reservedSeats.findIndex(s =>
+      s.id === socket.id &&
+      s.seat.Reihennummer === seat.seat.Reihennummer &&
+      s.seat.Sitznummer === seat.seat.Sitznummer
+    );
+    if (existingSeatIndex !== -1) {
+      reservedSeats[existingSeatIndex] = {...seat, id: socket.id};
+      io.emit('reservedSeats', reservedSeats);
+    } else {
+      console.log("Seat not found in reservedSeats:", seat);
+    }
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+    for (let i = reservedSeats.length - 1; i >= 0; i--) {
+      if (reservedSeats[i].id === socket.id) {
+        socket.broadcast.emit('seatReleased', reservedSeats[i]);
+        reservedSeats.splice(i, 1);
+        io.emit('reservedSeats', reservedSeats);
+      }
+    }
+  });
+});
+
 // Routes
 // Login endpoint
 app.post('/loginCustomer', (req, res) => {
-  const { email, password } = req.body;
+  const {email, password} = req.body;
   const kundeQuery = 'SELECT * FROM Kunden WHERE Email = ? AND Passwort = ?';
 
-  con.query(kundeQuery, [email, password], function(kundeError, kundeResults) {
+  con.query(kundeQuery, [email, password], function (kundeError, kundeResults) {
     if (kundeError) throw kundeError;
 
     if (kundeResults.length > 0) {
       // User found
       const user = kundeResults[0];
-      res.send({ status: 'success', message: 'Login successful as Kunde', data: user });
+      res.send({status: 'success', message: 'Login successful as Kunde', data: user});
     } else {
       // User not found
-      res.send({ status: 'fail', message: 'Invalid email or password' });
+      res.send({status: 'fail', message: 'Invalid email or password'});
     }
   });
 });
 
 // Create a new Kunde
 app.post('/registerCustomer', (req, res) => {
-  const { Vorname, Nachname, Email, Telefonnummer, Passwort } = req.body;
+  const {Vorname, Nachname, Email, Telefonnummer, Passwort} = req.body;
   const checkQuery = 'SELECT * FROM Kunden WHERE Email = ? OR Telefonnummer = ?';
 
   con.query(checkQuery, [Email, Telefonnummer], (checkError, checkResults) => {
     if (checkError) {
       console.error('Error checking customer existence:', checkError);
-      res.status(500).json({ status: 'error', message: 'Error checking customer existence' });
+      res.status(500).json({status: 'error', message: 'Error checking customer existence'});
       return;
     }
 
     if (checkResults.length > 0) {
       const existingCustomer = checkResults[0];
       if (existingCustomer.Email === Email) {
-        res.status(400).json({ status: 'fail', message: 'Customer already exists with this email' });
+        res.status(400).json({status: 'fail', message: 'Customer already exists with this email'});
       } else if (existingCustomer.Telefonnummer === Telefonnummer) {
-        res.status(400).json({ status: 'fail', message: 'Customer already exists with this phone number' });
+        res.status(400).json({status: 'fail', message: 'Customer already exists with this phone number'});
       }
       return;
     }
@@ -87,10 +157,10 @@ app.post('/registerCustomer', (req, res) => {
     con.query(query, [Vorname, Nachname, Email, Telefonnummer, Passwort], (error, results) => {
       if (error) {
         console.error('Error inserting customer:', error);
-        res.status(500).json({ status: 'error', message: 'Error inserting customer' });
+        res.status(500).json({status: 'error', message: 'Error inserting customer'});
         return;
       }
-      res.status(201).json({ status: 'success', message: 'Kunde created', kundenID: results.insertId });
+      res.status(201).json({status: 'success', message: 'Kunde created', kundenID: results.insertId});
     });
   });
 });
@@ -99,14 +169,23 @@ app.post('/registerCustomer', (req, res) => {
 //Display movies
 app.get('/movies', (req, res) => {
   const query = `
-    SELECT f.FilmID, f.Titel, f.Beschreibung, f.Dauer, f.Altersfreigabe, f.Genre, f.Regisseur, f.Erscheinungsdatum, b.PfadGrossesBild, b.PfadKleinesBild
+    SELECT f.FilmID,
+           f.Titel,
+           f.Beschreibung,
+           f.Dauer,
+           f.Altersfreigabe,
+           f.Genre,
+           f.Regisseur,
+           f.Erscheinungsdatum,
+           b.PfadGrossesBild,
+           b.PfadKleinesBild
     FROM Filme f
-    LEFT JOIN Bilder b ON f.FilmID = b.FilmID`;
+           LEFT JOIN Bilder b ON f.FilmID = b.FilmID`;
 
   con.query(query, (error, results) => {
     if (error) {
       console.error("Error fetching films:", error);
-      res.status(500).json({ error: 'Database query error' });
+      res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Films fetched successfully:", results);
       res.json(results);
@@ -116,17 +195,26 @@ app.get('/movies', (req, res) => {
 
 //Display Movie Details
 app.post('/movieDetails', (req, res) => {
-  const { movieID } = req.body;
+  const {movieID} = req.body;
   const query = `
-    SELECT f.FilmID, f.Titel, f.Beschreibung, f.Dauer, f.Altersfreigabe, f.Genre, f.Regisseur, f.Erscheinungsdatum, b.PfadGrossesBild, b.PfadKleinesBild
+    SELECT f.FilmID,
+           f.Titel,
+           f.Beschreibung,
+           f.Dauer,
+           f.Altersfreigabe,
+           f.Genre,
+           f.Regisseur,
+           f.Erscheinungsdatum,
+           b.PfadGrossesBild,
+           b.PfadKleinesBild
     FROM Filme f
-    LEFT JOIN Bilder b ON f.FilmID = b.FilmID
+           LEFT JOIN Bilder b ON f.FilmID = b.FilmID
     WHERE f.FilmID = ?`;
 
-  con.query(query, [movieID], function(error, results) {
+  con.query(query, [movieID], function (error, results) {
     if (error) {
       console.error("Error fetching film:", error);
-      res.status(500).json({ error: 'Database query error' });
+      res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Film fetched successfully:", results[0]);
       res.json(results);
@@ -135,48 +223,52 @@ app.post('/movieDetails', (req, res) => {
 });
 
 app.post('/seats', (req, res) => {
-  const { eventID } = req.body;
-  const query =`
-    SELECT sp.SitzplatzID, sp.SaalID, sp.Reihennummer, sp.Sitznummer, sp.Sitztyp,
+  const {eventID} = req.body;
+  const query = `
+    SELECT sp.SitzplatzID,
+           sp.SaalID,
+           sp.Reihennummer,
+           sp.Sitznummer,
+           sp.Sitztyp,
            CASE WHEN bt.SitzplatzID IS NOT NULL THEN 'Occupied' ELSE 'Free' END AS Buchungsstatus
     FROM Sitzplaetze sp
            LEFT JOIN buchtTicket bt ON sp.SitzplatzID = bt.SitzplatzID AND bt.VorfuehrungsID = ?
     WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)`;
 
-  con.query(query, [eventID, eventID], function(error, results) {
+  con.query(query, [eventID, eventID], function (error, results) {
     if (error) {
       console.error("Error fetching seats:", error);
-      res.status(500).json({ error: 'Database query error' });
+      res.status(500).json({error: 'Database query error'});
     } else {
       if (results.length > 0) {
-      console.log("Seats fetched successfully:", results);
-      res.json(results);
+        console.log("Seats fetched successfully:", results);
+        res.json(results);
       } else {
         console.error("Seats not found for event ID:", eventID);
-        res.status(404).json({ error: 'Seats not found' });
+        res.status(404).json({error: 'Seats not found'});
       }
     }
   });
 });
 
 app.post('/room', (req, res) => {
-  const { eventID } = req.body;
+  const {eventID} = req.body;
   const query = `
     SELECT s.SaalID, s.Saalname, s.AnzahlSitzplaetze, s.Saaltyp
     FROM Saele s
-    WHERE s.SaalID = (SELECT v.SaalID FROM Vorfuehrungen v WHERE v.VorfuehrungsID = ? )`;
+    WHERE s.SaalID = (SELECT v.SaalID FROM Vorfuehrungen v WHERE v.VorfuehrungsID = ?)`;
 
   con.query(query, [eventID], (error, results) => {
     if (error) {
       console.error("Error fetching room:", error);
-      res.status(500).json({ error: 'Database query error' });
+      res.status(500).json({error: 'Database query error'});
     } else {
       if (results.length > 0) {
         console.log("Room fetched successfully:", results);
         res.json(results);
       } else {
         console.error("Room not found for event ID:", eventID);
-        res.status(404).json({ error: 'Room not found' });
+        res.status(404).json({error: 'Room not found'});
       }
     }
   });
@@ -187,13 +279,13 @@ app.post('/events', (req, res) => {
   const query = `
     SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
     FROM Vorfuehrungen v
-    JOIN Saele s ON v.SaalID = s.SaalID
+           JOIN Saele s ON v.SaalID = s.SaalID
     WHERE v.FilmID = ?`;
 
   con.query(query, [movieID], (error, results) => {
     if (error) {
       console.error("Error fetching events:", error);
-      res.status(500).json({ error: 'Database query error' });
+      res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Events fetched successfully:", results);
       res.json(results);
@@ -204,21 +296,19 @@ app.post('/events', (req, res) => {
 
 app.post('/tickets', (req, res) => {
   const {roomType} = req.body;
-  console.log(roomType);
   const query = `SELECT t.TicketID, t.Saaltyp, t.Tickettyp, t.Sitztyp, t.PreisNetto, t.PreisBrutto
                  FROM Tickets t
                  WHERE t.Saaltyp = ?`;
   con.query(query, [roomType], (error, results) => {
     if (error) {
       console.error("Error fetching tickets:", error);
-      res.status(500).json({ error: 'Database query error' });
+      res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Tickets fetched successfully:", results);
       res.json(results);
     }
   });
 });
-
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));

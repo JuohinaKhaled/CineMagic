@@ -7,7 +7,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 })
 export class SeatComponent {
   @Input() seat: any;
-  @Input() canSelectMore! : boolean;
+  @Input() canSelectMore!: boolean;
   @Output() seatSelected = new EventEmitter<any>();
 
   isAccessible() {
@@ -26,9 +26,9 @@ export class SeatComponent {
     return this.seat.Buchungsstatus === 'Occupied';
   }
 
-  selectSeat() {
+  isSelected() {
     if (!this.isOccupied()) {
-      if(this.canSelectMore) {
+      if (this.canSelectMore) {
         this.seat.selected = !this.seat.selected;
         this.seatSelected.emit(this.seat);
       } else {
@@ -36,6 +36,5 @@ export class SeatComponent {
         this.seatSelected.emit(this.seat);
       }
     }
-
   }
 }

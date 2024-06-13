@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {RoomService} from "./service/room.service";
 import {ActivatedRoute} from "@angular/router";
 import {MovieService} from "../movie/movie.service";
@@ -6,7 +6,7 @@ import {TicketService} from "../ticket/service/ticket.service";
 import {Room} from "../models/room";
 import {of, switchMap} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
-
+import {SocketService} from "./service/socket.service";
 
 
 @Component({
@@ -14,7 +14,7 @@ import {catchError, tap} from "rxjs/operators";
   templateUrl: './room.component.html',
   styleUrl: './room.component.css'
 })
-export class RoomComponent implements OnInit{
+export class RoomComponent implements OnInit, OnDestroy {
 
   room?: Room;
   movie: any;
@@ -26,13 +26,16 @@ export class RoomComponent implements OnInit{
   studentCounterValue: number = 0;
   childCounterValue: number = 0;
   selectedSeats: any[] = [];
+  otherSelectedSeats: any[] = [];
   tickets: any[] = [];
 
 
-  constructor(private roomService : RoomService,
+  constructor(private roomService: RoomService,
               private route: ActivatedRoute,
               private movieService: MovieService,
-              private ticketService: TicketService) {}
+              private ticketService: TicketService,
+              private socketService: SocketService) {
+  }
 
   ngOnInit(): void {
     this.getEventID();
@@ -40,6 +43,9 @@ export class RoomComponent implements OnInit{
     this.getRoom();
     this.getSeats();
     this.getMovie();
+    this.getOtherClientSeats();
+    this.getCurrentClientSeats();
+    this.getSeatsReleasedByOtherClient();
   }
 
   getEventID() {
@@ -53,6 +59,48 @@ export class RoomComponent implements OnInit{
     }
   }
 
+  getOtherClientSeats() {
+    this.socketService.getOtherClientSeat().subscribe(
+      (data) => {
+        this.otherSelectedSeats = data;
+        this.otherSelectedSeats.forEach(seat => {
+          const seatToUpdate = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+          if (seatToUpdate) {
+            seatToUpdate.Buchungsstatus = 'Occupied';
+          }
+        });
+      },
+      (error) => {
+        console.error("Error loading seats:", error);
+      });
+  }
+
+  getSeatsReleasedByOtherClient() {
+    this.socketService.getSeatReleasedByOtherClient().subscribe(
+      (seat) => {
+        const seatToUpdate = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+        if (seatToUpdate) {
+          seatToUpdate.Buchungsstatus = 'Free';
+        }
+      },
+      (error) => {
+        console.error("Error loading released seats:", error);
+      }
+    );
+  }
+
+  getCurrentClientSeats() {
+    this.socketService.getCurrentClientSeat().subscribe(
+      (data) => {
+        this.selectedSeats = data;
+        console.log("Seats loaded:", this.selectedSeats);
+      },
+      (error) => {
+        console.error("Error loading seats:", error);
+      });
+  }
+
+
   getMovieID() {
     this.movieID = +this.route.snapshot.paramMap.get('movieID')!;
     console.log('Movie ID:', this.movieID);
@@ -64,22 +112,22 @@ export class RoomComponent implements OnInit{
     }
   }
 
-  getRoom(){
+  getRoom() {
     this.roomService.getRoom(this.eventID).pipe(
       tap((data) => {
         this.room = new Room(data[0].roomID, data[0].roomName, data[0].roomCapacity, data[0].roomType);
         console.log("Room loaded:", this.room);
-      }), switchMap(()=> {
+      }), switchMap(() => {
         if (this.room) {
           return this.ticketService.getTickets(this.room.roomType).pipe(
             tap((data) => {
               this.tickets = data;
               console.log('Ticket data loaded:', this.tickets);
-        })
-      );
-      } else {
-        return of([]);
-      }
+            })
+          );
+        } else {
+          return of([]);
+        }
       }),
       catchError(error => {
         console.error("Error loading room:", error);
@@ -88,7 +136,7 @@ export class RoomComponent implements OnInit{
     ).subscribe();
   }
 
-  getSeats(){
+  getSeats() {
     this.roomService.getSeats(this.eventID).subscribe(
       (data) => {
         this.seats = data;
@@ -110,7 +158,7 @@ export class RoomComponent implements OnInit{
     }
   }
 
-  getMovie(){
+  getMovie() {
     this.movieService.getMovieDetails(this.movieID).subscribe(
       (data) => {
         this.movie = data;
@@ -127,34 +175,36 @@ export class RoomComponent implements OnInit{
 
     switch (type) {
       case 'Adult':
-          console.log('Erwachsen:' + this.adultCounterValue, value);
+        console.log('Erwachsen:' + this.adultCounterValue, value);
         this.adultCounterValue = value;
         break;
       case 'Student':
-          console.log('Student:' + this.studentCounterValue, value);
+        console.log('Student:' + this.studentCounterValue, value);
         this.studentCounterValue = value;
         break;
       case 'Child':
-          console.log('Child:' + this.childCounterValue, value);
+        console.log('Child:' + this.childCounterValue, value);
         this.childCounterValue = value;
         break;
       default:
         break;
     }
-    console.log(type);
     this.updateSelectedSeats(type);
   }
 
-  updateSelectedSeats(personType : string) {
+  updateSelectedSeats(personType: string) {
+    console.log("HIEEEEER:", this.otherSelectedSeats, this.selectedSeats)
     const totalSeats = this.getTotalCount();
     if (this.selectedSeats.length > totalSeats) {
+      console.log('WHAT: :D', this.selectedSeats.length, this.selectedSeats);
       const seatIndex = this.selectedSeats.findIndex(s => s.personType === personType);
-      // Finde den ersten ausgewählten Sitz mit dem angegebenen Personentyp
+      console.log("SEATINDEX:", seatIndex);
       if (seatIndex !== -1) {
-        // Entferne den ausgewählten Sitz aus den ausgewählten Sitzen
         const removedSeat = this.selectedSeats.splice(seatIndex, 1)[0];
-        // Aktualisiere den ausgewählten Sitz, um ihn als nicht ausgewählt zu markieren
+        console.log("RemovedSeat", removedSeat);
         const seatToDeselect = this.seats.find(s => s.Reihennummer === removedSeat.Reihennummer && s.Sitznummer === removedSeat.Sitznummer);
+        console.log("SeatToDeselect",seatToDeselect);
+        this.socketService.releaseSeat(seatToDeselect);
         if (seatToDeselect) {
           seatToDeselect.selected = false;
         }
@@ -166,6 +216,7 @@ export class RoomComponent implements OnInit{
       if (selectedSeatsOfType > this.getCounterValue(personType)) {
         const index = this.selectedSeats.findIndex(s => s.personType === personType);
 
+        console.log(index);
         if (index !== -1) {
           const oldSeat = this.selectedSeats.splice(index, 1)[0];
           const newSeat = this.seats.find(s => s.Reihennummer === oldSeat.Reihennummer && s.Sitznummer === oldSeat.Sitznummer);
@@ -174,15 +225,22 @@ export class RoomComponent implements OnInit{
           const newPriceBrutto = this.getBruttoPrice(newPersonType, newSeat);
           const newPriceNetto = this.getNettoPrice(newPersonType, newSeat);
 
-          const updatedSeat = { ...oldSeat, personType: newPersonType, priceBrutto: newPriceBrutto, priceNetto: newPriceNetto };
-
+          const updatedSeat = {
+            ...oldSeat,
+            personType: newPersonType,
+            priceBrutto: newPriceBrutto,
+            priceNetto: newPriceNetto
+          };
+          console.log('Alter Sitz:', oldSeat);
+          console.log('Neuer Sitz: ', updatedSeat);
           this.selectedSeats.splice(index, 0, updatedSeat);
+          this.socketService.updateSeat(updatedSeat);
         }
       }
     }
   }
 
-  getCounterValue(personType: string){
+  getCounterValue(personType: string) {
     let count: number = 0;
     switch (personType) {
       case 'Adult':
@@ -236,7 +294,7 @@ export class RoomComponent implements OnInit{
     }
   }
 
-  private getNettoPrice(personType: string, seat: any) {
+  getNettoPrice(personType: string, seat: any) {
     let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
     console.log('Ausgewähltes Ticket', priceData);
     if (priceData) {
@@ -255,19 +313,19 @@ export class RoomComponent implements OnInit{
       console.log("delete : ", seat)
     } else {
       if (this.canSelectMoreSeats()) {
-          seat.selected = true;
-          const personType = this.getPersonType();
-          console.log(personType);
-          const priceBrutto = this.getBruttoPrice(personType, seat);
-          const priceNetto = this.getNettoPrice(personType, seat);
-          this.selectedSeats.push({
-            Sitztyp: seat.Sitztyp,
-            Reihennummer: seat.Reihennummer,
-            Sitznummer: seat.Sitznummer,
-            personType,
-            priceBrutto,
-            priceNetto
-          });
+        seat.selected = true;
+        const personType = this.getPersonType();
+        console.log(personType);
+        const priceBrutto = this.getBruttoPrice(personType, seat);
+        const priceNetto = this.getNettoPrice(personType, seat);
+        this.socketService.reserveSeat({
+          Sitztyp: seat.Sitztyp,
+          Reihennummer: seat.Reihennummer,
+          Sitznummer: seat.Sitznummer,
+          personType,
+          priceBrutto,
+          priceNetto
+        });
       } else {
         alert('You have selected the maximum number of seats allowed.');
       }
@@ -280,12 +338,11 @@ export class RoomComponent implements OnInit{
 
   removeSeat(seat: any) {
     console.log("Removing seat: ", seat);
-    console.log(seat);
     const index = this.selectedSeats.findIndex(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
     if (index > -1) {
       console.log("Seat found at index: ", index);
       const seatToDeselect = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
-      this.selectedSeats.splice(index, 1);
+      this.socketService.releaseSeat(seatToDeselect);
       if (seatToDeselect) {
         seatToDeselect.selected = false;
       }
@@ -295,6 +352,7 @@ export class RoomComponent implements OnInit{
     }
   }
 
-
-
+  ngOnDestroy(): void {
+    this.socketService.disconnect();
+  }
 }

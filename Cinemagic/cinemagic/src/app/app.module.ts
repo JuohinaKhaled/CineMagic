@@ -16,14 +16,17 @@ import { SeatComponent } from './room/seat/seat.component';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
 import { MovieService } from "./movie/movie.service";
-import {RoomService} from "./room/service/room.service";
+import { RoomService } from "./room/service/room.service";
 import { MovieDetailsComponent } from './movie/movie-details/movie-details.component';
 import { EventComponent } from './event/event.component';
-import {EventService} from "./event/service/event.service";
+import { EventService } from "./event/service/event.service";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { CounterComponent } from './room/counter/counter.component';
 import { CustomSnackbarComponent } from './custom-snackbar/custom-snackbar.component';
 import { TicketComponent } from './ticket/ticket.component';
+import { SocketService } from "./room/service/socket.service";
+import { TicketService } from "./ticket/service/ticket.service";
+import {NgOptimizedImage} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -41,14 +44,16 @@ import { TicketComponent } from './ticket/ticket.component';
     CustomSnackbarComponent,
     TicketComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-  ],
-  providers: [AuthService, AuthGuard, MovieService, RoomService, EventService, provideAnimationsAsync()],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        NgOptimizedImage,
+    ],
+  providers: [AuthService, AuthGuard, MovieService, RoomService, EventService, SocketService, TicketService,
+    provideAnimationsAsync()],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
