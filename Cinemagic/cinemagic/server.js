@@ -105,6 +105,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('seatReleased', reservedSeats[i]);
         reservedSeats.splice(i, 1);
         io.emit('reservedSeats', reservedSeats);
+      } else {
+        console.log("Seat not found in reservedSeats:", reservedSeats[i]);
       }
     }
   });

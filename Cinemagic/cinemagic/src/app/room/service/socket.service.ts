@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import * as io from "socket.io-client";
-import {Observable} from 'rxjs';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +15,30 @@ export class SocketService {
   }
 
   reserveSeat(seat: any): void {
-    this.socket.emit('reserveSeat', {seat});
-    console.log('reserveSeat: ', seat);
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('reserveSeat', {seat});
+      console.log('reserveSeat: ', seat);
+    } else {
+      console.error('Socket not connected');
+    }
   }
 
   releaseSeat(seat: any): void {
-    this.socket.emit('releaseSeat', {seat});
-    console.log('releaseSeat: ', seat);
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('releaseSeat', {seat});
+      console.log('releaseSeat: ', seat);
+    } else {
+      console.error('Socket not connected');
+    }
   }
 
   updateSeat(seat: any): void {
-    this.socket.emit('updateSeat', {seat});
-    console.log('updateSeat: ', seat);
+    if (this.socket && this.socket.connected) {
+      this.socket.emit('updateSeat', {seat});
+      console.log('updateSeat: ', seat);
+    } else {
+      console.error('Socket not connected');
+    }
   }
 
   getSeatReleasedByOtherClient(): Observable<any> {
@@ -33,7 +46,12 @@ export class SocketService {
       this.socket.on('seatReleased', (data: any) => {
         observer.next(data.seat);
       });
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error receiving seatReleased:', error);
+        return throwError(error);
+      })
+    );
   }
 
   getCurrentClientSeat(): Observable<any[]> {
@@ -43,7 +61,12 @@ export class SocketService {
           data.id === this.socket.id).map((data: any) => data.seat);
         observer.next(otherClientSeats);
       });
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error receiving reservedSeats:', error);
+        return throwError(error);
+      })
+    );
   }
 
   getOtherClientSeat(): Observable<any[]> {
@@ -53,12 +76,19 @@ export class SocketService {
           data.id !== this.socket.id).map((data: any) => data.seat);
         observer.next(otherClientSeats);
       });
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error receiving reservedSeats:', error);
+        return throwError(error);
+      })
+    );
   }
 
   disconnect(): void {
     if (this.socket && this.socket.connected) {
       this.socket.emit('disconnect');
+    } else {
+      console.error('Socket not connected');
     }
   }
 }
