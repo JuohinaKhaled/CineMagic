@@ -25,7 +25,7 @@ export class AuthService {
           this.isLoggedIn = true;
           this.email = response.data.Email;
           console.log('Login erfolgreich, Email: ', this.email);
-          const redirect = this.redirectUrl ? this.redirectUrl : '/home';
+          const redirect = this.redirectUrl ? this.redirectUrl : '/';
           this.router.navigate([redirect]);
         } else {
           console.log('Login fehlgeschlagen, Antwort: ', response);
@@ -41,7 +41,7 @@ export class AuthService {
   logout(): void {
     this.isLoggedIn = false;
     this.email = null;
-    this.router.navigate(['/login']); // Redirect to the login page after logout
+    this.router.navigate(['/login']);
   }
 
   registerCustomer(data: any): Observable<any> {

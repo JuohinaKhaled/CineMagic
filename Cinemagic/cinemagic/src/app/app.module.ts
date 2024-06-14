@@ -27,6 +27,7 @@ import { TicketComponent } from './ticket/ticket.component';
 import { SocketService } from "./room/service/socket.service";
 import { TicketService } from "./ticket/service/ticket.service";
 import {NgOptimizedImage} from "@angular/common";
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,8 @@ import {NgOptimizedImage} from "@angular/common";
     EventComponent,
     CounterComponent,
     CustomSnackbarComponent,
-    TicketComponent
+    TicketComponent,
+    ProfileComponent
   ],
     imports: [
         BrowserModule,

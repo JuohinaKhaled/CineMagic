@@ -1,0 +1,75 @@
+.profile-container {
+  background-color: #000;
+  color: #FFD700;
+  padding: 20px;
+  text-align: center;
+}
+
+.header h1 {
+  margin-bottom: 20px;
+  font-size: 2em;
+  text-transform: capitalize;
+}
+
+.navigation {
+  margin-bottom: 20px;
+}
+
+.navigation ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.navigation li {
+  display: inline;
+}
+
+.navigation a {
+  color: #FFD700;
+  text-decoration: none;
+  font-weight: bold;
+  text-transform: capitalize;
+  transition: color 0.3s;
+}
+
+.navigation a:hover {
+  color: #FF4500;
+}
+
+.icons {
+  display: flex;
+  justify-content: center;
+  gap: 60px; /* Increased space between icons */
+}
+
+.icon {
+  text-align: center;
+}
+
+.icon a {
+  text-decoration: none; /* Remove underline from links */
+  color: #FFD700;
+  transition: color 0.3s;
+}
+
+.icon a:hover {
+  color: #FF4500;
+}
+
+.icon img {
+  width: 50px;
+  height: 50px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.icon p {
+  margin: 0;
+  text-transform: capitalize;
+  font-size: 1em;
+  color: #FFD700; /* Set the color to yellow */
+}
