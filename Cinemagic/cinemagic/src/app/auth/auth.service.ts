@@ -41,7 +41,7 @@ export class AuthService {
   logout(): void {
     this.isLoggedIn = false;
     this.email = null;
-    this.router.navigate(['/home']);
+    this.router.navigate(['/login']); // Redirect to the login page after logout
   }
 
   registerCustomer(data: any): Observable<any> {
@@ -54,25 +54,5 @@ export class AuthService {
         return throwError(err);
       })
     );
-  }
-
-  getKundenID(): number | null {
-    return this.kundenID;
-  }
-
-  getName(): string | null {
-    return this.name;
-  }
-
-  getEmail(): string | null {
-    return this.email;
-  }
-
-  getTelefonnummer(): string | null {
-    return this.telefonnummer;
-  }
-
-  getPasswort(): string | null {
-    return this.passwort;
   }
 }
