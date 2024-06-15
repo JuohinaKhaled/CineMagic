@@ -171,18 +171,20 @@ app.post('/registerCustomer', (req, res) => {
 //Display movies
 app.get('/movies', (req, res) => {
   const query = `
-    SELECT f.FilmID,
-           f.Titel,
-           f.Beschreibung,
-           f.Dauer,
-           f.Altersfreigabe,
-           f.Genre,
-           f.Regisseur,
-           f.Erscheinungsdatum,
-           b.PfadGrossesBild,
-           b.PfadKleinesBild
-    FROM Filme f
-           LEFT JOIN Bilder b ON f.FilmID = b.FilmID`;
+      SELECT f.FilmID            as movieID,
+             f.Titel             as movieName,
+             f.Beschreibung      as movieDescription,
+             f.Dauer             as duration,
+             f.Altersfreigabe    as age,
+             f.Genre             as genre,
+             f.Regisseur         as director,
+             f.Erscheinungsdatum as releaseDate,
+             f.Gesamtbewertung   as overallRating,
+             f.AnzahlBewertungen as numberRatings,
+             b.PfadGrossesBild   as pathPictureLarge,
+             b.PfadKleinesBild   as pathPictureSmall
+      FROM Filme f
+               LEFT JOIN Bilder b ON f.FilmID = b.FilmID`;
 
   con.query(query, (error, results) => {
     if (error) {
@@ -190,7 +192,7 @@ app.get('/movies', (req, res) => {
       res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Films fetched successfully:", results);
-      res.json(results);
+      res.status(200).json(results);
     }
   });
 });
@@ -199,19 +201,21 @@ app.get('/movies', (req, res) => {
 app.post('/movieDetails', (req, res) => {
   const {movieID} = req.body;
   const query = `
-    SELECT f.FilmID,
-           f.Titel,
-           f.Beschreibung,
-           f.Dauer,
-           f.Altersfreigabe,
-           f.Genre,
-           f.Regisseur,
-           f.Erscheinungsdatum,
-           b.PfadGrossesBild,
-           b.PfadKleinesBild
-    FROM Filme f
-           LEFT JOIN Bilder b ON f.FilmID = b.FilmID
-    WHERE f.FilmID = ?`;
+      SELECT f.FilmID            as movieID,
+             f.Titel             as movieName,
+             f.Beschreibung      as movieDescription,
+             f.Dauer             as duration,
+             f.Altersfreigabe    as age,
+             f.Genre             as genre,
+             f.Regisseur         as director,
+             f.Erscheinungsdatum as releaseDate,
+             f.Gesamtbewertung   as overallRating,
+             f.AnzahlBewertungen as numberRatings,
+             b.PfadGrossesBild   as pathPictureLarge,
+             b.PfadKleinesBild   as pathPictureSmall
+      FROM Filme f
+               LEFT JOIN Bilder b ON f.FilmID = b.FilmID
+      WHERE f.FilmID = ?`;
 
   con.query(query, [movieID], function (error, results) {
     if (error) {
@@ -219,7 +223,7 @@ app.post('/movieDetails', (req, res) => {
       res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Film fetched successfully:", results[0]);
-      res.json(results);
+      res.status(200).json(results[0]);
     }
   });
 });
@@ -232,10 +236,11 @@ app.post('/seats', (req, res) => {
            sp.Reihennummer,
            sp.Sitznummer,
            sp.Sitztyp,
-           CASE WHEN bt.SitzplatzID IS NOT NULL THEN 'Occupied' ELSE 'Free' END AS Buchungsstatus
+           IF(bt.SitzplatzID IS NOT NULL, 'Occupied', 'Free') AS Buchungsstatus
     FROM Sitzplaetze sp
            LEFT JOIN buchtTicket bt ON sp.SitzplatzID = bt.SitzplatzID AND bt.VorfuehrungsID = ?
-    WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)`;
+    WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)
+  `;
 
   con.query(query, [eventID, eventID], function (error, results) {
     if (error) {
@@ -256,21 +261,22 @@ app.post('/seats', (req, res) => {
 app.post('/room', (req, res) => {
   const {eventID} = req.body;
   const query = `
-    SELECT s.SaalID, s.Saalname, s.AnzahlSitzplaetze, s.Saaltyp
-    FROM Saele s
-    WHERE s.SaalID = (SELECT v.SaalID FROM Vorfuehrungen v WHERE v.VorfuehrungsID = ?)`;
+      SELECT s.SaalID, s.Saalname, s.AnzahlSitzplaetze, s.Saaltyp
+      FROM Saele s
+      WHERE s.SaalID = (SELECT v.SaalID FROM Vorfuehrungen v WHERE v.VorfuehrungsID = ?)
+  `;
 
   con.query(query, [eventID], (error, results) => {
     if (error) {
-      console.error("Error fetching room:", error);
       res.status(500).json({error: 'Database query error'});
+      console.error("Error fetching Room:", error);
     } else {
       if (results.length > 0) {
-        console.log("Room fetched successfully:", results);
-        res.json(results);
+        res.status(200).json({status: 'success', message: 'Room fetched!', room: results[0]});
+        console.error("Successful fetching Room:", error);
       } else {
-        console.error("Room not found for event ID:", eventID);
-        res.status(404).json({error: 'Room not found'});
+        res.status(404).json({status: 'error', error: 'Room not found!'});
+        console.error("Error fetching Room:", error);
       }
     }
   });
@@ -279,18 +285,31 @@ app.post('/room', (req, res) => {
 app.post('/events', (req, res) => {
   const {movieID} = req.body;
   const query = `
-    SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
-    FROM Vorfuehrungen v
-           JOIN Saele s ON v.SaalID = s.SaalID
-    WHERE v.FilmID = ?`;
+      SELECT v.VorfuehrungsID    as eventID,
+             v.FilmID            as movieID,
+             v.SaalID            as roomID,
+             v.Vorfuehrungsdatum as eventDate,
+             v.Vorfuehrungszeit  as eventTime,
+             v.VerkaufteTickets  as soldTickets,
+             s.Saalname          as roomName,
+             s.Saaltyp           as roomType
+      FROM Vorfuehrungen v
+               JOIN Saele s ON v.SaalID = s.SaalID
+      WHERE v.FilmID = ?
+  `;
 
   con.query(query, [movieID], (error, results) => {
     if (error) {
-      console.error("Error fetching events:", error);
       res.status(500).json({error: 'Database query error'});
+      console.error("Error fetching Events:", error);
     } else {
-      console.log("Events fetched successfully:", results);
-      res.json(results);
+      if (results.length > 0) {
+        res.status(200).json(results);
+        console.log("Events fetched successfully:", results);
+      } else {
+        res.status(404).json({status: 'error', error: 'Events not found!'});
+        console.error("Error fetching Events:", error);
+      }
     }
   });
 });
@@ -301,31 +320,44 @@ app.post('/event', (req, res) => {
     SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
     FROM Vorfuehrungen v
            JOIN Saele s ON v.SaalID = s.SaalID
-    WHERE v.VorfuehrungsID = ?`;
+    WHERE v.VorfuehrungsID = ?
+  `;
 
   con.query(query, [eventID], (error, results) => {
     if (error) {
-      console.error("Error fetching event:", error);
+      console.error("Error fetching Event:", error);
       res.status(500).json({error: 'Database query error'});
     } else {
-      console.log("Event fetched successfully:", results);
-      res.json(results);
+      if (results.length > 0) {
+        res.status(200).json({status: 'success', message: 'Event fetched!', event: results[0]});
+        console.log("Event fetched successfully:", results);
+      } else {
+        res.status(404).json({status: 'error', error: 'Event not found!'});
+        console.error("Error fetching Event:", error);
+      }
     }
   });
 });
 
 app.post('/tickets', (req, res) => {
   const {roomType} = req.body;
-  const query = `SELECT t.TicketID, t.Saaltyp, t.Tickettyp, t.Sitztyp, t.PreisNetto, t.PreisBrutto
-                 FROM Tickets t
-                 WHERE t.Saaltyp = ?`;
+  const query = `
+    SELECT t.TicketID, t.Saaltyp, t.Tickettyp, t.Sitztyp, t.PreisNetto, t.PreisBrutto
+    FROM Tickets t
+    WHERE t.Saaltyp = ?
+  `;
   con.query(query, [roomType], (error, results) => {
     if (error) {
-      console.error("Error fetching tickets:", error);
       res.status(500).json({error: 'Database query error'});
+      console.error("Error fetching tickets:", error);
     } else {
-      console.log("Tickets fetched successfully:", results);
-      res.json(results);
+      if (results.length > 0) {
+        res.status(200).json({status: 'success', message: 'Tickets fetched!', event: results});
+        console.log("Tickets fetched successfully:", results);
+      } else {
+        res.status(404).json({status: 'error', error: 'Tickets not found!'});
+        console.error("Error fetching Tickets:", error);
+      }
     }
   });
 });

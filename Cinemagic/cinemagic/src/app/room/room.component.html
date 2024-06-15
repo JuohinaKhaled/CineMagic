@@ -1,16 +1,16 @@
 <div class="container justify-content-center align-items-center d-flex flex-column">
 
-  <div *ngIf="room" class="row mb-5 d-flex flex-column">
+  <div *ngIf="room$ | async as room" class="row mb-5 d-flex flex-column">
     <h1 class="align-self-center">{{room.roomName}}</h1>
     <span class="badge bg-danger">{{room.roomType}}</span>
   </div>
 
-  <div *ngFor="let e of event" class="row justify-content-center d-flex mt-2">
+  <div *ngIf="event$ | async as event" class="row justify-content-center d-flex mt-2">
 
     <div *ngFor="let m of movie" class="col-auto justify-content-start d-flex flex-column">
       <h1 class="align-self-center mb-3">{{m.Titel}}</h1>
       <h6 class="align-self-center text-white mb-3">
-        {{e.Vorfuehrungsdatum | date:'dd.MM.yyyy'}} {{' | ' + (e.Vorfuehrungszeit |  slice:0:5)}}
+        {{event.eventDate | date:'dd.MM.yyyy'}} {{' | ' + (event.eventTime |  slice:0:5)}}
       </h6>
       <div class="col-auto justify-content-center d-flex mb-3">
         <app-counter [headline]="'Adult'" (counterValueChanged)="onCounterValueChanged('Adult', $event)"></app-counter>

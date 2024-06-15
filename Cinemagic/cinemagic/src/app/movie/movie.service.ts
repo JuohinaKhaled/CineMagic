@@ -1,32 +1,40 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import {Observable, throwError} from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {map, Observable, throwError} from 'rxjs';
 import {catchError, tap} from "rxjs/operators";
+import {Movie} from "../models/movie";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovieService {
-  private apiUrl = 'http://localhost:4200/movies';
 
-  constructor(private http: HttpClient) { }
-
-  getFilms(): Observable<any[]> {
-    console.log("Fetching films from API...");
-    return this.http.get<any[]>(this.apiUrl);
+  constructor(private http: HttpClient) {
   }
 
-  getMovieDetails(movieID: number): Observable<any> {
-    return this.http.post<any>('/movieDetails', { movieID }).pipe(
-      tap(response => {
-        if (response.length > 0) {
-          console.log('Film-Details abgerufen: ', response);
-        } else {
-          console.log('Keine Film-Details gefunden, Antwort: ', response);
-        }
+  private moviesAllUrl = '/movies';
+  private movieUrl = '/movieDetails';
+  httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
+
+  fetchAllMovies(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(this.moviesAllUrl, this.httpOptions).pipe(
+      tap(movie => {
+        console.log("Movie_Service: Movies fetched: ", movie);
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Film-Details: ', err);
+        console.log('Movie_Service: Error fetching Movies: ', err);
+        return throwError(err);
+      })
+    );
+  }
+
+  fetchMovie(movieID: number): Observable<Movie> {
+    return this.http.post<Movie>(this.movieUrl, {movieID}, this.httpOptions).pipe(
+      tap(movie => {
+        console.log('Movie_Service: Movie fetched: ', movie);
+      }),
+      catchError(err => {
+        console.log('Movie_Service: Error fetching Movie', err);
         return throwError(err);
       })
     );

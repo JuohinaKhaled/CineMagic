@@ -17,27 +17,27 @@ export class SocketService {
   reserveSeat(seat: any): void {
     if (this.socket && this.socket.connected) {
       this.socket.emit('reserveSeat', {seat});
-      console.log('reserveSeat: ', seat);
+      console.log('Socket_Service: reserveSeat: ', seat);
     } else {
-      console.error('Socket not connected');
+      console.error('Socket_Service: Socket not connected');
     }
   }
 
   releaseSeat(seat: any): void {
     if (this.socket && this.socket.connected) {
       this.socket.emit('releaseSeat', {seat});
-      console.log('releaseSeat: ', seat);
+      console.log('Socket_Service: releaseSeat: ', seat);
     } else {
-      console.error('Socket not connected');
+      console.error('Socket_Service: Socket not connected');
     }
   }
 
   updateSeat(seat: any): void {
     if (this.socket && this.socket.connected) {
       this.socket.emit('updateSeat', {seat});
-      console.log('updateSeat: ', seat);
+      console.log('Socket_Service: updateSeat: ', seat);
     } else {
-      console.error('Socket not connected');
+      console.error('Socket_Service: Socket not connected');
     }
   }
 
@@ -48,7 +48,7 @@ export class SocketService {
       });
     }).pipe(
       catchError(error => {
-        console.error('Error receiving seatReleased:', error);
+        console.error('Socket_Service: Error receiving seatReleased:', error);
         return throwError(error);
       })
     );
@@ -63,7 +63,7 @@ export class SocketService {
       });
     }).pipe(
       catchError(error => {
-        console.error('Error receiving reservedSeats:', error);
+        console.error('Socket_Service: Error receiving reservedSeats:', error);
         return throwError(error);
       })
     );
@@ -78,7 +78,7 @@ export class SocketService {
       });
     }).pipe(
       catchError(error => {
-        console.error('Error receiving reservedSeats:', error);
+        console.error('Socket_Service: Error receiving reservedSeats:', error);
         return throwError(error);
       })
     );
@@ -88,7 +88,7 @@ export class SocketService {
     if (this.socket && this.socket.connected) {
       this.socket.emit('disconnect');
     } else {
-      console.error('Socket not connected');
+      console.error('Socket_Service: Socket not connected');
     }
   }
 }

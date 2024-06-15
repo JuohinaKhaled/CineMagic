@@ -4,7 +4,9 @@ import {ActivatedRoute} from "@angular/router";
 import {MovieService} from "../movie/movie.service";
 import {TicketService} from "../ticket/service/ticket.service";
 import {Room} from "../models/room";
-import {of, switchMap} from "rxjs";
+import {Event} from "../models/event";
+import {Ticket} from "../models/ticket";
+import {Observable, of, switchMap} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {SocketService} from "./service/socket.service";
 import {EventService} from "../event/service/event.service";
@@ -17,8 +19,8 @@ import {EventService} from "../event/service/event.service";
 })
 export class RoomComponent implements OnInit, OnDestroy {
 
-  room?: Room;
-  event: any;
+  room$: Observable<Room | any> | undefined;
+  event$: Observable<Event | any> | undefined;
   movie: any;
   seats: any[] = [];
   groupedSeats: any[][] = [];
@@ -31,20 +33,20 @@ export class RoomComponent implements OnInit, OnDestroy {
   totalPriceNetto: number = 0;
   selectedSeats: any[] = [];
   otherSelectedSeats: any[] = [];
-  tickets: any[] = [];
+  tickets: Ticket[] = []
 
 
-  constructor(private roomService: RoomService,
-              private route: ActivatedRoute,
-              private movieService: MovieService,
-              private ticketService: TicketService,
-              private socketService: SocketService,
-              private eventService: EventService) {
+  constructor(
+    private roomService: RoomService,
+    private route: ActivatedRoute,
+    private movieService: MovieService,
+    private ticketService: TicketService,
+    private socketService: SocketService,
+    private eventService: EventService) {
   }
 
   ngOnInit(): void {
-    this.getEventID();
-    this.getMovieID();
+    this.initializeIDs();
     this.getRoom();
     this.getSeats();
     this.getMovie();
@@ -54,14 +56,13 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.getSeatsReleasedByOtherClient();
   }
 
-  getEventID() {
-    this.eventID = +this.route.snapshot.paramMap.get('eventID')!;
-    console.log('Movie ID:', this.eventID);
-
-    if (!this.eventID) {
-      console.error('No event data found in state.');
-    } else {
-      console.log('Event data loaded:', this.eventID);
+  private initializeIDs() {
+    try {
+      this.movieID = +this.route.snapshot.paramMap.get('movieID')!;
+      this.eventID = +this.route.snapshot.paramMap.get('eventID')!;
+    } catch (error) {
+      console.error('Error initializing IDs:', error);
+      throw error;
     }
   }
 
@@ -108,55 +109,44 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
 
-  getMovieID() {
-    this.movieID = +this.route.snapshot.paramMap.get('movieID')!;
-    console.log('Movie ID:', this.movieID);
-
-    if (!this.movieID) {
-      console.error('No movie data found in state.');
-    } else {
-      console.log('Event data loaded:', this.movieID);
-    }
-  }
-
   getEvent() {
-    this.eventService.getEvent(this.eventID).subscribe(
-      (data) => {
-        this.event = data;
-        console.log("Movie loaded:", this.movie);
-      },
-      (error) => {
-        console.error("Error fetching movie details:", error);
-      }
+    this.event$ = this.eventService.fetchEvent(this.eventID).pipe(
+      catchError(err => {
+        console.error('Error fetching Event:', err);
+        return [];
+      })
     );
   }
 
   getRoom() {
-    this.roomService.getRoom(this.eventID).pipe(
-      tap((data) => {
-        this.room = new Room(data[0].roomID, data[0].roomName, data[0].roomCapacity, data[0].roomType);
-        console.log("Room loaded:", this.room);
-      }), switchMap(() => {
-        if (this.room) {
-          return this.ticketService.getTickets(this.room.roomType).pipe(
-            tap((data) => {
+    this.room$ = this.roomService.fetchRoom(this.eventID).pipe(
+      switchMap(room =>{
+        if (room) {
+          this.ticketService.fetchTickets(room.roomType).pipe(
+            tap( data => {
               this.tickets = data;
-              console.log('Ticket data loaded:', this.tickets);
+            }),
+            catchError(err => {
+              console.error('Error fetching Tickets:', err);
+              return of([]); // Handle error as needed
             })
           );
         } else {
-          return of([]);
+          console.error('Room not fetched');
+          return of(null); // Return null or handle case where room is not fetched
         }
+        return of(room);
       }),
-      catchError(error => {
-        console.error("Error loading room:", error);
-        return of([]);
+      catchError(err => {
+        console.error('Error fetching Room:', err);
+        return of(null); // Handle error as needed
       })
-    ).subscribe();
+    );
   }
 
+
   getSeats() {
-    this.roomService.getSeats(this.eventID).subscribe(
+    this.roomService.fetchSeats(this.eventID).subscribe(
       (data) => {
         this.seats = data;
         console.log("Seats loaded:", this.seats);
@@ -178,7 +168,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   getMovie() {
-    this.movieService.getMovieDetails(this.movieID).subscribe(
+    this.movieService.fetchMovie(this.movieID).subscribe(
       (data) => {
         this.movie = data;
         console.log("Movie loaded:", this.movie);
@@ -303,22 +293,22 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   getBruttoPrice(personType: string, seat: any): number {
-    let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
+    let priceData = this.tickets.find(t => t.ticketType === personType && t.seatType === seat.Sitztyp);
     console.log('Ausgewähltes Ticket', priceData);
     if (priceData) {
-      console.log('Preis: ', priceData.PreisBrutto)
-      return priceData.PreisBrutto;
+      console.log('Preis: ', priceData.priceBrutto)
+      return priceData.priceNetto;
     } else {
       return 0;
     }
   }
 
   getNettoPrice(personType: string, seat: any) {
-    let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
+    let priceData = this.tickets.find(t => t.ticketType === personType && t.seatType === seat.Sitztyp);
     console.log('Ausgewähltes Ticket', priceData);
     if (priceData) {
-      console.log('Preis: ', priceData.PreisBrutto)
-      return priceData.PreisNetto;
+      console.log('Preis: ', priceData.priceBrutto)
+      return priceData.priceNetto;
     } else {
       return 0;
     }
@@ -371,10 +361,10 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateTotalPrice(){
+  updateTotalPrice() {
     this.totalPriceBrutto = 0;
     this.totalPriceNetto = 0;
-    this.selectedSeats.forEach(seat =>{
+    this.selectedSeats.forEach(seat => {
       this.totalPriceBrutto += seat.priceBrutto;
       this.totalPriceNetto += seat.priceNetto;
     })

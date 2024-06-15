@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { MovieService } from '../movie/movie.service'
-import {ActivatedRoute, Route, Router} from "@angular/router";
+import {Component, OnInit} from '@angular/core';
+import {MovieService} from '../movie/movie.service'
+import {Router} from "@angular/router";
+import {map, Observable, throwError} from "rxjs";
+import {Movie} from "../models/movie";
+import {catchError, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -8,26 +11,33 @@ import {ActivatedRoute, Route, Router} from "@angular/router";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  films: any[] = [];
+  movies$: Observable<|Movie[]> | undefined
 
-  constructor(private movieService: MovieService, private router: Router) {}
+  constructor(private movieService: MovieService, private router: Router) {
+  }
 
   ngOnInit(): void {
-    this.movieService.getFilms().subscribe(
-      (data: any[]) => {
-        this.films = data;
-        console.log("Films loaded:", this.films);
-      },
-      (error) => {
-        console.error("Error loading films:", error);
-      }
-    );
+    this.getMovies();
   }
 
-  routeMovieDetails(FilmID: any) {
-    console.log('Navigating to movie-details with film: ' + FilmID);
-    this.router.navigate(['/movie-details', FilmID]);
+  getMovies(){
+    this.movies$ = this.movieService.fetchAllMovies().pipe(
+      tap(movies => {
+        console.log('Home_Component: Movies fetched:', movies);
+      }),
+      catchError(err => {
+        console.error('Home_Component: Error loading Movies:', err);
+        return throwError(err);
+      })
+    );
+
   }
+  routeMovieDetails(movieID: number) {
+    console.log('Home_Component: Navigating to movie-details: ' + movieID);
+    this.router.navigate(['/movie-details', movieID]);
+  }
+
+
 }
 
 

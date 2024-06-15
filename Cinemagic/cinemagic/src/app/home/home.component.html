@@ -1,17 +1,20 @@
 <div class="container mt-4">
   <!-- Carousel -->
-  <div *ngIf="films.length > 0">
-    <div id="filmCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+  <div *ngIf="movies$ | async as movies">
+    <div *ngIf="movies.length > 0; else noMoviesTemplate" id="filmCarousel" class="carousel slide"
+         data-bs-ride="carousel" data-bs-interval="2000">
       <div class="carousel-inner">
-        <div *ngFor="let film of films; let i = index" [class.active]="i === 0" class="carousel-item">
-          <img [src]="film.PfadGrossesBild" class="d-block w-100" [alt]="film.Titel">
+        <div *ngFor="let movie of movies; let i = index" [class.active]="i === 0" class="carousel-item">
+          <img [src]="movie.pathPictureLarge" class="d-block w-100" [alt]="movie.movieName">
         </div>
       </div>
-      <button id="prevBtn" class="carousel-control-prev" type="button" data-bs-target="#filmCarousel" data-bs-slide="prev">
+      <button id="prevBtn" class="carousel-control-prev" type="button" data-bs-target="#filmCarousel"
+              data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button id="nextBtn" class="carousel-control-next" type="button" data-bs-target="#filmCarousel" data-bs-slide="next">
+      <button id="nextBtn" class="carousel-control-next" type="button" data-bs-target="#filmCarousel"
+              data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
@@ -19,20 +22,22 @@
   </div>
 
   <!-- Film Panels -->
-  <div class="row mt-4" *ngIf="films.length > 0">
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let film of films"> <!-- Responsive columns -->
-      <div class="card h-100" (click)="routeMovieDetails(film.FilmID)">
-        <img [src]="film.PfadKleinesBild" class="card-img-top" [alt]="film.Titel">
+  <div class="row mt-4" *ngIf="movies$ | async as m">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let movie of m"> <!-- Responsive columns -->
+      <div class="card h-100" (click)="routeMovieDetails(movie.movieID)">
+        <img [src]="movie.pathPictureSmall" class="card-img-top" [alt]="movie.movieName">
         <div class="overlay">
           <div class="overlay-text">More Info</div>
         </div>
         <div class="card-body">
-          <h5 class="card-title">{{ film.Titel }}</h5>
+          <h5 class="card-title">{{ movie.movieName }}</h5>
         </div>
       </div>
     </div>
   </div>
-  <div *ngIf="films.length === 0" class="text-center">
-    <p>No films available.</p>
-  </div>
+  <ng-template #noMoviesTemplate>
+    <div class="text-center">
+      <p>No films available.</p>
+    </div>
+  </ng-template>
 </div>

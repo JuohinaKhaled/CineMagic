@@ -1,28 +1,30 @@
-<div *ngIf="film" class="movie-details-container">
+<div *ngIf="movie$ | async as movie" class="movie-details-container">
   <div class="movie-header">
     <div class="movie-poster">
-      <img [src]="film.PfadGrossesBild" alt="{{ film.Titel }}" class="img-fluid"/>
+      <img [src]="movie.pathPictureLarge" [alt]="movie.movieName" class="img-fluid" fill=""/>
     </div>
     <div class="movie-info">
-      <h1>{{ film.Titel }}</h1>
-      <p>{{ film.Beschreibung }}</p>
-      <p>Duration: {{ film.Dauer }} minutes</p>
-      <p>Age rating: {{ film.Altersfreigabe }}</p>
-      <p>Genre: {{ film.Genre }}</p>
-      <p>Director: {{ film.Regisseur }}</p>
-      <p>Release date: {{ film.Erscheinungsdatum | date }}</p>
+      <h1>{{ movie.movieName }}</h1>
+      <p>{{ movie.movieDescription }}</p>
+      <p>Duration: {{ movie.duration }} minutes</p>
+      <p>Age rating: {{ movie.age }}</p>
+      <p>Genre: {{ movie.genre }}</p>
+      <p>Director: {{ movie.director }}</p>
+      <p>Release date: {{ movie.releaseDate | date }}</p>
     </div>
   </div>
-  <div *ngIf="groupedEvents.length > 0" class="showtimes">
+
+
+  <div *ngIf="groupedEvents$ | async as groupedEvents" class="showtimes">
     <h2>Showtimes</h2>
     <div *ngFor="let group of groupedEvents">
       <h3>{{ group.date | date:'fullDate' }}</h3>
       <div class="event-buttons">
         <div *ngFor="let event of group.eventsToShow" class="event-button-wrapper">
-          <button class="event-button" (click)="goToRoom(event.VorfuehrungsID)">
-            <div class="cinema-info">{{ event.Saalname }}</div>
-            <div class="time">{{ event.Vorfuehrungszeit }}</div>
-            <div class="saal-type">{{ event.Saaltyp }}</div>
+          <button class="event-button" (click)="goToRoom(event.eventID)">
+            <div class="cinema-info">{{ event.roomName }}</div>
+            <div class="time">{{ event.eventTime }}</div>
+            <div class="saal-type">{{ event.roomType }}</div>
           </button>
         </div>
       </div>
@@ -30,3 +32,5 @@
     </div>
   </div>
 </div>
+
+

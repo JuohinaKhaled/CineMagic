@@ -1,4 +1,3 @@
-
 export class Room {
   roomID: number;
   roomName: string;
@@ -11,6 +10,4 @@ export class Room {
     this.roomCapacity = roomCapacity;
     this.roomType = roomType;
   }
-
-
 }
