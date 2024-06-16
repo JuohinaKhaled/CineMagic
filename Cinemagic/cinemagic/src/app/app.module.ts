@@ -11,23 +11,23 @@ import { FooterComponent } from './footer/footer.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { HomeComponent } from './home/home.component';
-import { RoomComponent } from './room/room.component';
-import { SeatComponent } from './room/seat/seat.component';
+import { RoomComponent } from './components/room/room.component';
+import { SeatComponent } from './components/seat/seat.component';
 import { AuthService } from './auth/auth.service';
 import { AuthGuard } from './auth/auth.guard';
-import { MovieService } from "./services/movie.service";
-import { RoomService } from "./services/room.service";
-import { MovieDetailsComponent } from './movie/movie-details/movie-details.component';
+import { MovieService } from "./services/movie/movie.service";
+import { RoomService } from "./services/room/room.service";
+import { MovieDetailsComponent } from './components/movie/movie-details.component';
 import { EventComponent } from './event/event.component';
-import { EventService } from "./services/event.service";
+import { EventService } from "./services/event/event.service";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { CounterComponent } from './room/counter/counter.component';
-import { CustomSnackbarComponent } from './custom-snackbar/custom-snackbar.component';
+import { CounterComponent } from './components/counter/counter.component';
+import { CustomSnackbarComponent } from './components/custom-snackbar/custom-snackbar.component';
 import { TicketComponent } from './ticket/ticket.component';
-import { SocketService } from "./services/socket.service";
-import { TicketService } from "./services/ticket.service";
+import { SocketService } from "./services/socket/socket.service";
+import { TicketService } from "./services/ticket/ticket.service";
 import {NgOptimizedImage} from "@angular/common";
-import { ProfileComponent } from './profile/profile.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 @NgModule({
   declarations: [

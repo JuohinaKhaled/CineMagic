@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {RoomService} from "../services/room.service";
+import {RoomService} from "../../services/room/room.service";
 import {ActivatedRoute} from "@angular/router";
-import {MovieService} from "../services/movie.service";
-import {TicketService} from "../services/ticket.service";
-import {Room} from "../models/room";
+import {MovieService} from "../../services/movie/movie.service";
+import {TicketService} from "../../services/ticket/ticket.service";
+import {Room} from "../../models/room/room";
 import {of, switchMap} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
-import {SocketService} from "../services/socket.service";
-import {EventService} from "../services/event.service";
+import {SocketService} from "../../services/socket/socket.service";
+import {EventService} from "../../services/event/event.service";
 
 
 @Component({

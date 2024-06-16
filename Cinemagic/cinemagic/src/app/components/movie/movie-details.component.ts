@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MovieService } from '../../services/movie.service';
-import { EventService } from '../../services/event.service';
+import { MovieService } from '../../services/movie/movie.service';
+import { EventService } from '../../services/event/event.service';
 import * as _ from 'lodash';
 
 @Component({

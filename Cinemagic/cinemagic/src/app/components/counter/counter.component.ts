@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subscription} from "rxjs";
-import {CounterService} from "../../services/counter.service";
-import {SocketService} from "../../services/socket.service";
+import {CounterService} from "../../services/counter/counter.service";
+import {SocketService} from "../../services/socket/socket.service";
 import {catchError, tap} from "rxjs/operators";
 
 @Component({
