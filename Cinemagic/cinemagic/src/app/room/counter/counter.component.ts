@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subscription} from "rxjs";
 import {CounterService} from "./service/counter.service";
+import {SocketService} from "../service/socket.service";
+import {catchError, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-counter',
@@ -9,12 +11,34 @@ import {CounterService} from "./service/counter.service";
 })
 export class CounterComponent implements OnInit, OnDestroy {
   @Input() headline: string = '';
+  @Input() eventID: number = 0;
   @Output() counterValueChanged = new EventEmitter<number>();
   counterValue: number = 0;
   totalCounterValue: number = 0;
   subscription: Subscription = new Subscription();
 
-  constructor(private counterService: CounterService) {
+  constructor(private counterService: CounterService, private socketService: SocketService) {
+  }
+
+  ngOnInit(): void {
+    this.startValue();
+    this.subscription = this.counterService.getTotalCounterValue().subscribe(value => {
+      this.totalCounterValue = value;
+    });
+  }
+
+  startValue() {
+
+    this.socketService.getCurrentCount(this.headline, this.eventID).subscribe(
+      startValue => {
+        this.counterValue = startValue;
+        for (let i = 0; i < startValue; i++) {
+          this.increment();
+        }
+      },
+      error => {
+        console.error("Error loading counter:", error);
+      });
   }
 
   increment() {
@@ -39,12 +63,6 @@ export class CounterComponent implements OnInit, OnDestroy {
 
   disableIncrement() {
     return this.totalCounterValue >= 6;
-  }
-
-  ngOnInit(): void {
-    this.subscription = this.counterService.getTotalCounterValue().subscribe(value => {
-      this.totalCounterValue = value;
-    });
   }
 
   ngOnDestroy() {

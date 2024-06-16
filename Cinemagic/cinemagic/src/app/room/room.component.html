@@ -13,10 +13,12 @@
         {{e.Vorfuehrungsdatum | date:'dd.MM.yyyy'}} {{' | ' + (e.Vorfuehrungszeit |  slice:0:5)}}
       </h6>
       <div class="col-auto justify-content-center d-flex mb-3">
-        <app-counter [headline]="'Adult'" (counterValueChanged)="onCounterValueChanged('Adult', $event)"></app-counter>
-        <app-counter [headline]="'Student'"
+        <app-counter [headline]="'Adult'" [eventID]="eventID"
+                     (counterValueChanged)="onCounterValueChanged('Adult', $event)"></app-counter>
+        <app-counter [headline]="'Student'" [eventID]="eventID"
                      (counterValueChanged)="onCounterValueChanged('Student', $event)"></app-counter>
-        <app-counter [headline]="'Child'" (counterValueChanged)="onCounterValueChanged('Child', $event)"></app-counter>
+        <app-counter [headline]="'Child'" [eventID]="eventID"
+                     (counterValueChanged)="onCounterValueChanged('Child', $event)"></app-counter>
       </div>
       <div class="selected-seats">
         <div *ngFor="let seat of selectedSeats">
@@ -42,5 +44,32 @@
     </div>
 
   </div>
+
+  <div class="modal fade" id="maxSeatsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+       aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header d-flex flex-column">
+          <button type="button" class="btn-close align-self-end" data-bs-dismiss="modal" aria-label="Close"
+                  (click)="closeModal()"></button>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="--bs-danger"
+               class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path
+              d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+          </svg>
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Maximum number reached</h1>
+        </div>
+        <div class="modal-body">
+          You have selected the maximum number of seats that you have selected on the counter. You can select a maximum
+          of 6 seats at the counter.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
 </div>

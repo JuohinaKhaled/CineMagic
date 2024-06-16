@@ -4,6 +4,7 @@ import {BehaviorSubject} from "rxjs";
 @Injectable({
   providedIn: 'root'
 })
+
 export class CounterService {
   private totalCounterValue = new BehaviorSubject<number>(0);
 

@@ -62,39 +62,54 @@ io.on('connection', (socket) => {
     io.emit('reservedSeats', reservedSeats);
   }, 1000);
 
-  socket.on('reserveSeat', (seat) => {
-    reservedSeats.push({...seat, id: socket.id});
+  socket.on('reserveSeat', ({seat, eventID}) => {
+    reservedSeats.push({seat: {...seat}, id: socket.id, eventID: eventID});
     io.emit('reservedSeats', reservedSeats);
     console.log(reservedSeats);
   });
 
-  socket.on('releaseSeat', (seat) => {
+  socket.on('releaseSeat', ({seat, eventID}) => {
     const seatIndex = reservedSeats.findIndex(s =>
       s.id === socket.id &&
-      s.seat.Sitztyp === seat.seat.Sitztyp &&
-      s.seat.Reihennummer === seat.seat.Reihennummer &&
-      s.seat.Sitznummer === seat.seat.Sitznummer
+      s.seat.Sitztyp === seat.Sitztyp &&
+      s.seat.Reihennummer === seat.Reihennummer &&
+      s.seat.Sitznummer === seat.Sitznummer &&
+      s.eventID === eventID
     );
     if (seatIndex !== -1) {
-      socket.broadcast.emit('seatReleased', seat);
+      socket.broadcast.emit('seatReleased', reservedSeats[seatIndex]);
       reservedSeats.splice(seatIndex, 1);
       io.emit('reservedSeats', reservedSeats);
     } else {
-      console.log("Seat not found in reservedSeats:", seat);
+      console.log("Seat not found in reservedSeats:", seat, eventID);
     }
   });
 
-  socket.on('updateSeat', (seat) => {
+
+  socket.on('counterValue', ({personType, eventID}) => {
+    let count = 0
+    reservedSeats.forEach(s => {
+      if (s.id === socket.id &&
+        s.seat.personType === personType &&
+        s.eventID === eventID) {
+        count++;
+      }
+    });
+    socket.emit(personType + 'Counter', count, eventID);
+  });
+
+  socket.on('updateSeat', ({seat, eventID}) => {
     const existingSeatIndex = reservedSeats.findIndex(s =>
       s.id === socket.id &&
-      s.seat.Reihennummer === seat.seat.Reihennummer &&
-      s.seat.Sitznummer === seat.seat.Sitznummer
+      s.seat.Reihennummer === seat.Reihennummer &&
+      s.seat.Sitznummer === seat.Sitznummer &&
+      s.eventID === eventID
     );
     if (existingSeatIndex !== -1) {
-      reservedSeats[existingSeatIndex] = {...seat, id: socket.id};
+      reservedSeats[existingSeatIndex] = {seat: {...seat}, id: socket.id, eventID: eventID};
       io.emit('reservedSeats', reservedSeats);
     } else {
-      console.log("Seat not found in reservedSeats:", seat);
+      console.log("Seat not found in reservedSeats:", seat, eventID);
     }
   });
 

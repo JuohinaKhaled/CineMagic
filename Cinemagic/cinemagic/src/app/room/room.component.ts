@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {RoomService} from "./service/room.service";
 import {ActivatedRoute} from "@angular/router";
 import {MovieService} from "../movie/movie.service";
@@ -15,8 +15,9 @@ import {EventService} from "../event/service/event.service";
   templateUrl: './room.component.html',
   styleUrl: './room.component.css'
 })
-export class RoomComponent implements OnInit, OnDestroy {
+export class RoomComponent implements OnInit {
 
+  modal: any;
   room?: Room;
   event: any;
   movie: any;
@@ -43,6 +44,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.getModal();
     this.getEventID();
     this.getMovieID();
     this.getRoom();
@@ -52,6 +54,11 @@ export class RoomComponent implements OnInit, OnDestroy {
     this.getOtherClientSeats();
     this.getCurrentClientSeats();
     this.getSeatsReleasedByOtherClient();
+    this.setCounter();
+  }
+
+  getModal() {
+    this.modal = document.getElementById('maxSeatsModal');
   }
 
   getEventID() {
@@ -65,8 +72,32 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
   }
 
+  setCounter() {
+    this.socketService.getCurrentCount('Adult', this.eventID).subscribe(
+      startValue => {
+        this.adultCounterValue = startValue;
+      },
+      error => {
+        console.error("Error loading counter:", error);
+      });
+    this.socketService.getCurrentCount('Child', this.eventID).subscribe(
+      startValue => {
+        this.childCounterValue = startValue;
+      },
+      error => {
+        console.error("Error loading counter:", error);
+      });
+    this.socketService.getCurrentCount('Student', this.eventID).subscribe(
+      startValue => {
+        this.studentCounterValue = startValue;
+      },
+      error => {
+        console.error("Error loading counter:", error);
+      });
+  }
+
   getOtherClientSeats() {
-    this.socketService.getOtherClientSeat().subscribe(
+    this.socketService.getOtherClientSeat(this.eventID).subscribe(
       (data) => {
         this.otherSelectedSeats = data;
         this.otherSelectedSeats.forEach(seat => {
@@ -82,7 +113,7 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   getSeatsReleasedByOtherClient() {
-    this.socketService.getSeatReleasedByOtherClient().subscribe(
+    this.socketService.getSeatReleasedByOtherClient(this.eventID).subscribe(
       (seat) => {
         const seatToUpdate = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
         if (seatToUpdate) {
@@ -96,9 +127,15 @@ export class RoomComponent implements OnInit, OnDestroy {
   }
 
   getCurrentClientSeats() {
-    this.socketService.getCurrentClientSeat().subscribe(
+    this.socketService.getCurrentClientSeat(this.eventID).subscribe(
       (data) => {
         this.selectedSeats = data;
+        this.selectedSeats.forEach(seat => {
+          const seatToSelect = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+          if (seatToSelect) {
+            seatToSelect.selected = true;
+          }
+        });
         this.updateTotalPrice();
         console.log("Seats loaded:", this.selectedSeats);
       },
@@ -168,6 +205,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     );
   }
 
+
   groupSeatsByRow(): void {
     let rowIndex = 0;
     this.groupedSeats = [];
@@ -223,7 +261,7 @@ export class RoomComponent implements OnInit, OnDestroy {
         console.log("RemovedSeat", removedSeat);
         const seatToDeselect = this.seats.find(s => s.Reihennummer === removedSeat.Reihennummer && s.Sitznummer === removedSeat.Sitznummer);
         console.log("SeatToDeselect", seatToDeselect);
-        this.socketService.releaseSeat(seatToDeselect);
+        this.socketService.releaseSeat(seatToDeselect, this.eventID);
         if (seatToDeselect) {
           seatToDeselect.selected = false;
         }
@@ -253,7 +291,7 @@ export class RoomComponent implements OnInit, OnDestroy {
           console.log('Alter Sitz:', oldSeat);
           console.log('Neuer Sitz: ', updatedSeat);
           this.selectedSeats.splice(index, 0, updatedSeat);
-          this.socketService.updateSeat(updatedSeat);
+          this.socketService.updateSeat(updatedSeat, this.eventID);
         }
       }
     }
@@ -344,9 +382,10 @@ export class RoomComponent implements OnInit, OnDestroy {
           personType,
           priceBrutto,
           priceNetto
-        });
+        }, this.eventID);
       } else {
-        alert('You have selected the maximum number of seats allowed.');
+        this.modal.classList.add('show');
+        this.modal.style.display = 'block';
       }
     }
   }
@@ -361,7 +400,7 @@ export class RoomComponent implements OnInit, OnDestroy {
     if (index > -1) {
       console.log("Seat found at index: ", index);
       const seatToDeselect = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
-      this.socketService.releaseSeat(seatToDeselect);
+      this.socketService.releaseSeat(seatToDeselect, this.eventID);
       if (seatToDeselect) {
         seatToDeselect.selected = false;
       }
@@ -371,18 +410,18 @@ export class RoomComponent implements OnInit, OnDestroy {
     }
   }
 
-  updateTotalPrice(){
+  updateTotalPrice() {
     this.totalPriceBrutto = 0;
     this.totalPriceNetto = 0;
-    this.selectedSeats.forEach(seat =>{
+    this.selectedSeats.forEach(seat => {
       this.totalPriceBrutto += seat.priceBrutto;
       this.totalPriceNetto += seat.priceNetto;
     })
   }
 
-  ngOnDestroy(): void {
-    this.socketService.disconnect();
+  closeModal() {
+    this.modal.classList.remove('show');
+    this.modal.style.display = 'none';
   }
-
 
 }

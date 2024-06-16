@@ -6,3 +6,6 @@ screen{
   width: 90%;
 }
 
+.modal-header h1{
+  color: black;
+}
