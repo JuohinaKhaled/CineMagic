@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {SocketService} from "../room/service/socket.service";
+import {SocketService} from "../services/socket.service";
 
 @Component({
   selector: 'app-ticket',

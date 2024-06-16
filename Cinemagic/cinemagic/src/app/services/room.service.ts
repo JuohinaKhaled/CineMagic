@@ -2,7 +2,7 @@ import {Injectable, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
-import {Room} from "../../models/room";
+import {Room} from "../models/room";
 
 @Injectable({
   providedIn: 'root'

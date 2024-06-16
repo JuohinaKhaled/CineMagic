@@ -85,7 +85,6 @@ io.on('connection', (socket) => {
     }
   });
 
-
   socket.on('counterValue', ({personType, eventID}) => {
     let count = 0
     reservedSeats.forEach(s => {
@@ -247,7 +246,7 @@ app.post('/seats', (req, res) => {
            sp.Reihennummer,
            sp.Sitznummer,
            sp.Sitztyp,
-           CASE WHEN bt.SitzplatzID IS NOT NULL THEN 'Occupied' ELSE 'Free' END AS Buchungsstatus
+           IF(bt.SitzplatzID IS NOT NULL, 'Occupied', 'Free') AS Buchungsstatus
     FROM Sitzplaetze sp
            LEFT JOIN buchtTicket bt ON sp.SitzplatzID = bt.SitzplatzID AND bt.VorfuehrungsID = ?
     WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)`;
@@ -344,6 +343,62 @@ app.post('/tickets', (req, res) => {
     }
   });
 });
+
+app.post('/booking', (req, res) => {
+  const {
+    customerID,
+    purchaseDate,
+    totalPriceNetto,
+    totalPriceBrutto,
+    quantityTicketsAdult,
+    quantityTicketsChild,
+    quantityTicketsStudent,
+    paid
+  } = req.body;
+
+  const query = `
+    INSERT INTO Buchung (KundenID, Kaufdatum, GesamtPreisNetto, GesamtPreisBrutto, AnzahlTicketsErwachsene,
+                         AnzahlTicketsKinder, AnzahlTicketsStudenten, Bezahlt)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  con.query(query, [customerID, purchaseDate, totalPriceNetto, totalPriceBrutto, quantityTicketsAdult,
+    quantityTicketsChild, quantityTicketsStudent, paid], (error, results) => {
+    if (error) {
+      console.error("Error fetching seats:", error);
+      res.status(500).json({error: 'Database query error'});
+    } else {
+      if (results > 0) {
+        const bookingID = results.insertId;
+        console.log("BookingID fetched successfully:", bookingID);
+        res.status(200).json(bookingID);
+      } else {
+        console.error("BookingID not found:");
+        res.status(404).json({error: 'BookingID not found'});
+      }
+    }
+  })
+});
+
+app.post('/bookingTickets', (req, res) => {
+  const {bookingID, customerID, eventID, seatID, ticketID} = req.body;
+
+  const query = `
+    INSERT INTO buchtTicket (BuchungsID, KundenID, VorfuehrungsID, SitzplatzID, TicketID)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  con.query(query, [bookingID, customerID, eventID, seatID, ticketID], (error, results) => {
+    if (error) {
+      console.error('Error booking tickets:', error);
+      res.status(500).json({error: 'Error booking tickets:'});
+      return;
+    }
+    console.log('Tickets booked succesfully');
+    res.status(201).json({message: 'Tickets booked succesfully', affectedRows: results.affectedRows});
+  });
+});
+
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));
