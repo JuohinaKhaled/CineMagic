@@ -1,5 +1,4 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {SocketService} from "../services/socket.service";
 
 @Component({
   selector: 'app-ticket',
@@ -11,7 +10,7 @@ export class TicketComponent {
   @Input() seat: any;
   @Output() remove = new EventEmitter<any>();
 
-  constructor(private socketService: SocketService) {
+  constructor() {
   }
   onRemoveSeat() {
     this.remove.emit(this.seat);
