@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {RoomService} from "../../services/room/room.service";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {MovieService} from "../../services/movie/movie.service";
 import {TicketService} from "../../services/ticket/ticket.service";
 import {Room} from "../../models/room/room";
@@ -8,6 +8,10 @@ import {of, switchMap} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {SocketService} from "../../services/socket/socket.service";
 import {EventService} from "../../services/event/event.service";
+import {AuthService} from "../../services/auth/auth.service";
+import {ModalComponent} from "../modal/modal.component";
+import {ModalService} from "../../services/modal/modal.service";
+import {BookingService} from "../../services/booking/booking.service";
 
 
 @Component({
@@ -17,7 +21,7 @@ import {EventService} from "../../services/event/event.service";
 })
 export class RoomComponent implements OnInit {
 
-  modal: any;
+  @ViewChild('modal') modal!: ModalComponent;
   room?: Room;
   event: any;
   movie: any;
@@ -35,16 +39,21 @@ export class RoomComponent implements OnInit {
   tickets: any[] = [];
 
 
-  constructor(private roomService: RoomService,
-              private route: ActivatedRoute,
-              private movieService: MovieService,
-              private ticketService: TicketService,
-              private socketService: SocketService,
-              private eventService: EventService) {
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private roomService: RoomService,
+    private movieService: MovieService,
+    private ticketService: TicketService,
+    private socketService: SocketService,
+    private eventService: EventService,
+    private authService: AuthService,
+    private modalService: ModalService,
+    private bookingService: BookingService
+  ) {
   }
 
   ngOnInit(): void {
-    this.getModal();
     this.getEventID();
     this.getMovieID();
     this.getRoom();
@@ -55,10 +64,6 @@ export class RoomComponent implements OnInit {
     this.getCurrentClientSeats();
     this.getSeatsReleasedByOtherClient();
     this.setCounter();
-  }
-
-  getModal() {
-    this.modal = document.getElementById('maxSeatsModal');
   }
 
   getEventID() {
@@ -268,7 +273,6 @@ export class RoomComponent implements OnInit {
       }
     } else {
       const selectedSeatsOfType = this.selectedSeats.filter(s => s.personType === personType).length;
-      // Überprüfe, ob die Anzahl der ausgewählten Sitze kleiner als der entsprechende Counter ist
 
       if (selectedSeatsOfType > this.getCounterValue(personType)) {
         const index = this.selectedSeats.findIndex(s => s.personType === personType);
@@ -324,42 +328,24 @@ export class RoomComponent implements OnInit {
   }
 
   getPersonType(): string {
-    let personType = '';
-    let adult = this.selectedSeats.filter(pt => pt.personType === 'Adult').length;
-    let student = this.selectedSeats.filter(pt => pt.personType === 'Student').length;
-    let child = this.selectedSeats.filter(pt => pt.personType === 'Child').length;
-
-    if (adult < this.adultCounterValue) {
-      personType = 'Adult';
-    } else if (student < this.studentCounterValue) {
-      personType = 'Student';
-    } else if (child < this.childCounterValue) {
-      personType = 'Child';
+    if ((this.selectedSeats.filter(pt => pt.personType === 'Adult').length) < this.adultCounterValue) {
+      return 'Adult';
+    } else if ((this.selectedSeats.filter(pt => pt.personType === 'Student').length) < this.studentCounterValue) {
+      return 'Student';
+    } else if ((this.selectedSeats.filter(pt => pt.personType === 'Child').length) < this.childCounterValue) {
+      return 'Child';
     }
-
-    return personType;
+    return '';
   }
 
   getBruttoPrice(personType: string, seat: any): number {
     let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
-    console.log('Ausgewähltes Ticket', priceData);
-    if (priceData) {
-      console.log('Preis: ', priceData.PreisBrutto)
-      return priceData.PreisBrutto;
-    } else {
-      return 0;
-    }
+    return priceData ? priceData.PreisBrutto : 0;
   }
 
   getNettoPrice(personType: string, seat: any) {
     let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
-    console.log('Ausgewähltes Ticket', priceData);
-    if (priceData) {
-      console.log('Preis: ', priceData.PreisBrutto)
-      return priceData.PreisNetto;
-    } else {
-      return 0;
-    }
+    return priceData ? priceData.PreisNetto : 0;
   }
 
   onSeatSelected(seat: any) {
@@ -384,8 +370,7 @@ export class RoomComponent implements OnInit {
           priceNetto
         }, this.eventID);
       } else {
-        this.modal.classList.add('show');
-        this.modal.style.display = 'block';
+        this.openModal('Maximum Seats Selected', 'warning')
       }
     }
   }
@@ -395,33 +380,53 @@ export class RoomComponent implements OnInit {
   }
 
   removeSeat(seat: any) {
-    console.log("Removing seat: ", seat);
     const index = this.selectedSeats.findIndex(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
     if (index > -1) {
-      console.log("Seat found at index: ", index);
-      const seatToDeselect = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
-      this.socketService.releaseSeat(seatToDeselect, this.eventID);
-      if (seatToDeselect) {
-        seatToDeselect.selected = false;
+      const removeSeat = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
+      if(removeSeat) {
+        this.socketService.releaseSeat(removeSeat, this.eventID);
+        removeSeat.selected = false;
+        console.log('Room_Component: Seat removed:', removeSeat);
+      } else {
+        console.log('Room_Component: Seat not found:', removeSeat);
       }
-      console.log('Seat removed:', seat);
     } else {
       console.log('Seat not found in selectedSeats:', seat);
     }
   }
 
   updateTotalPrice() {
-    this.totalPriceBrutto = 0;
-    this.totalPriceNetto = 0;
-    this.selectedSeats.forEach(seat => {
-      this.totalPriceBrutto += seat.priceBrutto;
-      this.totalPriceNetto += seat.priceNetto;
-    })
+    this.totalPriceBrutto = this.selectedSeats.reduce((total, seat) => total + seat.priceBrutto, 0);
+    this.totalPriceNetto = this.selectedSeats.reduce((total, seat) => total + seat.priceNetto, 0);
   }
 
-  closeModal() {
-    this.modal.classList.remove('show');
-    this.modal.style.display = 'none';
+
+  openModal(title: string, modalType: 'confirmation' | 'information' | 'warning' = 'information') {
+    let isLoggedIn = this.authService.isLoggedIn
+    if (!this.authService.isLoggedIn && modalType === 'confirmation') {
+      title = 'Please login';
+    }
+    this.modalService.open(title, isLoggedIn, modalType).then((result: string) => {
+      const navigationMap: { [key: string]: string } = {
+        'login': '/login',
+        'register': '/register',
+        'booking': '/book-tickets'
+      };
+
+      if (result && navigationMap[result]) {
+        if(result === 'login'){
+          const roomUrl = `/room/${this.eventID}/${this.movieID}`;
+          this.bookingService.setRedirectUrl(roomUrl);
+          this.bookingService.startBooking();
+        }
+        this.router.navigate([navigationMap[result]]);
+      } else {
+        console.log('Room_Component: Modal cancelled or closed');
+      }
+    }).catch(() => {
+      console.log('Room_Component: Modal could not be opened');
+    });
   }
+
 
 }

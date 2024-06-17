@@ -9,7 +9,7 @@
 }
 
 .accessible {
-  background-image: url("/src/assets/images/SitzplatzBarrierefreiSchwarz.svg");
+  background-image: url("/assets/images/SitzplatzBarrierefreiSchwarz.svg");
 }
 
 .accessible, .accessible-occupied {
@@ -31,12 +31,12 @@
 
 .accessible-occupied, .premium-occupied, .standard-occupied {
   background-color: #333333;
-  background-image: url("/src/assets/images/SitzplatzBesetztWeiss.svg");
+  background-image: url("/assets/images/SitzplatzBesetztWeiss.svg");
 }
 
 .selected {
   background-color: darkgreen;
-  background-image: url("/src/assets/images/SitzplatzBesetztWeiss.svg");
+  background-image: url("/assets/images/SitzplatzBesetztWeiss.svg");
 }
 
 

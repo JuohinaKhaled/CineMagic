@@ -5,9 +5,10 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
   templateUrl: './seat.component.html',
   styleUrl: './seat.component.css'
 })
+
 export class SeatComponent {
   @Input() seat: any;
-  @Input() canSelectMore!: boolean;
+  @Input() canSelectMore = false;
   @Output() seatSelected = new EventEmitter<any>();
 
   isAccessible() {

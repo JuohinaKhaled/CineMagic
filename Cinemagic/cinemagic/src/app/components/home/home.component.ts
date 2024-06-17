@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { MovieService } from '../services/movie.service'
+import {Component, OnInit} from '@angular/core';
+
 import {ActivatedRoute, Route, Router} from "@angular/router";
+import {MovieService} from "../../services/movie/movie.service";
 
 @Component({
   selector: 'app-home',
@@ -10,7 +11,8 @@ import {ActivatedRoute, Route, Router} from "@angular/router";
 export class HomeComponent implements OnInit {
   films: any[] = [];
 
-  constructor(private movieService: MovieService, private router: Router) {}
+  constructor(private movieService: MovieService, private router: Router) {
+  }
 
   ngOnInit(): void {
     this.movieService.getFilms().subscribe(

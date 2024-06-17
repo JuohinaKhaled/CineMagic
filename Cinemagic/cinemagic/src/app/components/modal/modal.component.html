@@ -1,0 +1,36 @@
+<div class="modal-header d-flex flex-column">
+  <button type="button" class="btn-close align-self-end" aria-label="Close" (click)="onCancel()"></button>
+  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="current" class="bi bi-exclamation-circle"
+       viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+    <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+  </svg>
+  <h5 class="modal-title">{{ title }}</h5>
+</div>
+
+<div class="modal-body text-center">
+  <p>{{ message }}</p>
+  <ng-container *ngIf="modalType === 'confirmation' && !isLoggedIn">
+    <p>You need to log in to book. Do you want to log in?</p>
+  </ng-container>
+  <ng-container *ngIf="modalType === 'confirmation' && isLoggedIn">
+    <p>Do you want to confirm your booking?</p>
+  </ng-container>
+  <ng-container *ngIf="modalType === 'warning'">
+    <p>You have selected maximum number of seats that you have selected on the counter. You can select a maximum
+      of 6 seats at the counter.</p>
+  </ng-container>
+</div>
+
+<div class="modal-footer justify-content-center align-content-center">
+  <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+  <button type="button" class="btn btn-danger" (click)="onLogin()" *ngIf="modalType !== 'warning' && !isLoggedIn">
+    Login
+  </button>
+  <button type="button" class="btn btn-danger" (click)="onRegister()" *ngIf="modalType !== 'warning' && !isLoggedIn">
+    Register
+  </button>
+  <button type="button" class="btn btn-danger" (click)="onBooking()" *ngIf="modalType !== 'warning' && isLoggedIn">
+    Book Tickets
+  </button>
+</div>

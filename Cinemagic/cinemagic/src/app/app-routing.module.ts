@@ -6,8 +6,10 @@ import { RegisterComponent } from './components/register/register.component';
 import {RoomComponent} from "./components/room/room.component";
 import {MovieDetailsComponent} from "./components/movie/movie-details.component";
 import {EventComponent} from "./components/event/event.component";
-import {AuthGuard} from "./auth/auth.guard";
+import {AuthGuard} from "./guards/auth/auth.guard";
 import {ProfileComponent} from "./components/profile/profile.component";
+import {BookingComponent} from "./components/booking/booking.component";
+import {bookingGuard} from "./guards/booking/booking.guard";
 
 const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -15,9 +17,10 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'profile', component: ProfileComponent, canActivate: [AuthGuard] },
-  { path: 'room/:eventID/:movieID', component: RoomComponent },
+  { path: 'room/:eventID/:movieID', component: RoomComponent, canActivate: [bookingGuard]},
   { path: 'movie-details/:movieID', component: MovieDetailsComponent },
-  { path: 'event/', component: EventComponent }
+  { path: 'event/', component: EventComponent },
+  { path: 'booking', component: BookingComponent }
 ];
 
 @NgModule({

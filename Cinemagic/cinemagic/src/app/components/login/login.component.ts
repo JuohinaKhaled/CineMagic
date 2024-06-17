@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
+import {AuthService} from "../../services/auth/auth.service";
+import {BookingService} from "../../services/booking/booking.service";
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
+    private bookingService: BookingService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
@@ -29,6 +31,7 @@ export class LoginComponent {
         if (response.status === 'success') {
           console.log('Login successful');
           this.openSnackBar('Login successful!');
+          this.bookingService.cancelBooking();
           this.router.navigate(['/home']);
         } else {
           console.log('Login failed');
