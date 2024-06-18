@@ -350,9 +350,9 @@ app.post('/booking', (req, res) => {
     purchaseDate,
     totalPriceNetto,
     totalPriceBrutto,
-    quantityTicketsAdult,
-    quantityTicketsChild,
-    quantityTicketsStudent,
+    counterTicketsAdult,
+    counterTicketsChild,
+    counterTicketsStudent,
     paid
   } = req.body;
 
@@ -362,8 +362,8 @@ app.post('/booking', (req, res) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  con.query(query, [customerID, purchaseDate, totalPriceNetto, totalPriceBrutto, quantityTicketsAdult,
-    quantityTicketsChild, quantityTicketsStudent, paid], (error, results) => {
+  con.query(query, [customerID, purchaseDate, totalPriceNetto, totalPriceBrutto, counterTicketsAdult,
+    counterTicketsChild, counterTicketsStudent, paid], (error, results) => {
     if (error) {
       console.error("Error fetching seats:", error);
       res.status(500).json({error: 'Database query error'});
