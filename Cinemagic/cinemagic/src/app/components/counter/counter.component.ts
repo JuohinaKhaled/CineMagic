@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {Subscription} from "rxjs";
+import {Subscription, throwError} from "rxjs";
 import {CounterService} from "../../services/counter/counter.service";
 import {SocketService} from "../../services/socket/socket.service";
 import {catchError, tap} from "rxjs/operators";
@@ -21,24 +21,24 @@ export class CounterComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.startValue();
+    this.startCounterValue();
     this.subscription = this.counterService.getTotalCounterValue().subscribe(value => {
       this.totalCounterValue = value;
     });
   }
 
-  startValue() {
-
-    this.socketService.getCurrentCount(this.headline, this.eventID).subscribe(
-      startValue => {
+  startCounterValue() {
+    this.socketService.getCurrentCount(this.headline, this.eventID).pipe(
+      tap(startValue => {
         this.counterValue = startValue;
         for (let i = 0; i < startValue; i++) {
           this.increment();
         }
-      },
-      error => {
-        console.error("Error loading counter:", error);
-      });
+      }),
+      catchError(err => {
+        console.error("Counter_Component: Error fetching counter:", err);
+        return throwError(err);
+      }));
   }
 
   increment() {

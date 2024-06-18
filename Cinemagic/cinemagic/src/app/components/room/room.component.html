@@ -39,14 +39,17 @@
             <h5> ({{ totalPriceNetto }} €)</h5>
           </div>
 
-          <button class="row btn btn-danger align-self-center mb-3" (click)="openModal('Booking confirmation','confirmation')">Booking</button>
+          <button class="row btn btn-danger align-self-center mb-3"
+                  (click)="openModal('Booking confirmation','confirmation')">Booking
+          </button>
 
         </div>
 
         <ng-container *ngIf="groupedSeats">
           <div class="col-auto container justify-content-center d-flex flex-column">
 
-            <img src="assets/images/Screen.svg" alt="screen" class="screen row align-self-center w-75">
+            <img src="/assets/images/Screen.svg" alt="screen" class="screen row align-self-center w-75" height="16"
+                 width="16">
 
             <h2 class="row align-self-center">Screen</h2>
 
