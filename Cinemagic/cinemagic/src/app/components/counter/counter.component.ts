@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Subscription, throwError} from "rxjs";
 import {CounterService} from "../../services/counter/counter.service";
 import {SocketService} from "../../services/socket/socket.service";
@@ -9,36 +9,34 @@ import {catchError, tap} from "rxjs/operators";
   templateUrl: './counter.component.html',
   styleUrl: './counter.component.css'
 })
-export class CounterComponent implements OnInit, OnDestroy {
+export class CounterComponent implements OnInit, OnDestroy, OnChanges {
   @Input() headline: string = '';
   @Input() eventID: number = 0;
   @Output() counterValueChanged = new EventEmitter<number>();
   counterValue: number = 0;
   totalCounterValue: number = 0;
   subscription: Subscription = new Subscription();
+  counterInitialized: boolean = false;
 
   constructor(private counterService: CounterService, private socketService: SocketService) {
   }
 
   ngOnInit(): void {
-    this.startCounterValue();
     this.subscription = this.counterService.getTotalCounterValue().subscribe(value => {
       this.totalCounterValue = value;
     });
+    this.startCounterValue();
   }
 
   startCounterValue() {
-    this.socketService.getCurrentCount(this.headline, this.eventID).pipe(
-      tap(startValue => {
+    this.socketService.getCurrentCount(this.headline, this.eventID).subscribe(
+      startValue => {
         this.counterValue = startValue;
-        for (let i = 0; i < startValue; i++) {
-          this.increment();
-        }
-      }),
-      catchError(err => {
-        console.error("Counter_Component: Error fetching counter:", err);
-        return throwError(err);
-      }));
+        this.counterValueChanged.emit(this.counterValue);
+      },
+      error => {
+        console.error("Counter_Component: Error fetching counter:", error);
+      });
   }
 
   increment() {
@@ -69,5 +67,12 @@ export class CounterComponent implements OnInit, OnDestroy {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    console.log('DESTROY called', this.subscription);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+
+      console.log('ngOnChanges called', changes);
+
   }
 }

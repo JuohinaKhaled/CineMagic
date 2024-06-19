@@ -1,73 +1,70 @@
-import {AfterViewInit, Component, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {RoomService} from "../../services/room/room.service";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, NavigationExtras, Router} from "@angular/router";
 import {MovieService} from "../../services/movie/movie.service";
 import {TicketService} from "../../services/ticket/ticket.service";
 import {Room} from "../../models/room/room";
-import {of, switchMap} from "rxjs";
+import {of, switchMap, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {SocketService} from "../../services/socket/socket.service";
 import {EventService} from "../../services/event/event.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {ModalComponent} from "../modal/modal.component";
 import {ModalService} from "../../services/modal/modal.service";
+import {values} from "lodash";
 
 
-  @Component({
-    selector: 'app-room',
-    templateUrl: './room.component.html',
-    styleUrls: ['./room.component.css']
-  })
-  export class RoomComponent implements OnInit,  AfterViewInit{
+@Component({
+  selector: 'app-room',
+  templateUrl: './room.component.html',
+  styleUrls: ['./room.component.css']
+})
+export class RoomComponent implements OnInit {
 
-    @ViewChild('modal') modal!: ModalComponent;
-    isRoomComponent: boolean = false;
-    room?: Room;
-    event: any;
-    movie: any;
-    seats: any[] = [];
-    groupedSeats: any[][] = [];
-    eventID: number = 0;
-    movieID: number = 0;
-    adultCounterValue: number = 0;
-    studentCounterValue: number = 0;
-    childCounterValue: number = 0;
-    totalPriceBrutto: number = 0;
-    totalPriceNetto: number = 0;
-    selectedSeats: any[] = [];
-    otherSelectedSeats: any[] = [];
-    tickets: any[] = [];
+  @ViewChild('modal') modal!: ModalComponent;
+  isRoomComponent: boolean = true;
+  room?: Room;
+  event: any;
+  movie: any;
+  seats: any[] = [];
+  groupedSeats: any[][] = [];
+  eventID: number = 0;
+  movieID: number = 0;
+  adultCounterValue: number = 0;
+  studentCounterValue: number = 0;
+  childCounterValue: number = 0;
+  totalPriceBrutto: number = 0;
+  totalPriceNetto: number = 0;
+  selectedSeats: any[] = [];
+  otherSelectedSeats: any[] = [];
+  tickets: any[] = [];
 
 
-    constructor(
-      private route: ActivatedRoute,
-      private router: Router,
-      private roomService: RoomService,
-      private movieService: MovieService,
-      private ticketService: TicketService,
-      private socketService: SocketService,
-      private eventService: EventService,
-      private authService: AuthService,
-      private modalService: ModalService
-    ) {
-    }
-    ngAfterViewInit(): void {
-      console.log('isRoomComponent in ngAfterViewInit:', this.isRoomComponent);
-    }
-    ngOnInit(): void {
-      this.isRoomComponent = true;
-      console.log('isRoomComponent:', this.isRoomComponent);
-      this.getEventID();
-      this.getMovieID();
-      this.getRoom();
-      this.getSeats();
-      this.getMovie();
-      this.getEvent();
-      this.getOtherClientSeats();
-      this.getCurrentClientSeats();
-      this.getSeatsReleasedByOtherClient();
-      this.setCounter();
-    }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private roomService: RoomService,
+    private movieService: MovieService,
+    private ticketService: TicketService,
+    private socketService: SocketService,
+    private eventService: EventService,
+    private authService: AuthService,
+    private modalService: ModalService
+  ) {
+  }
+
+  ngOnInit(): void {
+    this.getEventID();
+    this.getMovieID();
+    this.getMovie();
+    this.getEvent();
+    this.getRoom();
+    this.getSeats();
+    this.getOtherClientSeats();
+    this.getCurrentClientSeats();
+    this.getSeatsReleasedByOtherClient();
+    this.setCounter();
+  }
 
   getEventID() {
     this.eventID = +this.route.snapshot.paramMap.get('eventID')!;
@@ -103,6 +100,7 @@ import {ModalService} from "../../services/modal/modal.service";
         console.error("Error loading counter:", error);
       });
   }
+
 
   getOtherClientSeats() {
     this.socketService.getOtherClientSeat(this.eventID).subscribe(
@@ -258,12 +256,9 @@ import {ModalService} from "../../services/modal/modal.service";
   }
 
   updateSelectedSeats(personType: string) {
-    console.log("HIEEEEER:", this.otherSelectedSeats, this.selectedSeats)
     const totalSeats = this.getTotalCount();
     if (this.selectedSeats.length > totalSeats) {
-      console.log('WHAT: :D', this.selectedSeats.length, this.selectedSeats);
       const seatIndex = this.selectedSeats.findIndex(s => s.personType === personType);
-      console.log("SEATINDEX:", seatIndex);
       if (seatIndex !== -1) {
         const removedSeat = this.selectedSeats.splice(seatIndex, 1)[0];
         console.log("RemovedSeat", removedSeat);
@@ -285,12 +280,14 @@ import {ModalService} from "../../services/modal/modal.service";
           const oldSeat = this.selectedSeats.splice(index, 1)[0];
           const newSeat = this.seats.find(s => s.Reihennummer === oldSeat.Reihennummer && s.Sitznummer === oldSeat.Sitznummer);
 
-          const newPersonType = this.getPersonType();
-          const newPriceBrutto = this.getBruttoPrice(newPersonType, newSeat);
+          const newTicketID: number = this.getTicketID(personType, newSeat)
+          const newPersonType: string = this.getPersonType();
+          const newPriceBrutto: number = this.getBruttoPrice(newPersonType, newSeat);
           const newPriceNetto = this.getNettoPrice(newPersonType, newSeat);
 
           const updatedSeat = {
             ...oldSeat,
+            ticketID: newTicketID,
             personType: newPersonType,
             priceBrutto: newPriceBrutto,
             priceNetto: newPriceNetto
@@ -341,6 +338,11 @@ import {ModalService} from "../../services/modal/modal.service";
     return '';
   }
 
+  getTicketID(personType: string, seat: any): number {
+    let ticket = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
+    return ticket ? ticket.TicketID : 0;
+  }
+
   getBruttoPrice(personType: string, seat: any): number {
     let priceData = this.tickets.find(t => t.Tickettyp === personType && t.Sitztyp === seat.Sitztyp);
     return priceData ? priceData.PreisBrutto : 0;
@@ -360,14 +362,16 @@ import {ModalService} from "../../services/modal/modal.service";
     } else {
       if (this.canSelectMoreSeats()) {
         seat.selected = true;
+
         const personType = this.getPersonType();
-        console.log(personType);
+        const ticketID = this.getTicketID(personType, seat);
         const priceBrutto = this.getBruttoPrice(personType, seat);
         const priceNetto = this.getNettoPrice(personType, seat);
         this.socketService.reserveSeat({
           Sitztyp: seat.Sitztyp,
           Reihennummer: seat.Reihennummer,
           Sitznummer: seat.Sitznummer,
+          ticketID,
           personType,
           priceBrutto,
           priceNetto
@@ -423,17 +427,15 @@ import {ModalService} from "../../services/modal/modal.service";
         }
 
         if (result === 'booking') {
-          this.router.navigate([navigationMap[result]],
-            {
-              queryParams: {
-                selectedSeats: JSON.stringify(this.selectedSeats),
-                totalPriceBrutto: this.totalPriceBrutto,
-                totalPriceNetto: this.totalPriceNetto,
-                adultTickets: this.adultCounterValue,
-                studentTickets: this.studentCounterValue,
-                childTickets: this.childCounterValue
-              }
-            });
+          const navigationExtras: NavigationExtras = {
+            state: {
+              selectedSeats: JSON.stringify(this.selectedSeats),
+              totalPriceBrutto: this.totalPriceBrutto,
+              totalPriceNetto: this.totalPriceNetto,
+              eventID: this.eventID
+            }
+          };
+          this.router.navigate([navigationExtras]);
         } else {
           this.router.navigate([navigationMap[result]]);
         }
