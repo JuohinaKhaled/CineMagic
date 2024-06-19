@@ -1,4 +1,4 @@
-import {Component, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, Output, ViewChild} from '@angular/core';
 import {RoomService} from "../../services/room/room.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MovieService} from "../../services/movie/movie.service";
@@ -13,57 +13,61 @@ import {ModalComponent} from "../modal/modal.component";
 import {ModalService} from "../../services/modal/modal.service";
 
 
-@Component({
-  selector: 'app-room',
-  templateUrl: './room.component.html',
-  styleUrl: './room.component.css'
-})
-export class RoomComponent implements OnInit {
+  @Component({
+    selector: 'app-room',
+    templateUrl: './room.component.html',
+    styleUrls: ['./room.component.css']
+  })
+  export class RoomComponent implements OnInit,  AfterViewInit{
 
-  @ViewChild('modal') modal!: ModalComponent;
-  isRoomComponent: boolean = true;
-  room?: Room;
-  event: any;
-  movie: any;
-  seats: any[] = [];
-  groupedSeats: any[][] = [];
-  eventID: number = 0;
-  movieID: number = 0;
-  adultCounterValue: number = 0;
-  studentCounterValue: number = 0;
-  childCounterValue: number = 0;
-  totalPriceBrutto: number = 0;
-  totalPriceNetto: number = 0;
-  selectedSeats: any[] = [];
-  otherSelectedSeats: any[] = [];
-  tickets: any[] = [];
+    @ViewChild('modal') modal!: ModalComponent;
+    isRoomComponent: boolean = false;
+    room?: Room;
+    event: any;
+    movie: any;
+    seats: any[] = [];
+    groupedSeats: any[][] = [];
+    eventID: number = 0;
+    movieID: number = 0;
+    adultCounterValue: number = 0;
+    studentCounterValue: number = 0;
+    childCounterValue: number = 0;
+    totalPriceBrutto: number = 0;
+    totalPriceNetto: number = 0;
+    selectedSeats: any[] = [];
+    otherSelectedSeats: any[] = [];
+    tickets: any[] = [];
 
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private roomService: RoomService,
-    private movieService: MovieService,
-    private ticketService: TicketService,
-    private socketService: SocketService,
-    private eventService: EventService,
-    private authService: AuthService,
-    private modalService: ModalService
-  ) {
-  }
-
-  ngOnInit(): void {
-    this.getEventID();
-    this.getMovieID();
-    this.getRoom();
-    this.getSeats();
-    this.getMovie();
-    this.getEvent();
-    this.getOtherClientSeats();
-    this.getCurrentClientSeats();
-    this.getSeatsReleasedByOtherClient();
-    this.setCounter();
-  }
+    constructor(
+      private route: ActivatedRoute,
+      private router: Router,
+      private roomService: RoomService,
+      private movieService: MovieService,
+      private ticketService: TicketService,
+      private socketService: SocketService,
+      private eventService: EventService,
+      private authService: AuthService,
+      private modalService: ModalService
+    ) {
+    }
+    ngAfterViewInit(): void {
+      console.log('isRoomComponent in ngAfterViewInit:', this.isRoomComponent);
+    }
+    ngOnInit(): void {
+      this.isRoomComponent = true;
+      console.log('isRoomComponent:', this.isRoomComponent);
+      this.getEventID();
+      this.getMovieID();
+      this.getRoom();
+      this.getSeats();
+      this.getMovie();
+      this.getEvent();
+      this.getOtherClientSeats();
+      this.getCurrentClientSeats();
+      this.getSeatsReleasedByOtherClient();
+      this.setCounter();
+    }
 
   getEventID() {
     this.eventID = +this.route.snapshot.paramMap.get('eventID')!;

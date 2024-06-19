@@ -1,14 +1,14 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-ticket',
   templateUrl: './ticket.component.html',
-  styleUrl: './ticket.component.css'
+  styleUrls: ['./ticket.component.css']
 })
-export class TicketComponent {
+export class TicketComponent implements OnInit{
 
   @Input() seat: any;
-  @Input() isRoomComponent: boolean = false;
+  @Input() isRoomComponent?: boolean;
   @Output() remove = new EventEmitter<any>();
 
   constructor() {
@@ -16,4 +16,8 @@ export class TicketComponent {
   onRemoveSeat() {
     this.remove.emit(this.seat);
   }
+
+  ngOnInit(): void {
+  }
+
 }

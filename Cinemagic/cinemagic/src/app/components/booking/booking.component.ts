@@ -16,12 +16,12 @@ export class BookingComponent implements OnInit {
   adultCounterValue: number = 0;
   studentCounterValue: number = 0;
   childCounterValue: number = 0;
-  currentDate: string = new Date().toISOString().slice(0, 19).replace('T', ' ');
-  bookingID?: number;
-  b$ : Observable<any> | undefined;
+  currentDate: string = '';
+  bookingID: number = 0;
 
 
   constructor(private route: ActivatedRoute, private bookingService: BookingService) {
+
   }
 
   ngOnInit(): void {
@@ -44,11 +44,38 @@ export class BookingComponent implements OnInit {
       if (params['childTickets']) {
         this.childCounterValue = +params['childTickets'];
       }
+      this.setDate();
     });
   }
 
+  setDate() {
+    this.currentDate = this.currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  }
 
-/*  bookTicketsForSelectedSeats(bookingID: number) {
+
+  /* createBooking(totalPriceBrutto: number, totalPriceNetto: number) {
+     console.log('Totaler Preis:', totalPriceBrutto, totalPriceNetto);
+     console.log(this.currentDate);
+     this.bookingService.createBooking().subscribe(response => {
+       this.bookingID = response;
+     });
+   }*/
+
+  createBooking() {
+    this.bookingService.createBooking(1, this.currentDate, this.totalPriceNetto, this.totalPriceBrutto,
+      this.adultCounterValue, this.childCounterValue, this.studentCounterValue, false)
+      .subscribe(id => {
+          this.bookingID = id;
+          console.log('Booking_Component: Create Booking successful: ', id);
+      }),
+      catchError(err => {
+        console.error('Booking_Component: Error creating Booking: ', err);
+        return throwError(err);
+      });
+  }
+
+
+  /*  bookTicketsForSelectedSeats(bookingID: number) {
     this.selectedSeats.forEach(seat => {
       this.bookingService.bookTickets(bookingID, 1, 49, seat.seatID, seat.ticketID).pipe(
         tap((result: any) => {
@@ -64,26 +91,4 @@ export class BookingComponent implements OnInit {
         }))
     });
   }*/
-
- /* createBooking(totalPriceBrutto: number, totalPriceNetto: number) {
-    console.log('Totaler Preis:', totalPriceBrutto, totalPriceNetto);
-    console.log(this.currentDate);
-    this.bookingService.createBooking().subscribe(response => {
-      this.bookingID = response;
-    });
-  }*/
-
-  createBooking(){
-     this.bookingService.createBooking(1, this.currentDate,
-      this.totalPriceNetto, this.totalPriceBrutto, this.adultCounterValue, this.childCounterValue,
-      this.studentCounterValue, false).subscribe(id => {
-        this.bookingID = id;
-        console.log('Booking_Component: Create Booking successful: ', id);
-      }),
-      catchError(err => {
-        console.error('Booking_Component: Error creating Booking: ', err);
-        return throwError(err);
-      });
-  }
-
 }
