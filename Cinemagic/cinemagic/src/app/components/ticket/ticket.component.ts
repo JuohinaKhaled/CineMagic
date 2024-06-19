@@ -8,6 +8,7 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 export class TicketComponent {
 
   @Input() seat: any;
+  @Input() isRoomComponent: boolean = false;
   @Output() remove = new EventEmitter<any>();
 
   constructor() {

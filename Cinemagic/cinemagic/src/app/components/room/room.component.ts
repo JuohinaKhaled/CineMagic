@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, Output, ViewChild} from '@angular/core';
 import {RoomService} from "../../services/room/room.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MovieService} from "../../services/movie/movie.service";
@@ -11,7 +11,6 @@ import {EventService} from "../../services/event/event.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {ModalComponent} from "../modal/modal.component";
 import {ModalService} from "../../services/modal/modal.service";
-import {BookingService} from "../../services/booking/booking.service";
 
 
 @Component({
@@ -22,6 +21,7 @@ import {BookingService} from "../../services/booking/booking.service";
 export class RoomComponent implements OnInit {
 
   @ViewChild('modal') modal!: ModalComponent;
+  isRoomComponent: boolean = true;
   room?: Room;
   event: any;
   movie: any;
@@ -48,8 +48,7 @@ export class RoomComponent implements OnInit {
     private socketService: SocketService,
     private eventService: EventService,
     private authService: AuthService,
-    private modalService: ModalService,
-    private bookingService: BookingService
+    private modalService: ModalService
   ) {
   }
 
@@ -383,7 +382,7 @@ export class RoomComponent implements OnInit {
     const index = this.selectedSeats.findIndex(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
     if (index > -1) {
       const removeSeat = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
-      if(removeSeat) {
+      if (removeSeat) {
         this.socketService.releaseSeat(removeSeat, this.eventID);
         removeSeat.selected = false;
         console.log('Room_Component: Seat removed:', removeSeat);
@@ -410,21 +409,35 @@ export class RoomComponent implements OnInit {
       const navigationMap: { [key: string]: string } = {
         'login': '/login',
         'register': '/register',
-        'booking': '/book-tickets'
+        'booking': '/booking'
       };
 
       if (result && navigationMap[result]) {
-        if(result === 'login'){
+        if (result === 'login') {
           const roomUrl = `/room/${this.eventID}/${this.movieID}`;
-          this.bookingService.setRedirectUrl(roomUrl);
-          this.bookingService.startBooking();
+          this.authService.setRedirectUrl(roomUrl);
         }
-        this.router.navigate([navigationMap[result]]);
+
+        if (result === 'booking') {
+          this.router.navigate([navigationMap[result]],
+            {
+              queryParams: {
+                selectedSeats: JSON.stringify(this.selectedSeats),
+                totalPriceBrutto: this.totalPriceBrutto,
+                totalPriceNetto: this.totalPriceNetto,
+                adultTickets: this.adultCounterValue,
+                studentTickets: this.studentCounterValue,
+                childTickets: this.childCounterValue
+              }
+            });
+        } else {
+          this.router.navigate([navigationMap[result]]);
+        }
       } else {
-        console.log('Room_Component: Modal cancelled or closed');
+        console.log('Room_Component: Modal cancelled or closed!');
       }
     }).catch(() => {
-      console.log('Room_Component: Modal could not be opened');
+      console.log('Room_Component: Modal could not be opened!');
     });
   }
 

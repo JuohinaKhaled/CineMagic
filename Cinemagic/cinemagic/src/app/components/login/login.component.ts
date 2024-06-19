@@ -31,8 +31,6 @@ export class LoginComponent {
         if (response.status === 'success') {
           console.log('Login successful');
           this.openSnackBar('Login successful!');
-          this.bookingService.cancelBooking();
-          this.router.navigate(['/home']);
         } else {
           console.log('Login failed');
           this.openSnackBar('Login failed. Please check your credentials.');

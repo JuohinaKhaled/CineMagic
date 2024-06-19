@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { Router } from '@angular/router';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable, throwError} from 'rxjs';
+import {tap, catchError} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -16,16 +16,18 @@ export class AuthService {
   telefonnummer: string | null = null;
   passwort: string | null = null;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) {
+  }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>('/loginCustomer', { email, password }).pipe(
+    return this.http.post<any>('/loginCustomer', {email, password}).pipe(
       tap(response => {
         if (response.status === 'success') {
           this.isLoggedIn = true;
           this.email = response.data.Email;
           console.log('Login erfolgreich, Email: ', this.email);
           const redirect = this.redirectUrl ? this.redirectUrl : '/';
+          console.log(redirect);
           this.router.navigate([redirect]);
         } else {
           console.log('Login fehlgeschlagen, Antwort: ', response);
@@ -38,9 +40,14 @@ export class AuthService {
     );
   }
 
+  setRedirectUrl(redirectUrl: string) {
+    this.redirectUrl = redirectUrl;
+  }
+
   logout(): void {
     this.isLoggedIn = false;
     this.email = null;
+    this.redirectUrl = null;
     this.router.navigate(['/login']);
   }
 

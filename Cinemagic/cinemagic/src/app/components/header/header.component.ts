@@ -13,10 +13,6 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  navigateToLogin() {
-    this.router.navigate(['/login']);
-  }
-
   isLogged() {
     return this.isLoggedIn = this.authService.isLoggedIn;
   }
@@ -24,4 +20,5 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.authService.logout();
   }
+
 }

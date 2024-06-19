@@ -344,6 +344,7 @@ app.post('/tickets', (req, res) => {
   });
 });
 
+
 app.post('/booking', (req, res) => {
   const {
     customerID,
@@ -356,31 +357,31 @@ app.post('/booking', (req, res) => {
     paid
   } = req.body;
 
+  console.log('Received booking request with data:', req.body);
+
   const query = `
     INSERT INTO Buchung (KundenID, Kaufdatum, GesamtPreisNetto, GesamtPreisBrutto, AnzahlTicketsErwachsene,
                          AnzahlTicketsKinder, AnzahlTicketsStudenten, Bezahlt)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  con.query(query, [customerID, purchaseDate, totalPriceNetto, totalPriceBrutto, counterTicketsAdult,
-    counterTicketsChild, counterTicketsStudent, paid], (error, results) => {
+  con.query(query, [customerID, purchaseDate, totalPriceNetto, totalPriceBrutto,
+    counterTicketsAdult, counterTicketsChild, counterTicketsStudent,
+    paid
+  ], (error, results) => {
     if (error) {
-      console.error("Error fetching seats:", error);
-      res.status(500).json({error: 'Database query error'});
-    } else {
-      if (results > 0) {
-        const bookingID = results.insertId;
-        console.log("BookingID fetched successfully:", bookingID);
-        res.status(200).json(bookingID);
-      } else {
-        console.error("BookingID not found:");
-        res.status(404).json({error: 'BookingID not found'});
-      }
+      console.error('Error inserting booking:', error);
+      res.status(500).json({ error: error.message }); // Fehlermeldung an den Client senden
+      return;
     }
-  })
+
+    console.log('Inserted booking with ID:', results.insertId);
+    res.status(201).json(results.insertId); // Erfolgreiche Antwort an den Client senden
+  });
 });
 
-app.post('/bookingTickets', (req, res) => {
+
+app.put('/bookingTickets', (req, res) => {
   const {bookingID, customerID, eventID, seatID, ticketID} = req.body;
 
   const query = `
