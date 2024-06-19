@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {RoomService} from "../../services/room/room.service";
-import {ActivatedRoute, NavigationExtras, Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {MovieService} from "../../services/movie/movie.service";
 import {TicketService} from "../../services/ticket/ticket.service";
 import {Room} from "../../models/room/room";
@@ -11,7 +11,7 @@ import {EventService} from "../../services/event/event.service";
 import {AuthService} from "../../services/auth/auth.service";
 import {ModalComponent} from "../modal/modal.component";
 import {ModalService} from "../../services/modal/modal.service";
-import {values} from "lodash";
+import {BookingService} from "../../services/booking/booking.service";
 
 
 @Component({
@@ -38,7 +38,8 @@ export class RoomComponent implements OnInit {
   selectedSeats: any[] = [];
   otherSelectedSeats: any[] = [];
   tickets: any[] = [];
-
+  bookingID?: number;
+  currentDate: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -49,7 +50,8 @@ export class RoomComponent implements OnInit {
     private socketService: SocketService,
     private eventService: EventService,
     private authService: AuthService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private bookingService: BookingService
   ) {
   }
 
@@ -368,6 +370,7 @@ export class RoomComponent implements OnInit {
         const priceBrutto = this.getBruttoPrice(personType, seat);
         const priceNetto = this.getNettoPrice(personType, seat);
         this.socketService.reserveSeat({
+          SitzplatzID: seat.SitzplatzID,
           Sitztyp: seat.Sitztyp,
           Reihennummer: seat.Reihennummer,
           Sitznummer: seat.Sitznummer,
@@ -425,17 +428,13 @@ export class RoomComponent implements OnInit {
           const roomUrl = `/room/${this.eventID}/${this.movieID}`;
           this.authService.setRedirectUrl(roomUrl);
         }
-
         if (result === 'booking') {
-          const navigationExtras: NavigationExtras = {
-            state: {
-              selectedSeats: JSON.stringify(this.selectedSeats),
-              totalPriceBrutto: this.totalPriceBrutto,
-              totalPriceNetto: this.totalPriceNetto,
-              eventID: this.eventID
-            }
-          };
-          this.router.navigate([navigationExtras]);
+          this.createBooking();
+          if (this.bookingID) {
+            this.createBooking();
+            this.router.navigate([navigationMap[result]]);
+          }
+          console.log(this.bookingID);
         } else {
           this.router.navigate([navigationMap[result]]);
         }
@@ -447,5 +446,42 @@ export class RoomComponent implements OnInit {
     });
   }
 
+  setDate() {
+    return this.currentDate = this.currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  }
+
+  createBooking() {
+    this.bookingService.createBooking(1, this.setDate(), this.totalPriceNetto, this.totalPriceBrutto,
+      this.adultCounterValue, this.childCounterValue, this.studentCounterValue, false)
+      .subscribe({
+        next: (bookingID) => {
+          this.bookingID = bookingID;
+          console.log('Booking_Component: Create Booking successful: ', bookingID);
+          if(bookingID){
+            this.bookTicketsForSelectedSeats(bookingID);
+          }
+        },
+        error: (error) => {
+          console.error('Booking_Component: Error creating Booking: ', error)
+        }
+      })
+  }
+
+  bookTicketsForSelectedSeats(bookingID: number) {
+    this.selectedSeats.forEach(seat => {
+      this.bookingService.bookingTickets(bookingID, 1, this.eventID, seat.SitzplatzID, seat.ticketID).subscribe({
+        next: (result: any) => {
+          if (result) {
+            console.log('Booking tickets for seat successful:', result);
+          } else {
+            console.error('Error booking tickets for seat:', result);
+          }
+        },
+        error:(error) => {
+          console.error('Error booking tickets for seat:', seat, error);
+          return throwError(error);
+        }})
+    });
+  }
 
 }

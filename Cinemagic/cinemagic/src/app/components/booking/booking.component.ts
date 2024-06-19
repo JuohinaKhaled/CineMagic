@@ -61,10 +61,10 @@ export class BookingComponent implements OnInit {
         })
       )
       .subscribe(studentValue => {
-        this.adultCounterValue = studentValue;
-        console.log('');
-      }
-    );
+          this.adultCounterValue = studentValue;
+          console.log('');
+        }
+      );
   }
 
   setDate() {
@@ -85,21 +85,4 @@ export class BookingComponent implements OnInit {
 
   }
 
-
-  /*  bookTicketsForSelectedSeats(bookingID: number) {
-    this.selectedSeats.forEach(seat => {
-      this.bookingService.bookTickets(bookingID, 1, 49, seat.seatID, seat.ticketID).pipe(
-        tap((result: any) => {
-          if (result && result.affectedRows !== undefined && result.affectedRows > 0) {
-            console.log('Booking tickets for seat successful:', result.affectedRows);
-          } else {
-            console.error('Error booking tickets for seat:', result);
-          }
-        }),
-        catchError(error => {
-          console.error('Error booking tickets for seat:', seat, error);
-          return throwError(error);
-        }))
-    });
-  }*/
 }

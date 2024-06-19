@@ -357,8 +357,6 @@ app.post('/booking', (req, res) => {
     paid
   } = req.body;
 
-  console.log('Received booking request with data:', req.body);
-
   const query = `
     INSERT INTO Buchung (KundenID, Kaufdatum, GesamtPreisNetto, GesamtPreisBrutto, AnzahlTicketsErwachsene,
                          AnzahlTicketsKinder, AnzahlTicketsStudenten, Bezahlt)

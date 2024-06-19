@@ -1,3 +1,5 @@
+// noinspection JSDeprecatedSymbols
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieService } from '../../services/movie/movie.service';
