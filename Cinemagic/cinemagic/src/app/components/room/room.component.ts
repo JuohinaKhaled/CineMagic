@@ -215,12 +215,12 @@ export class RoomComponent implements OnInit {
 
 
   groupSeatsByRow(): void {
-    let rowIndex = 0;
-    this.groupedSeats = [];
-    for (let i = 0; i < this.seats.length; i += 10) {
-      this.groupedSeats[rowIndex] = this.seats.slice(i, i + 10);
-      rowIndex++;
+    let maxRowNumber = Math.max(...this.seats.map(seat => seat.Reihennummer));
+    this.groupedSeats = Array.from({length: maxRowNumber}, () => []);
+    for (let seat of this.seats) {
+      this.groupedSeats[seat.Reihennummer - 1][seat.Sitznummer - 1] = seat;
     }
+    console.log('Room_Component: Seats grouped by row: ', this.groupedSeats);
   }
 
   getMovie() {
