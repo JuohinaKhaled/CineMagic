@@ -11,6 +11,7 @@ export class BookingService {
   httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
   private createBookingUrl = '/booking';
   private bookingTicketsUrl = '/bookingTickets';
+  private fetchBookingUrl = '/newBooking';
 
   constructor(private http: HttpClient) {
   }
@@ -29,7 +30,7 @@ export class BookingService {
         paid
       }, this.httpOptions)
       .pipe(
-        tap(response => {
+        tap((response) => {
           if (response) {
             console.log('Booking_Service: Creating Booking successful: ', response);
           } else {
@@ -67,5 +68,18 @@ export class BookingService {
       );
   }
 
+
+  fetchAllBookedTickets(bookingID: number): Observable<any> {
+    return this.http.post<any[]>(this.fetchBookingUrl, {bookingID}, this.httpOptions).pipe(
+      tap((booking: any[]) =>{
+        console.log('Booking_Service: Fetching Booking Successful:', booking);
+      }),
+      catchError((err) =>{
+        console.log('Booking_Service: Error Fetching Booking:', err);
+        return throwError(err);
+      })
+    );
+
+  }
 
 }

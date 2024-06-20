@@ -30,7 +30,8 @@ import {NgOptimizedImage} from "@angular/common";
 import {ProfileComponent} from './components/profile/profile.component';
 import {ModalComponent} from './components/modal/modal.component';
 import {ModalService} from "./services/modal/modal.service";
-import { BookingComponent } from './components/booking/booking.component';
+import {BookingComponent} from './components/booking/booking.component';
+import {BookingService} from "./services/booking/booking.service";
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { BookingComponent } from './components/booking/booking.component';
     SocketService,
     TicketService,
     ModalService,
+    BookingService,
     provideAnimationsAsync()
   ],
   bootstrap: [AppComponent]

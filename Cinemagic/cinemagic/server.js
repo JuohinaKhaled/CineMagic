@@ -402,3 +402,27 @@ app.put('/bookingTickets', (req, res) => {
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));
 });
+
+app.post('/newBooking', (req, res) => {
+  const {bookingID} = req.body;
+
+  const query = `
+    INSERT INTO buchtTicket (BuchungsID, KundenID, VorfuehrungsID, SitzplatzID, TicketID)
+    VALUES (?)
+  `;
+
+  con.query(query, [bookingID], (error, results) => {
+    if (error) {
+      console.error('Error fetching booking:', error);
+      res.status(500).json({error: 'Error fetching booking:'});
+      return;
+    }
+    console.log('Booking fetched succesfully');
+    res.status(201).json(results);
+  });
+});
+
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));
+});

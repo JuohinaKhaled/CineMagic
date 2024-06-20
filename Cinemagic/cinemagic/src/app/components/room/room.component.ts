@@ -432,7 +432,6 @@ export class RoomComponent implements OnInit {
           this.createBooking();
           if (this.bookingID) {
             this.createBooking();
-            this.router.navigate([navigationMap[result]]);
           }
           console.log(this.bookingID);
         } else {
@@ -457,8 +456,9 @@ export class RoomComponent implements OnInit {
         next: (bookingID) => {
           this.bookingID = bookingID;
           console.log('Booking_Component: Create Booking successful: ', bookingID);
-          if(bookingID){
+          if (bookingID) {
             this.bookTicketsForSelectedSeats(bookingID);
+            this.router.navigate(['/booking', this.bookingID]);
           }
         },
         error: (error) => {
@@ -477,10 +477,11 @@ export class RoomComponent implements OnInit {
             console.error('Error booking tickets for seat:', result);
           }
         },
-        error:(error) => {
+        error: (error) => {
           console.error('Error booking tickets for seat:', seat, error);
           return throwError(error);
-        }})
+        }
+      })
     });
   }
 
