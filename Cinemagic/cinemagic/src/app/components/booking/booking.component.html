@@ -1,13 +1,13 @@
 <div class="d-flex flex-column justify-content-center align-items-center">
   <h1 class="text-white mb-2">Booking overview</h1>
   <div class="d-flex flex-column">
-    <ng-container *ngFor="let seat of selectedSeats">
-      <app-ticket [seat]="seat"></app-ticket>
+    <ng-container>
+      <app-ticket ></app-ticket>
     </ng-container>
   </div>
   <div class="d-flex flex-row text-white justify-content-center align-items-center mb-3">
-    <h2 class="me-1">Total Price: {{ totalPriceBrutto }}€ </h2>
-    <h5> ({{ totalPriceNetto }} €)</h5>
+    <h2 class="me-1">Total Price: € </h2>
+    <h5> ( €)</h5>
   </div>
-  <button class="btn btn-danger" (click)="createBooking()">Booking</button>
+
 </div>
