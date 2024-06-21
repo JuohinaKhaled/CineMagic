@@ -429,9 +429,9 @@ export class RoomComponent implements OnInit {
           this.authService.setRedirectUrl(roomUrl);
         }
         if (result === 'booking') {
-          this.createBooking();
+          this.addBooking();
           if (this.bookingID) {
-            this.createBooking();
+            this.addBooking();
           }
           console.log(this.bookingID);
         } else {
@@ -449,15 +449,15 @@ export class RoomComponent implements OnInit {
     return this.currentDate = this.currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
   }
 
-  createBooking() {
-    this.bookingService.createBooking(1, this.setDate(), this.totalPriceNetto, this.totalPriceBrutto,
+  addBooking() {
+    this.bookingService.addBooking(1, this.setDate(), this.totalPriceNetto, this.totalPriceBrutto,
       this.adultCounterValue, this.childCounterValue, this.studentCounterValue, false)
       .subscribe({
         next: (bookingID) => {
           this.bookingID = bookingID;
           console.log('Booking_Component: Create Booking successful: ', bookingID);
           if (bookingID) {
-            this.bookTicketsForSelectedSeats(bookingID);
+            this.bookSeats(bookingID);
             this.router.navigate(['/booking', this.bookingID]);
           }
         },
@@ -467,9 +467,9 @@ export class RoomComponent implements OnInit {
       })
   }
 
-  bookTicketsForSelectedSeats(bookingID: number) {
+  bookSeats(bookingID: number) {
     this.selectedSeats.forEach(seat => {
-      this.bookingService.bookingTickets(bookingID, 1, this.eventID, seat.SitzplatzID, seat.ticketID).subscribe({
+      this.bookingService.bookTickets(bookingID, 1, this.eventID, seat.SitzplatzID, seat.ticketID).subscribe({
         next: (result: any) => {
           if (result) {
             console.log('Booking tickets for seat successful:', result);

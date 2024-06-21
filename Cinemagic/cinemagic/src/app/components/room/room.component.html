@@ -29,7 +29,7 @@
         <h2 class="me-1">Total Price: {{ totalPriceBrutto }}€ </h2>
         <h5> ({{ totalPriceNetto }} €)</h5>
       </div>
-      <button class="row btn btn-danger align-self-center mb-3"
+      <button class="row btn btn-danger align-self-center mb-3" [disabled]="selectedSeats.length === 0"
               (click)="openModal('Booking confirmation','confirmation')">Booking
       </button>
     </div>

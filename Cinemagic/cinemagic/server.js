@@ -345,7 +345,7 @@ app.post('/tickets', (req, res) => {
 });
 
 
-app.post('/booking', (req, res) => {
+app.post('/addBooking', (req, res) => {
   const {
     customerID,
     purchaseDate,
@@ -379,7 +379,7 @@ app.post('/booking', (req, res) => {
 });
 
 
-app.put('/bookingTickets', (req, res) => {
+app.put('/bookSeats', (req, res) => {
   const {bookingID, customerID, eventID, seatID, ticketID} = req.body;
 
   const query = `
@@ -403,12 +403,29 @@ app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));
 });
 
-app.post('/newBooking', (req, res) => {
+app.post('/booking', (req, res) => {
   const {bookingID} = req.body;
 
   const query = `
-    INSERT INTO buchtTicket (BuchungsID, KundenID, VorfuehrungsID, SitzplatzID, TicketID)
-    VALUES (?)
+      SELECT b.BuchungsID,
+             b.Kaufdatum,
+             b.GesamtPreisNetto,
+             b.GesamtPreisBrutto,
+             b.AnzahlTicketsErwachsene,
+             b.AnzahlTicketsKinder,
+             b.AnzahlTicketsStudenten,
+             b.Bezahlt,
+             v.Vorfuehrungsdatum,
+             v.Vorfuehrungszeit,
+             f.Titel,
+             s.Saalname
+      FROM buchtTicket bt
+               JOIN Buchung b ON bt.BuchungsID = b.BuchungsID
+               JOIN Vorfuehrungen v ON bt.VorfuehrungsID = v.VorfuehrungsID
+               JOIN Sitzplaetze sp ON bt.SitzplatzID = sp.SitzplatzID
+               JOIN Saele s ON sp.SaalID = s.SaalID
+               JOIN Filme f ON v.FilmID = f.FilmID
+      WHERE b.BuchungsID = ?;
   `;
 
   con.query(query, [bookingID], (error, results) => {
@@ -422,6 +439,37 @@ app.post('/newBooking', (req, res) => {
   });
 });
 
+
+app.post('/bookedSeats', (req, res) => {
+  const {bookingID} = req.body;
+
+  const query = `
+      SELECT s.SitzplatzID,
+             s.SaalID,
+             s.Reihennummer,
+             s.Sitznummer,
+             s.Sitztyp,
+             t.Saaltyp,
+             t.Tickettyp,
+             t.Sitztyp,
+             t.PreisNetto,
+             t.PreisBrutto
+      FROM buchtTicket bt
+               JOIN Sitzplaetze s ON bt.SitzplatzID = s.SitzplatzID
+               JOIN Tickets t ON bt.TicketID = t.TicketID
+      WHERE bt.BuchungsID = ?;
+  `;
+
+  con.query(query, [bookingID], (error, results) => {
+    if (error) {
+      console.error('Error fetching booked Seats:', error);
+      res.status(500).json({error: 'Error fetching booked Seats:'});
+      return;
+    }
+    console.log('Booked Seats fetched succesfully');
+    res.status(201).json(results);
+  });
+});
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));

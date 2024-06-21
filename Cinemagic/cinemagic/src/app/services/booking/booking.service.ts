@@ -9,16 +9,17 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 export class BookingService {
 
   httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
-  private createBookingUrl = '/booking';
-  private bookingTicketsUrl = '/bookingTickets';
-  private fetchBookingUrl = '/newBooking';
+  private addBookingUrl = '/addBooking';
+  private bookSeatsUrl = '/bookSeats';
+  private bookingUrl = '/booking';
+  private bookedSeatsUrl = '/bookedSeats';
 
   constructor(private http: HttpClient) {
   }
 
-  createBooking(customerID: number, purchaseDate: string, totalPriceNetto: number, totalPriceBrutto: number, counterTicketsAdult: number,
-                counterTicketsChild: number, counterTicketsStudent: number, paid: boolean): Observable<number> {
-    return this.http.post<number>(this.createBookingUrl,
+  addBooking(customerID: number, purchaseDate: string, totalPriceNetto: number, totalPriceBrutto: number, counterTicketsAdult: number,
+             counterTicketsChild: number, counterTicketsStudent: number, paid: boolean): Observable<number> {
+    return this.http.post<number>(this.addBookingUrl,
       {
         customerID,
         purchaseDate,
@@ -45,8 +46,8 @@ export class BookingService {
   }
 
 
-  bookingTickets(bookingID: number, customerID: number, eventID: number, seatID: number, ticketID: number): Observable<any> {
-    return this.http.put<any>(this.bookingTicketsUrl, {
+  bookTickets(bookingID: number, customerID: number, eventID: number, seatID: number, ticketID: number): Observable<any> {
+    return this.http.put<any>(this.bookSeatsUrl, {
       bookingID,
       customerID,
       eventID,
@@ -69,9 +70,9 @@ export class BookingService {
   }
 
 
-  fetchAllBookedTickets(bookingID: number): Observable<any> {
-    return this.http.post<any[]>(this.fetchBookingUrl, {bookingID}, this.httpOptions).pipe(
-      tap((booking: any[]) =>{
+  fetchBooking(bookingID: number): Observable<any> {
+    return this.http.post<any[]>(this.bookingUrl, {bookingID}, this.httpOptions).pipe(
+      tap((booking: any[]) => {
         console.log('Booking_Service: Fetching Booking Successful:', booking);
       }),
       catchError((err) =>{
@@ -79,7 +80,20 @@ export class BookingService {
         return throwError(err);
       })
     );
-
   }
+
+  fetchAllBookedSeats(bookingID: number): Observable<any> {
+    return this.http.post<any[]>(this.bookedSeatsUrl, {bookingID}, this.httpOptions).pipe(
+      tap((seats: any[]) => {
+        console.log('Booking_Service: Fetching Booking Successful:', seats);
+      }),
+      catchError((err) =>{
+        console.log('Booking_Service: Error Fetching Booking:', err);
+        return throwError(err);
+      })
+    );
+  }
+
+
 
 }
