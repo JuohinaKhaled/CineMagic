@@ -1,8 +1,8 @@
 <div class="navbar px-5 pt-5">
   <div class="navbar-left">
     <ul class="d-flex gap-4 w-100 list-unstyled">
-      <li><a class="pb-2 mt-2 text-decoration-none" href="#">Programm</a></li>
-      <li><a class="pb-2 mt-2 text-decoration-none" href="#">News</a></li>
+      <li><a class="pb-2 mt-2 text-decoration-none" [routerLink]="['/home']">Programm</a></li>
+      <!--<li><a class="pb-2 mt-2 text-decoration-none" href="#">News</a></li>-->
     </ul>
   </div>
   <div class="navbar-right">
@@ -26,7 +26,7 @@
         </button>
       </li>
       <li *ngIf="!isLogged()">
-        <button routerLink="/login" type="button" class="btn btn-sm btn-danger">Login</button>
+        <button (click)=onNavigate() type="button" class="btn btn-sm btn-danger">Login</button>
       </li>
     </ul>
   </div>

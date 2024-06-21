@@ -20,7 +20,7 @@ const routes: Routes = [
   {path: 'room/:eventID/:movieID', component: RoomComponent},
   {path: 'movie-details/:movieID', component: MovieDetailsComponent},
   {path: 'event/', component: EventComponent},
-  {path: 'booking/:bookingID', component: BookingComponent}
+  {path: 'booking/:bookingID', component: BookingComponent, canActivate: [AuthGuard]}
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {BookingService} from "../../services/booking/booking.service";
-import {catchError} from "rxjs/operators";
+import {catchError, tap} from "rxjs/operators";
 import {map, Observable, throwError} from "rxjs";
 
 @Component({
@@ -36,7 +36,7 @@ export class BookingComponent implements OnInit {
 
   getAllBookedSeats() {
     this.seats$ = this.bookingService.fetchAllBookedSeats(this.bookingID).pipe(
-      map((seats: any[]) => {
+      tap((seats: any[]) => {
         this.cdRef.detectChanges();
         console.log('Booking_Component: Fetching booked Seats successful:', seats)
         return seats;

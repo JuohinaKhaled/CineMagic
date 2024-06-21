@@ -49,6 +49,7 @@ export class AuthService {
     this.email = null;
     this.redirectUrl = null;
     this.router.navigate(['/login']);
+    console.log('Logout');
   }
 
   registerCustomer(data: any): Observable<any> {

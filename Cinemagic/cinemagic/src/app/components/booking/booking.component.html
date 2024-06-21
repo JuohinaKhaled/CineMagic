@@ -1,15 +1,15 @@
 <ng-container *ngIf="booking">
   <ng-container *ngIf="seats$ | async as seats">
-    <div class="d-flex flex-column justify-content-center align-items-center">
-      <h1 class="text-white mb-2">Booking overview</h1>
-      <h5>#{{booking.BuchungsID}} | {{booking.Kaufdatum}} | {{booking.Titel}}</h5>
-      <h5>{{booking.Saalname}} | {{booking.Vorfuehrungsdatum}} | {{booking.Vorfuehrungszeit}}</h5>
+    <div class="d-flex flex-column justify-content-center align-items-center text-white ">
+      <h1 class="mb-2">Booking overview</h1>
+      <h5>#{{booking.BuchungsID}} | Booking date: {{booking.Kaufdatum | date:'dd.MM.yyyy'}} | {{booking.Titel}}</h5>
+      <h5>{{booking.Saalname}} | Event date: {{booking.Vorfuehrungsdatum | date:'dd.MM.yyyy'}} | {{booking.Vorfuehrungszeit |  slice:0:5}}</h5>
       <div class="d-flex flex-column">
         <ng-container *ngFor="let seat of seats">
           <app-ticket [seat]="seat"></app-ticket>
         </ng-container>
       </div>
-      <div class="d-flex flex-row text-white justify-content-center align-items-center mb-3">
+      <div class="d-flex flex-row justify-content-center align-items-center mb-3">
         <h2 class="me-1">Total Price: {{booking.GesamtPreisBrutto}} € </h2>
         <h5>({{booking.GesamtPreisNetto}} €)</h5>
       </div>
