@@ -418,7 +418,11 @@ app.post('/booking', (req, res) => {
              v.Vorfuehrungsdatum,
              v.Vorfuehrungszeit,
              f.Titel,
-             s.Saalname
+             f.Dauer,
+             f.Altersfreigabe,
+             f.Genre,
+             s.Saalname,
+             s.Saaltyp
       FROM buchtTicket bt
                JOIN Buchung b ON bt.BuchungsID = b.BuchungsID
                JOIN Vorfuehrungen v ON bt.VorfuehrungsID = v.VorfuehrungsID
@@ -451,7 +455,6 @@ app.post('/bookedSeats', (req, res) => {
              s.Sitztyp,
              t.Saaltyp,
              t.Tickettyp,
-             t.Sitztyp,
              t.PreisNetto,
              t.PreisBrutto
       FROM buchtTicket bt

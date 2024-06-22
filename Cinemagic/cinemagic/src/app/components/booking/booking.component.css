@@ -1,3 +1,52 @@
-.removeTicket{
-  display: none;
+hr{
+  border: 3px solid #FFD700;
+  width: 50px;
+  opacity: 1.0;
 }
+
+.h7{
+  color: #A6A4A4;
+  font-size: 0.8rem;
+}
+
+h2, h4{
+  color: black;
+}
+
+.date{
+  border: 2px solid #FFD700;
+  color: #FFD700;
+}
+
+.genre{
+  border: 2px solid #A6A4A4;
+  color: #A6A4A4;
+}
+
+.date, .genre{
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.overview{
+  width: 50%;
+}
+
+@media only screen and (max-width: 950px) {
+  .overview{
+    width: 70%;
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  .overview{
+    width: 80%;
+  }
+}
+
+@media only screen and (max-width: 350px) {
+  .overview {
+    width: 95%;
+  }
+}
+
