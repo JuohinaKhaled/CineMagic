@@ -474,6 +474,63 @@ app.post('/bookedSeats', (req, res) => {
   });
 });
 
+app.post('/allBooking', (req, res) => {
+  const {customerID} = req.body;
+
+  const query = `
+      SELECT b.BuchungsID
+      FROM Buchung b WHERE b.KundenID = ?;
+  `;
+
+  con.query(query, [customerID], (error, results) => {
+    if (error) {
+      console.error('Error fetching all Booking for current User:', error);
+      res.status(500).json({error: 'Error fetching all Booking for current User:'});
+      return;
+    }
+    console.log('All Booking for current User fetched successful.');
+    res.status(201).json(results);
+  });
+});
+
+app.post('/rating', (req, res) => {
+  const {customerID, movieID} = req.body;
+
+  const query = `
+      SELECT b.Bewertung
+      FROM bewertet b WHERE b.KundenID = ? AND b.FilmID = ?;
+  `;
+
+  con.query(query, [customerID, movieID], (error, results) => {
+    if (error) {
+      console.error('Error fetching all Booking for current User:', error);
+      res.status(500).json({error: 'Error fetching all Booking for current User:'});
+      return;
+    }
+    console.log('All Booking for current User fetched successful.');
+    res.status(201).json(results);
+  });
+});
+
+app.post('/rate', (req, res) => {
+  const {customerID, movieID, rating} = req.body;
+
+  const query = `
+      INSERT INTO bewertet (KundenID, FilmID, Bewertung)
+      VALUES (?,?,?);
+  `;
+
+  con.query(query, [customerID], (error, results) => {
+    if (error) {
+      console.error('Error fetching all Booking for current User:', error);
+      res.status(500).json({error: 'Error fetching all Booking for current User:'});
+      return;
+    }
+    console.log('All Booking for current User fetched successful.');
+    res.status(201).json(results);
+  });
+});
+
 app.get('/*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));
 });

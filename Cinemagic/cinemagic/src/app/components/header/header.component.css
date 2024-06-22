@@ -6,10 +6,13 @@ a:hover, li:hover svg{
   color: var(--cm-yellow);
 }
 
+li:hover button svg{
+  fill: black !important;
+}
+
 .navbar{
   height: 100px;
   margin: auto;
-  max-width: 90%;
 }
 
 button:hover svg{

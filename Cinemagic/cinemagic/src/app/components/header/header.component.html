@@ -1,4 +1,4 @@
-<div class="navbar pt-5">
+<div class="container navbar pt-5">
   <div class="navbar-left">
     <ul class="d-flex gap-4 w-100 list-unstyled">
       <li><a class="pb-2 mt-2 text-decoration-none" [routerLink]="['/home']">Programm</a></li>
@@ -15,7 +15,7 @@
         </a>
       </li>
       <li *ngIf="isLogged()">
-        <button type="button" class="pb-2 mt-1 btn btn-sm btn-outline-yellow" (click)="logout()">
+        <button type="button" class="pb-2 mt-1 btn btn-sm btn-outline-yellow-b" (click)="logout()">
           <span class="textLogout">Logout</span>
           <span class="iconLogout">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill=var(--cm-yellow) class="bi bi-box-arrow-right" viewBox="0 0 16 16">
@@ -26,7 +26,7 @@
         </button>
       </li>
       <li *ngIf="!isLogged()">
-        <button (click)=onNavigate() type="button" class="btn btn-sm btn-yellow-w">Login</button>
+        <button (click)=onNavigate() type="button" class="btn btn-sm btn-yellow-b">Login</button>
       </li>
     </ul>
   </div>

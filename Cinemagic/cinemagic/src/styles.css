@@ -13,7 +13,7 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.btn-outline-yellow {
+.btn-outline-yellow, .btn-outline-yellow-b{
   border-color: var(--cm-yellow);
   color: var(--cm-yellow);
 }
@@ -21,6 +21,11 @@ body {
 .btn-outline-yellow:hover{
   background-color: var(--cm-yellow);
   color: white;
+}
+
+.btn-outline-yellow-b:hover{
+  background-color: var(--cm-yellow);
+  color: black;
 }
 
 .btn-yellow-w {
