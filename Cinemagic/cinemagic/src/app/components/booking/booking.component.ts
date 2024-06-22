@@ -1,8 +1,10 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {BookingService} from "../../services/booking/booking.service";
 import {catchError, tap} from "rxjs/operators";
-import {map, Observable, throwError} from "rxjs";
+import {Observable, throwError} from "rxjs";
+import {AuthService} from "../../services/auth/auth.service";
+import {ModalService} from "../../services/modal/modal.service";
 
 @Component({
   selector: 'app-booking',
@@ -12,12 +14,16 @@ import {map, Observable, throwError} from "rxjs";
 export class BookingComponent implements OnInit {
 
   bookingID: number = 0;
+  isDateValid: boolean = false;
   booking: any;
   seats$: Observable<any[]> | undefined;
 
 
   constructor(private bookingService: BookingService,
               private route: ActivatedRoute,
+              private authService: AuthService,
+              private modalService: ModalService,
+              private router: Router,
               private cdRef: ChangeDetectorRef) {
   }
 
@@ -41,7 +47,7 @@ export class BookingComponent implements OnInit {
         console.log('Booking_Component: Fetching booked Seats successful:', seats)
         return seats;
       }),
-      catchError( err => {
+      catchError(err => {
         console.log('Booking_Component: Error fetching booked Seats:', err);
         return throwError(err);
       })
@@ -58,7 +64,39 @@ export class BookingComponent implements OnInit {
       error: (err) => {
         console.log('Booking_Component: Error fetching Booking:', err);
         return throwError(err);
-      }});
+      }
+    });
   }
 
+  isEventFinished() {
+    const currentDate = new Date();
+    return this.isDateValid = currentDate >= this.booking.Vorfuehrungsdatum;
+  }
+
+  openModal(title: string, modalType: 'rateMovie' | 'cancelBooking' | undefined) {
+    let isLoggedIn = this.authService.isLoggedIn
+
+    this.modalService.open(title, isLoggedIn, modalType).then((result: string) => {
+      if (result) {
+        if (result === 'cancelBooking') {
+          this.cancelBooking();
+          this.router.navigate(['/']);
+        } else if (result === 'rateMovie') {
+          this.rateMovie();
+        }
+      } else {
+        console.log('Booking_Component: Modal cancelled or closed!');
+      }
+    }).catch(() => {
+      console.log('Booking_Component: Modal could not be opened!');
+    });
+  }
+
+  cancelBooking() {
+
+  }
+
+  rateMovie() {
+
+  }
 }

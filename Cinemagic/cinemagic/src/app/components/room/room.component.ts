@@ -22,7 +22,6 @@ import {BookingService} from "../../services/booking/booking.service";
 export class RoomComponent implements OnInit {
 
   @ViewChild('modal') modal!: ModalComponent;
-  isRoomComponent: boolean = true;
   room?: Room;
   event: any;
   movie: any;
@@ -380,7 +379,7 @@ export class RoomComponent implements OnInit {
           priceNetto
         }, this.eventID);
       } else {
-        this.openModal('Maximum Seats Selected', 'warning')
+        this.openModal('Maximum Seats Selected', 'warningMaxSeats')
       }
     }
   }
@@ -411,12 +410,15 @@ export class RoomComponent implements OnInit {
   }
 
 
-  openModal(title: string, modalType: 'confirmation' | 'information' | 'warning' = 'information') {
+  openModal(title: string, modalType: 'confirmBooking' | 'warningMaxSeats' | undefined) {
     let isLoggedIn = this.authService.isLoggedIn
-    if (!this.authService.isLoggedIn && modalType === 'confirmation') {
+    if (!this.authService.isLoggedIn && modalType === 'confirmBooking') {
       title = 'Please login';
     }
+
+    console.log('Trying to open modal with title:', title, 'and type:', modalType);
     this.modalService.open(title, isLoggedIn, modalType).then((result: string) => {
+      console.log('Modal opened successfully with result:', result);
       const navigationMap: { [key: string]: string } = {
         'login': '/login',
         'register': '/register',

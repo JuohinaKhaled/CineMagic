@@ -90,6 +90,12 @@
           </div>
           <hr class="w-100 border border-1">
         </ng-container>
+        <ng-container *ngIf="!isEventFinished()">
+          <button class="btn btn-warning" (click)="openModal('Cancel Booking','cancelBooking')">Cancel Booking</button>
+        </ng-container>
+        <ng-container *ngIf="isEventFinished()">
+          <button class="btn btn-warning" (click)="openModal('Cancel Booking','rateMovie')">Rate Movie</button>
+        </ng-container>
       </div>
     </div>
   </ng-container>

@@ -6,11 +6,11 @@ import {ModalComponent} from "../../components/modal/modal.component";
   providedIn: 'root'
 })
 export class ModalService {
-  private modalRef?: NgbModalRef;
+  modalRef?: NgbModalRef;
 
   constructor(private ngbModal: NgbModal) { }
 
-  open(title: string, isLoggedIn: boolean, modalType: 'confirmation' | 'information' | 'warning') {
+  open(title: string, isLoggedIn: boolean, modalType: 'confirmBooking' | 'cancelBooking' | 'warningMaxSeats' | 'rateMovie' | undefined) {
     this.modalRef = this.ngbModal.open(ModalComponent, { centered: true });
     this.modalRef.componentInstance.title = title;
     this.modalRef.componentInstance.isLoggedIn = isLoggedIn;
@@ -25,12 +25,20 @@ export class ModalService {
         resolve('register');
         this.modalRef?.close();
       });
-      this.modalRef?.componentInstance.booking.subscribe(() => {
-        resolve('booking');
+      this.modalRef?.componentInstance.confirmBooking.subscribe(() => {
+        resolve('confirmBooking');
         this.modalRef?.close();
       });
-      this.modalRef?.componentInstance.cancel.subscribe(() => {
+      this.modalRef?.componentInstance.cancelEvent.subscribe(() => {
         resolve('close');
+        this.modalRef?.close();
+      });
+      this.modalRef?.componentInstance.cancelBooking.subscribe(() => {
+        resolve('cancelBooking');
+        this.modalRef?.close();
+      });
+      this.modalRef?.componentInstance.rate.subscribe(() => {
+        resolve('rateMovie');
         this.modalRef?.close();
       });
     });

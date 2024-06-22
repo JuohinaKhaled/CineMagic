@@ -1,45 +1,55 @@
-hr{
+hr {
   border: 3px solid #FFD700;
   width: 50px;
   opacity: 1.0;
 }
 
-.h7{
+.h7 {
   color: #A6A4A4;
   font-size: 0.8rem;
 }
 
-h2, h4{
+h2, h4 {
   color: black;
 }
 
-.date{
-  border: 2px solid #FFD700;
-  color: #FFD700;
+.date {
+  background-color: #FFD700;
+  color: white;
 }
 
-.genre{
+.genre {
   border: 2px solid #A6A4A4;
   color: #A6A4A4;
 }
 
-.date, .genre{
+.date, .genre {
   font-weight: 500;
   font-size: 0.8rem;
 }
 
-.overview{
+.overview {
   width: 50%;
 }
 
+.btn-outline-yellow {
+  border-color: #FFD700;
+  color: #FFD700;
+}
+
+.btn-outline-yellow:hover{
+  background-color: #FFD700;
+  color: white;
+}
+
 @media only screen and (max-width: 950px) {
-  .overview{
+  .overview {
     width: 70%;
   }
 }
 
 @media only screen and (max-width: 650px) {
-  .overview{
+  .overview {
     width: 80%;
   }
 }

@@ -10,27 +10,36 @@
 
 <div class="modal-body text-center">
   <p>{{ message }}</p>
-  <ng-container *ngIf="modalType === 'confirmation' && !isLoggedIn">
+  <ng-container *ngIf="modalType === 'confirmBooking' && !isLoggedIn">
     <p>You need to log in to book. Do you want to log in?</p>
   </ng-container>
-  <ng-container *ngIf="modalType === 'confirmation' && isLoggedIn">
+  <ng-container *ngIf="modalType === 'confirmBooking' && isLoggedIn">
     <p>Do you want to confirm your booking?</p>
   </ng-container>
-  <ng-container *ngIf="modalType === 'warning'">
+  <ng-container *ngIf="modalType === 'warningMaxSeats'">
     <p>You have selected maximum number of seats that you have selected on the counter. You can select a maximum
       of 6 seats at the counter.</p>
+  </ng-container>
+  <ng-container *ngIf="modalType === 'cancelBooking'">
+    <p>Do you really want to cancel your booking?</p>
   </ng-container>
 </div>
 
 <div class="modal-footer justify-content-center align-content-center">
   <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-  <button type="button" class="btn btn-danger" (click)="onLogin()" *ngIf="modalType !== 'warning' && !isLoggedIn">
+  <button type="button" class="btn btn-danger" (click)="onLogin()" *ngIf="modalType === 'confirmBooking' && !isLoggedIn">
     Login
   </button>
-  <button type="button" class="btn btn-danger" (click)="onRegister()" *ngIf="modalType !== 'warning' && !isLoggedIn">
+  <button type="button" class="btn btn-danger" (click)="onRegister()" *ngIf="modalType === 'confirmBooking' && !isLoggedIn">
     Register
   </button>
-  <button type="button" class="btn btn-danger" (click)="onBooking()" *ngIf="modalType !== 'warning' && isLoggedIn">
+  <button type="button" class="btn btn-danger" (click)="onBooking()" *ngIf="modalType === 'confirmBooking' && isLoggedIn">
     Book Tickets
+  </button>
+  <button type="button" class="btn btn-danger" (click)="onCancelBooking()" *ngIf="modalType === 'cancelBooking' && isLoggedIn">
+    Cancel Booking
+  </button>
+  <button type="button" class="btn btn-danger" (click)="onRate()" *ngIf="modalType === 'rateMovie' && isLoggedIn">
+    Rate Movie
   </button>
 </div>
