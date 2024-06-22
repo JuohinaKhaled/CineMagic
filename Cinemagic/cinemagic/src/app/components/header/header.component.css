@@ -1,22 +1,19 @@
 a, li svg{
-  color: #FFD700;
+  color: white;
 }
 
 a:hover, li:hover svg{
-  color: #FF4500;
-  transform: scale(1.2);
-}
-
-li a:hover{
-  border-bottom: 2px solid #FF4500;
+  color: var(--cm-yellow);
 }
 
 .navbar{
   height: 100px;
+  margin: auto;
+  max-width: 90%;
 }
 
 button:hover svg{
-  fill: #FFD700;
+  fill: var(--cm-yellow);
 }
 
 .iconLogout{
@@ -25,13 +22,6 @@ button:hover svg{
 
 .textLogout{
   display: block;
-}
-
-.footer{
-  text-align: center;
-  color: #FFD700;
-  background-color: #000000;
-  padding: 20px;
 }
 
 @media only screen and (max-width: 650px) {
@@ -44,9 +34,4 @@ button:hover svg{
   }
 }
 
-hr{
-  border: 1px solid #FFD700;
-  opacity: 100%;
-  margin: auto;
-  width: 325px;
-}
+

@@ -14,7 +14,12 @@ app-header, app-footer {
 }
 
 .flex-main {
+  padding-bottom: 2rem;
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
+}
+
+app-footer{
+  background-color: #9F9E9E;
 }

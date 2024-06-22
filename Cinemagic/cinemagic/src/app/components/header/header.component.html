@@ -1,4 +1,4 @@
-<div class="navbar px-5 pt-5">
+<div class="navbar pt-5">
   <div class="navbar-left">
     <ul class="d-flex gap-4 w-100 list-unstyled">
       <li><a class="pb-2 mt-2 text-decoration-none" [routerLink]="['/home']">Programm</a></li>
@@ -15,10 +15,10 @@
         </a>
       </li>
       <li *ngIf="isLogged()">
-        <button type="button" class="pb-2 mt-1 btn btn-sm btn-outline-danger" (click)="logout()">
+        <button type="button" class="pb-2 mt-1 btn btn-sm btn-outline-yellow" (click)="logout()">
           <span class="textLogout">Logout</span>
           <span class="iconLogout">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="var(--bs-danger)" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill=var(--cm-yellow) class="bi bi-box-arrow-right" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0z"/>
               <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"/>
             </svg>
@@ -26,7 +26,7 @@
         </button>
       </li>
       <li *ngIf="!isLogged()">
-        <button (click)=onNavigate() type="button" class="btn btn-sm btn-danger">Login</button>
+        <button (click)=onNavigate() type="button" class="btn btn-sm btn-yellow-w">Login</button>
       </li>
     </ul>
   </div>

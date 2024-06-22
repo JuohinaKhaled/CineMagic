@@ -32,16 +32,6 @@ h2, h4 {
   width: 50%;
 }
 
-.btn-outline-yellow {
-  border-color: #FFD700;
-  color: #FFD700;
-}
-
-.btn-outline-yellow:hover{
-  background-color: #FFD700;
-  color: white;
-}
-
 @media only screen and (max-width: 950px) {
   .overview {
     width: 70%;

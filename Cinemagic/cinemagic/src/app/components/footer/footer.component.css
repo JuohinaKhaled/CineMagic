@@ -1,46 +1,146 @@
-html, body {
-  height: 100%;
-  margin: 0;
-}
-
-.wrapper {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.content {
-  flex: 1;
-}
-
 .footer {
   text-align: center;
-  color: #FFD700;
-  background-color: #000000;
-  padding: 10px;
-  font-size: 14px;
-  position: relative;
-  bottom: 0;
-  width: 100%;
+  color: white;
+  font-size: 0.8rem;
+  width: 90%;
+  margin: auto;
 }
 
 .footer-content hr {
-  border: 1px solid #FFD700; /* Gold */
-  opacity: 100%;
+  border: 1px solid white;
+  opacity: 1.0;
   margin: auto;
-  width: 325px;
+  width: 4rem;
 }
 
 a, li a, .footer a {
-  color: #FFD700 !important;
+  color: white !important;
   text-decoration: none;
 }
 
-a:hover, li a:hover, .footer a:hover {
-  color: #FF4500 !important;
-  transform: scale(1.2);
+li a:hover{
+  color: #FFD700 !important;
+}
+.divider{
+  border: 1px solid white;
+  width: 100%;
+  opacity: 1.0;
 }
 
-li a:hover {
-  border-bottom: 2px solid #FF4500;
+hr {
+  border: 3px solid #FFD700;
+  width: 50px;
+  opacity: 1.0;
+}
+
+.ul-footer-1{
+  width: 32%;
+}
+
+.ul-footer-2{
+  width: 35%;
+}
+
+.ul-footer-3{
+  width: 20%;
+}
+
+@media only screen and (max-width: 1115px) {
+  .ul-footer-2{
+    width: 43%;
+  }
+
+  .ul-footer-3{
+    width: 12%;
+  }
+
+  .payment{
+    flex-direction: column !important;
+  }
+}
+
+@media only screen and (max-width: 920px) {
+  .ul-footer-2{
+    width: 33%;
+  }
+
+  .ul-footer-3{
+    width: 14%;
+  }
+
+  .contact{
+    flex-direction: column !important;
+  }
+}
+
+@media only screen and (max-width: 590px) {
+  .ul-footer-3{
+    width: 17%;
+  }
+}
+
+@media only screen and (max-width: 650px) {
+  svg{
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+}
+
+@media only screen and (max-width: 590px) {
+  .ul-footer-3{
+    width: 17%;
+  }
+}
+
+@media only screen and (max-width: 520px) {
+  svg{
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+  }
+
+  .ul-footer-1{
+    width: 100%;
+    padding-bottom: 2rem;
+  }
+
+  .ul-footer-2{
+    width: 100%;
+    padding-bottom: 1rem;
+  }
+
+  .ul-footer-3{
+    width: 100%;
+  }
+
+  li{
+    align-self: center !important;
+    align-items: center !important;
+    text-align: center !important;
+    flex-direction: column !important;
+  }
+
+  li div, a{
+    padding-right: 0 !important;
+    flex-direction: column !important;
+  }
+
+  svg{
+    align-self: center !important;
+  }
+
+  span, a{
+    padding-left: 0 !important;
+  }
+
+  li .about {
+    flex-direction: row !important;
+  }
+
+  li .about a{
+    padding-right: 2rem !important;
+  }
+
+  li .twitter a{
+    padding-right: 0 !important;
+  }
 }

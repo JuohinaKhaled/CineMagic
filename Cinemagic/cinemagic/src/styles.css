@@ -1,10 +1,43 @@
-/* You can add global styles to this file, and also import other style files */
-
-body{
+body {
   background-color: black;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html, body {
+  height: 100%;
+  --cm-yellow: #FFD700;
+  --cm-yellow-light: #eee095;
+}
 
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.btn-outline-yellow {
+  border-color: var(--cm-yellow);
+  color: var(--cm-yellow);
+}
+
+.btn-outline-yellow:hover{
+  background-color: var(--cm-yellow);
+  color: white;
+}
+
+.btn-yellow-w {
+  border-color: var(--cm-yellow);
+  background-color: var(--cm-yellow);
+  font-weight: 500;
+  color: white;
+}
+
+.btn-yellow-b {
+  border-color: var(--cm-yellow);
+  background-color: var(--cm-yellow);
+  font-weight: 500;
+  color: black;
+}
+
+.btn-yellow-b:hover, .btn-yellow-w:hover{
+  background-color: var(--cm-yellow-light);
+}
 
