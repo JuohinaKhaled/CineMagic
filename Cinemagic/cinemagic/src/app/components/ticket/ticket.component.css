@@ -1,3 +1,7 @@
 .removeTicket:hover{
   transform: scale(120%);
 }
+
+.border-yellow{
+  border: 2px solid var(--cm-yellow) !important;
+}

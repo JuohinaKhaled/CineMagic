@@ -2,7 +2,7 @@
 
   <div *ngIf="room" class="row mb-5 d-flex flex-column">
     <h1 class="align-self-center">{{room.roomName}}</h1>
-    <span class="badge bg-danger">{{room.roomType}}</span>
+    <span class="badge bg-yellow">{{room.roomType}}</span>
   </div>
 
   <div *ngFor="let e of event" class="row justify-content-center d-flex mt-2">
@@ -29,12 +29,12 @@
         <h2 class="me-1">Total Price: {{ totalPriceBrutto }}€ </h2>
         <h5> ({{ totalPriceNetto }} €)</h5>
       </div>
-      <button class="row btn btn-danger align-self-center mb-3" [disabled]="selectedSeats.length === 0"
+      <button class="row btn btn-yellow-b align-self-center mb-3" [disabled]="selectedSeats.length === 0"
               (click)="openModal('Booking confirmation','confirmBooking')">Booking
       </button>
     </div>
     <div *ngIf="groupedSeats" class="col-auto container justify-content-center d-flex flex-column">
-      <img [ngSrc]="'/assets/images/Screen.svg'" alt="screen" class="screen row align-self-center w-75">
+      <img src="/assets/images/Screen.svg" alt="screen" class="screen row align-self-center w-75">
       <h2 class="row align-self-center">Screen</h2>
       <div *ngFor="let row of groupedSeats; let i = index" class="row justify-content-center align-items-center">
         <h5 class="col-1">{{ row[0]?.Reihennummer }}</h5>

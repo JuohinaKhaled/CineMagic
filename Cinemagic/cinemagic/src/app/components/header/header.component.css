@@ -2,12 +2,16 @@ a, li svg{
   color: white;
 }
 
-a:hover, li:hover svg{
+a:hover, a:hover svg{
   color: var(--cm-yellow);
 }
 
 li:hover button svg{
   fill: black !important;
+}
+
+li:hover svg{
+  color: var(--cm-yellow);
 }
 
 .navbar{

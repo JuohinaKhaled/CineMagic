@@ -21,7 +21,7 @@
 }
 
 .premium {
-  background-color: var(--bs-danger);
+  background-color: var(--cm-yellow);
 }
 
 .premium, .premium-occupied {

@@ -8,7 +8,6 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 export class TicketComponent implements OnInit{
 
   @Input() seat: any;
-  @Input() isRoomComponent?: boolean;
   @Output() remove = new EventEmitter<any>();
 
   constructor() {

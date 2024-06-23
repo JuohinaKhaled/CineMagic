@@ -422,7 +422,7 @@ export class RoomComponent implements OnInit {
       const navigationMap: { [key: string]: string } = {
         'login': '/login',
         'register': '/register',
-        'booking': '/booking'
+        'confirmBooking': '/booking'
       };
 
       if (result && navigationMap[result]) {
@@ -430,7 +430,7 @@ export class RoomComponent implements OnInit {
           const roomUrl = `/room/${this.eventID}/${this.movieID}`;
           this.authService.setRedirectUrl(roomUrl);
         }
-        if (result === 'booking') {
+        if (result === 'confirmBooking') {
           this.addBooking();
           if (this.bookingID) {
             this.addBooking();

@@ -27,19 +27,19 @@
 
 <div class="modal-footer justify-content-center align-content-center">
   <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
-  <button type="button" class="btn btn-danger" (click)="onLogin()" *ngIf="modalType === 'confirmBooking' && !isLoggedIn">
+  <button type="button" class="btn btn-yellow-w" (click)="onLogin()" *ngIf="modalType === 'confirmBooking' && !isLoggedIn">
     Login
   </button>
-  <button type="button" class="btn btn-danger" (click)="onRegister()" *ngIf="modalType === 'confirmBooking' && !isLoggedIn">
+  <button type="button" class="btn btn-yellow-w" (click)="onRegister()" *ngIf="modalType === 'confirmBooking' && !isLoggedIn">
     Register
   </button>
-  <button type="button" class="btn btn-danger" (click)="onBooking()" *ngIf="modalType === 'confirmBooking' && isLoggedIn">
+  <button type="button" class="btn btn-yellow-w" (click)="onBooking()" *ngIf="modalType === 'confirmBooking' && isLoggedIn">
     Book Tickets
   </button>
-  <button type="button" class="btn btn-danger" (click)="onCancelBooking()" *ngIf="modalType === 'cancelBooking' && isLoggedIn">
+  <button type="button" class="btn btn-yellow-w" (click)="onCancelBooking()" *ngIf="modalType === 'cancelBooking' && isLoggedIn">
     Cancel Booking
   </button>
-  <button type="button" class="btn btn-danger" (click)="onRate()" *ngIf="modalType === 'rateMovie' && isLoggedIn">
+  <button type="button" class="btn btn-yellow-w" (click)="onRate()" *ngIf="modalType === 'rateMovie' && isLoggedIn">
     Rate Movie
   </button>
 </div>
