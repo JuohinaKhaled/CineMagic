@@ -1,0 +1,8 @@
+.modal-body{
+  padding: 0;
+  border-radius:  var(--bs-border-radius-sm);
+}
+
+iframe{
+  border-radius:  var(--bs-border-radius-sm);
+}

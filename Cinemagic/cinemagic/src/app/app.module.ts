@@ -32,6 +32,9 @@ import {ModalComponent} from './components/modal/modal.component';
 import {ModalService} from "./services/modal/modal.service";
 import {BookingComponent} from './components/booking/booking.component';
 import {BookingService} from "./services/booking/booking.service";
+import {VideoModalComponent} from './components/videomodal/videomodal.component';
+import {SafePipe} from './components/videomodal/safe.pipe';
+import { AllBookingsComponent } from './components/booking/all-bookings.component';
 
 @NgModule({
   declarations: [
@@ -50,7 +53,10 @@ import {BookingService} from "./services/booking/booking.service";
     TicketComponent,
     ProfileComponent,
     ModalComponent,
-    BookingComponent
+    BookingComponent,
+    VideoModalComponent,
+    SafePipe,
+    AllBookingsComponent
   ],
   imports: [
     BrowserModule,

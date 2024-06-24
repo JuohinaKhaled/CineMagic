@@ -1,5 +1,4 @@
-.movie-details-container {
-  padding: 20px;
+.container {
   color: #FFD700;
 }
 
@@ -7,22 +6,20 @@
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-  margin-bottom: 20px;
 }
 
 .movie-poster {
-  flex: 0 0 700px;
-  margin-right: 20px;
+  width: 50%;
 }
 
 .movie-poster img {
   width: 100%;
   height: auto;
-  border-radius: 10px;
+  border-radius: var(--bs-border-radius-lg);
 }
 
 .movie-info {
-  flex: 1;
+  width: 50%;
 }
 
 .movie-info h1 {
@@ -74,14 +71,14 @@
 }
 
 .event-button:hover {
-  background-color: red;
-  color: #FFD700;
+  background-color: var(--cm-yellow);
+  color: black;
 }
 
 .more-button {
   background-color: transparent;
-  color: #FFD700;
-  border: 2px solid #FFD700;
+  color: var(--cm-yellow);
+  border: 2px solid var(--cm-yellow);
   border-radius: 10px;
   cursor: pointer;
   font-size: 16px;
@@ -92,5 +89,15 @@
 
 .more-button:hover {
   color: #333;
-  background-color: #FFD700;
+  background-color: var(--cm-yellow);
+}
+
+@media only screen and (max-width: 985px) {
+  .movie-header {
+    flex-direction: column;
+  }
+
+  .movie-poster, .movie-info{
+    width: 100%;
+  }
 }

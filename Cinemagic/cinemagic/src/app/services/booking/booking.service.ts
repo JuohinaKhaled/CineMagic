@@ -13,22 +13,25 @@ export class BookingService {
   private bookSeatsUrl = '/bookSeats';
   private bookingUrl = '/booking';
   private bookedSeatsUrl = '/bookedSeats';
+  private allBookingUrl = '/allBooking'
+  private deleteBookingUrl = '/deleteBooking';
+  private updateBookingUrl = '/updateBooking';
 
   constructor(private http: HttpClient) {
   }
 
-  addBooking(customerID: number, purchaseDate: string, totalPriceNetto: number, totalPriceBrutto: number, counterTicketsAdult: number,
-             counterTicketsChild: number, counterTicketsStudent: number, paid: boolean): Observable<number> {
+  addBooking(customerID: number, eventID: number, purchaseDate: string, totalPriceNetto: number, totalPriceBrutto: number, counterTicketsAdult: number,
+             counterTicketsChild: number, counterTicketsStudent: number): Observable<number> {
     return this.http.post<number>(this.addBookingUrl,
       {
         customerID,
+        eventID,
         purchaseDate,
         totalPriceNetto,
         totalPriceBrutto,
         counterTicketsAdult,
         counterTicketsChild,
         counterTicketsStudent,
-        paid
       }, this.httpOptions)
       .pipe(
         tap((response) => {
@@ -71,8 +74,8 @@ export class BookingService {
 
 
   fetchBooking(bookingID: number): Observable<any> {
-    return this.http.post<any[]>(this.bookingUrl, {bookingID}, this.httpOptions).pipe(
-      tap((booking: any[]) => {
+    return this.http.post<any>(this.bookingUrl, {bookingID}, this.httpOptions).pipe(
+      tap((booking: any) => {
         console.log('Booking_Service: Fetching Booking Successful:', booking);
       }),
       catchError((err) =>{
@@ -94,6 +97,40 @@ export class BookingService {
     );
   }
 
+  fetchAllBooking(customerID: number): Observable<any> {
+    return this.http.post<any[]>(this.allBookingUrl, {customerID}, this.httpOptions).pipe(
+      tap((orders: any[]) => {
+        console.log('Orders_Service: Fetching Orders Successful:', orders);
+      }),
+      catchError((err) =>{
+        console.log('Orders_Service: Error Fetching Orders:', err);
+        return throwError(err);
+      })
+    );
+  }
 
+  deleteBooking(bookingID: number): Observable<any> {
+    const url = `${this.deleteBookingUrl}/${bookingID}`;
+    return this.http.delete<any>(url, this.httpOptions).pipe(
+      tap((deleteTickets) => {
+        console.log('Booking_Service: Removing Booking Successful:', deleteTickets);
+      }),
+      catchError((err) =>{
+        console.log('Booking_Service: Error removing Booking:', err);
+        return throwError(err);
+      })
+    );
+  }
 
+  updateBooking(bookingID: number): Observable<number> {
+    return this.http.put<number>(this.updateBookingUrl, {bookingID}, this.httpOptions).pipe(
+      tap((update) => {
+        console.log(`Booking_Service: Updating Booking successful`, update);
+      }),
+      catchError((err) => {
+        console.log(`Booking_Service: Error updating Booking:`, err);
+        return throwError(err);
+      })
+    );
+  }
 }

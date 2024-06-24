@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 
 import {ActivatedRoute, Route, Router} from "@angular/router";
 import {MovieService} from "../../services/movie/movie.service";
+import {ModalService} from "../../services/modal/modal.service";
 
 @Component({
   selector: 'app-home',
@@ -11,7 +12,9 @@ import {MovieService} from "../../services/movie/movie.service";
 export class HomeComponent implements OnInit {
   films: any[] = [];
 
-  constructor(private movieService: MovieService, private router: Router) {
+  constructor(private movieService: MovieService,
+              private router: Router,
+              private modalService: ModalService) {
   }
 
   ngOnInit(): void {
@@ -29,6 +32,10 @@ export class HomeComponent implements OnInit {
   routeMovieDetails(FilmID: any) {
     console.log('Navigating to movie-details with film: ' + FilmID);
     this.router.navigate(['/movie-details', FilmID]);
+  }
+
+  openVideoModal(videoUrl: string) {
+    this.modalService.openVideoModal(videoUrl);
   }
 }
 

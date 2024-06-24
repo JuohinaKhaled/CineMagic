@@ -17,13 +17,8 @@ a, li a, .footer a {
   text-decoration: none;
 }
 
-li a:hover{
+li a:hover {
   color: #FFD700 !important;
-}
-.divider{
-  border: 1px solid white;
-  width: 100%;
-  opacity: 1.0;
 }
 
 hr {
@@ -92,14 +87,18 @@ hr {
 }
 
 @media only screen and (max-width: 520px) {
+  .copyright{
+    justify-content: center !important;
+  }
+
   svg{
-    width: 1.5rem !important;
-    height: 1.5rem !important;
+    width: 1.3rem !important;
+    height: 1.3rem !important;
   }
 
   .ul-footer-1{
     width: 100%;
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
   }
 
   .ul-footer-2{

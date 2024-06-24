@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
 import {AuthService} from "../../services/auth/auth.service";
 import {BookingService} from "../../services/booking/booking.service";
+import {CustomSnackbarService} from "../../services/custom-snackbar/custom-snackbar.service";
 
 @Component({
   selector: 'app-login',
@@ -22,7 +23,7 @@ export class LoginComponent {
     private authService: AuthService,
     private bookingService: BookingService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: CustomSnackbarService
   ) {}
 
   onSubmit() {
@@ -30,28 +31,19 @@ export class LoginComponent {
       response => {
         if (response.status === 'success') {
           console.log('Login successful');
-          this.openSnackBar('Login successful!');
+          this.snackBar.openSnackBar('Login successful!');
         } else {
           console.log('Login failed');
-          this.openSnackBar('Login failed. Please check your credentials.');
+          this.snackBar.openSnackBar('Login failed. Please check your credentials.');
           this.loginFailed = true;
         }
       },
       error => {
         console.log('Error during login:', error);
-        this.openSnackBar('An error occurred during login. Please try again.');
+        this.snackBar.openSnackBar('An error occurred during login. Please try again.');
         this.loginFailed = true;
       }
     );
   }
 
-  openSnackBar(message: string) {
-    this.snackBar.openFromComponent(CustomSnackbarComponent, {
-      data: { message: message },
-      duration: 5000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-      panelClass: 'custom-snackbar'
-    });
-  }
 }

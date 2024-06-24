@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import {ModalComponent} from "../../components/modal/modal.component";
+import {VideoModalComponent} from "../../components/videomodal/videomodal.component";
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +45,10 @@ export class ModalService {
     });
   }
 
+  openVideoModal(videoUrl: string) {
+    this.modalRef = this.ngbModal.open(VideoModalComponent, { centered: true });
+    this.modalRef.componentInstance.videoUrl = videoUrl;
+  }
 
   close() {
     if (this.modalRef) {

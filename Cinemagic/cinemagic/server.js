@@ -54,6 +54,7 @@ const con = mysql.createConnection({
 
 //create WebSocket-Connection
 let reservedSeats = [];
+let bookedSeats = [];
 
 io.on('connection', (socket) => {
   console.log('Client connected', socket.id);
@@ -112,7 +113,7 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('disconnect', () => {
+  socket.on('clientDisconnect', () => {
     console.log('Client disconnected');
     for (let i = reservedSeats.length - 1; i >= 0; i--) {
       if (reservedSeats[i].id === socket.id) {
@@ -194,7 +195,9 @@ app.get('/movies', (req, res) => {
            f.Regisseur,
            f.Erscheinungsdatum,
            b.PfadGrossesBild,
-           b.PfadKleinesBild
+           b.PfadMittleresBild,
+           b.PfadKleinesBild,
+           b.PfadTrailerVideo
     FROM Filme f
            LEFT JOIN Bilder b ON f.FilmID = b.FilmID`;
 
@@ -348,28 +351,26 @@ app.post('/tickets', (req, res) => {
 app.post('/addBooking', (req, res) => {
   const {
     customerID,
-    purchaseDate,
+    eventID,
+    bookingDate,
     totalPriceNetto,
     totalPriceBrutto,
     counterTicketsAdult,
     counterTicketsChild,
-    counterTicketsStudent,
-    paid
+    counterTicketsStudent
   } = req.body;
 
   const query = `
-    INSERT INTO Buchung (KundenID, Kaufdatum, GesamtPreisNetto, GesamtPreisBrutto, AnzahlTicketsErwachsene,
-                         AnzahlTicketsKinder, AnzahlTicketsStudenten, Bezahlt)
+    INSERT INTO Buchung (KundenID, VorfuehrungsID, BuchungsDatum, GesamtPreisNetto, GesamtPreisBrutto,
+                         AnzahlTicketsErwachsene, AnzahlTicketsKinder, AnzahlTicketsStudenten)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  con.query(query, [customerID, purchaseDate, totalPriceNetto, totalPriceBrutto,
-    counterTicketsAdult, counterTicketsChild, counterTicketsStudent,
-    paid
-  ], (error, results) => {
+  con.query(query, [customerID, eventID, bookingDate, totalPriceNetto, totalPriceBrutto,
+    counterTicketsAdult, counterTicketsChild, counterTicketsStudent], (error, results) => {
     if (error) {
       console.error('Error inserting booking:', error);
-      res.status(500).json({ error: error.message }); // Fehlermeldung an den Client senden
+      res.status(500).json({error: error.message}); // Fehlermeldung an den Client senden
       return;
     }
 
@@ -405,33 +406,32 @@ app.get('/*', (req, res) => {
 
 app.post('/booking', (req, res) => {
   const {bookingID} = req.body;
+  console.log('ID :', bookingID);
 
   const query = `
-      SELECT b.BuchungsID,
-             b.Kaufdatum,
-             b.GesamtPreisNetto,
-             b.GesamtPreisBrutto,
-             b.AnzahlTicketsErwachsene,
-             b.AnzahlTicketsKinder,
-             b.AnzahlTicketsStudenten,
-             b.Bezahlt,
-             v.Vorfuehrungsdatum,
-             v.Vorfuehrungszeit,
-             f.Titel,
-             f.Dauer,
-             f.Altersfreigabe,
-             f.Genre,
-             s.Saalname,
-             s.Saaltyp
-      FROM buchtTicket bt
-               JOIN Buchung b ON bt.BuchungsID = b.BuchungsID
-               JOIN Vorfuehrungen v ON bt.VorfuehrungsID = v.VorfuehrungsID
-               JOIN Sitzplaetze sp ON bt.SitzplatzID = sp.SitzplatzID
-               JOIN Saele s ON sp.SaalID = s.SaalID
-               JOIN Filme f ON v.FilmID = f.FilmID
-      WHERE b.BuchungsID = ?;
-  `;
-
+    SELECT DISTINCT b.BuchungsID,
+                    b.BuchungsDatum,
+                    b.GesamtPreisNetto,
+                    b.GesamtPreisBrutto,
+                    b.AnzahlTicketsErwachsene,
+                    b.AnzahlTicketsKinder,
+                    b.AnzahlTicketsStudenten,
+                    b.BuchungsStatus,
+                    v.Vorfuehrungsdatum,
+                    v.Vorfuehrungszeit,
+                    f.Titel,
+                    f.Dauer,
+                    f.Altersfreigabe,
+                    f.Genre,
+                    s.Saalname,
+                    s.Saaltyp
+    FROM Buchung b
+           JOIN Vorfuehrungen v ON b.VorfuehrungsID = v.VorfuehrungsID
+           JOIN Saele s ON v.SaalID = s.SaalID
+           JOIN Filme f ON v.FilmID = f.FilmID
+    WHERE b.BuchungsID  = ?
+`;
+  console.log("Executing query with bookingID:", bookingID);
   con.query(query, [bookingID], (error, results) => {
     if (error) {
       console.error('Error fetching booking:', error);
@@ -443,24 +443,63 @@ app.post('/booking', (req, res) => {
   });
 });
 
+app.put('/updateBooking', (req, res) => {
+  const {bookingID} = req.body;
+  console.log('UPDATEID', bookingID);
+  const query =
+    `UPDATE Buchung
+     SET BuchungsStatus = 'Canceled'
+     WHERE BuchungsID = ?;
+    `;
 
+  con.query(query, [bookingID], (error, results) => {
+    if (error) {
+      console.error('Error updating Booking:', error);
+      res.status(500).json({error: 'Error updating Booking:'});
+      return;
+    }
+    console.log('Booking updated successful.', results);
+    res.status(201).json(results);
+  });
+});
+
+app.delete('/deleteBooking/:bookingID', (req, res) => {
+  const bookingID = req.params.bookingID;
+  console.log('Attempting to delete booking with ID:', bookingID);
+
+  const query =
+    `DELETE
+     FROM buchtTicket
+     WHERE BuchungsID = ?
+    `;
+
+  con.query(query, [bookingID], (error, results) => {
+    if (error) {
+      console.error('Error removing booked Seats:', error);
+      res.status(500).json({error: 'Error removing booked Seats:'});
+      return;
+    }
+    console.log('Booked Seats removing succesfully');
+    res.status(201).json(results);
+  });
+});
 app.post('/bookedSeats', (req, res) => {
   const {bookingID} = req.body;
 
   const query = `
-      SELECT s.SitzplatzID,
-             s.SaalID,
-             s.Reihennummer,
-             s.Sitznummer,
-             s.Sitztyp,
-             t.Saaltyp,
-             t.Tickettyp,
-             t.PreisNetto,
-             t.PreisBrutto
-      FROM buchtTicket bt
-               JOIN Sitzplaetze s ON bt.SitzplatzID = s.SitzplatzID
-               JOIN Tickets t ON bt.TicketID = t.TicketID
-      WHERE bt.BuchungsID = ?;
+    SELECT s.SitzplatzID,
+           s.SaalID,
+           s.Reihennummer,
+           s.Sitznummer,
+           s.Sitztyp,
+           t.Saaltyp,
+           t.Tickettyp,
+           t.PreisNetto,
+           t.PreisBrutto
+    FROM buchtTicket bt
+           JOIN Sitzplaetze s ON bt.SitzplatzID = s.SitzplatzID
+           JOIN Tickets t ON bt.TicketID = t.TicketID
+    WHERE bt.BuchungsID = ?;
   `;
 
   con.query(query, [bookingID], (error, results) => {
@@ -478,8 +517,10 @@ app.post('/allBooking', (req, res) => {
   const {customerID} = req.body;
 
   const query = `
-      SELECT b.BuchungsID
-      FROM Buchung b WHERE b.KundenID = ?;
+    SELECT b.BuchungsID
+    FROM Buchung b
+    WHERE b.KundenID = ?
+    ORDER BY b.BuchungsDatum DESC;
   `;
 
   con.query(query, [customerID], (error, results) => {
@@ -497,8 +538,10 @@ app.post('/rating', (req, res) => {
   const {customerID, movieID} = req.body;
 
   const query = `
-      SELECT b.Bewertung
-      FROM bewertet b WHERE b.KundenID = ? AND b.FilmID = ?;
+    SELECT b.Bewertung
+    FROM bewertet b
+    WHERE b.KundenID = ?
+      AND b.FilmID = ?;
   `;
 
   con.query(query, [customerID, movieID], (error, results) => {
@@ -516,8 +559,8 @@ app.post('/rate', (req, res) => {
   const {customerID, movieID, rating} = req.body;
 
   const query = `
-      INSERT INTO bewertet (KundenID, FilmID, Bewertung)
-      VALUES (?,?,?);
+    INSERT INTO bewertet (KundenID, FilmID, Bewertung)
+    VALUES (?, ?, ?);
   `;
 
   con.query(query, [customerID], (error, results) => {

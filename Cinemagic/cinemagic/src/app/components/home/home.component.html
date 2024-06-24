@@ -3,8 +3,12 @@
   <div *ngIf="films.length > 0">
     <div id="filmCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
       <div class="carousel-inner">
-        <div *ngFor="let film of films; let i = index" [class.active]="i === 0" class="carousel-item">
-          <img [src]="film.PfadGrossesBild" class="d-block w-100" [alt]="film.Titel">
+        <div *ngFor="let film of films; let i = index" [ngClass]="{'carousel-item': true, 'active': i === 0}">
+          <img [src]="film.PfadGrossesBild" class="bigPicture w-100" [alt]="film.Titel">
+          <img [src]="film.PfadMittleresBild" class="middlePicture w-100" [alt]="film.Titel">
+          <div class="play-button" (click)="openVideoModal('https://www.youtube.com/embed/'+ film.PfadTrailerVideo)">
+            &#9658;
+          </div>
         </div>
       </div>
       <button id="prevBtn" class="carousel-control-prev" type="button" data-bs-target="#filmCarousel" data-bs-slide="prev">
@@ -32,7 +36,7 @@
       </div>
     </div>
   </div>
-  <div *ngIf="films.length === 0" class="text-center">
+  <div *ngIf="films.length === 0" class="mt-5 d-flex flex-row justify-content-center align-items-center">
     <p>No films available.</p>
   </div>
 </div>

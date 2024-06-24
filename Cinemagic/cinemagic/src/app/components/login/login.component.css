@@ -1,6 +1,6 @@
 .login-container {
   width: 300px;
-  margin: 100px auto;
+  /*margin: 100px auto;*/
   padding: 20px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   background-color: #000000;
@@ -21,17 +21,14 @@
 }
 
 .btn {
-  background-color: #FF4500;
-  color: white;
   padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
   cursor: pointer;
   width: 100%;
 }
 
 .btn[disabled] {
   background-color: #555555;
+  color: white;
 }
 
 .register-link-container {
@@ -52,4 +49,8 @@
 
 .register-link span {
   font-weight: bold;
+}
+
+svg{
+  color: var(--cm-yellow-light);
 }

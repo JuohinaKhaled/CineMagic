@@ -1,49 +1,72 @@
-<div class="register-container">
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div class="form-group" [ngClass]="{'has-error': registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)}">
-      <label for="firstName">First Name</label>
-      <input id="firstName" formControlName="firstName" class="form-control" type="text" />
-      <div *ngIf="registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)">
-        <div *ngIf="registerForm.get('firstName')?.errors?.['required']">First name is required.</div>
+<div class="d-flex flex-column container">
+  <div class="d-flex flex-row justify-content-center align-items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-person-add" viewBox="0 0 16 16">
+      <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0m-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/>
+      <path d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z"/>
+    </svg>
+    <h1 class="text-white ps-2">Register</h1>
+  </div>
+  <div class="register-container mt-4 align-self-center">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group"
+           [ngClass]="{'has-error': registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)}">
+        <label for="firstName">First Name</label>
+        <input id="firstName" formControlName="firstName" class="form-control" type="text"/>
+        <div
+          *ngIf="registerForm.get('firstName')?.invalid && (registerForm.get('firstName')?.dirty || registerForm.get('firstName')?.touched)">
+          <div *ngIf="registerForm.get('firstName')?.errors?.['required']">First name is required.</div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group" [ngClass]="{'has-error': registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)}">
-      <label for="lastName">Last Name</label>
-      <input id="lastName" formControlName="lastName" class="form-control" type="text" />
-      <div *ngIf="registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)">
-        <div *ngIf="registerForm.get('lastName')?.errors?.['required']">Last name is required.</div>
+      <div class="form-group"
+           [ngClass]="{'has-error': registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)}">
+        <label for="lastName">Last Name</label>
+        <input id="lastName" formControlName="lastName" class="form-control" type="text"/>
+        <div
+          *ngIf="registerForm.get('lastName')?.invalid && (registerForm.get('lastName')?.dirty || registerForm.get('lastName')?.touched)">
+          <div *ngIf="registerForm.get('lastName')?.errors?.['required']">Last name is required.</div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group" [ngClass]="{'has-error': registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)}">
-      <label for="email">Email</label>
-      <input id="email" formControlName="email" class="form-control" type="email" />
-      <div *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)">
-        <div *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</div>
-        <div *ngIf="registerForm.get('email')?.errors?.['email']">Invalid email address.</div>
+      <div class="form-group"
+           [ngClass]="{'has-error': registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)}">
+        <label for="email">Email</label>
+        <input id="email" formControlName="email" class="form-control" type="email"/>
+        <div
+          *ngIf="registerForm.get('email')?.invalid && (registerForm.get('email')?.dirty || registerForm.get('email')?.touched)">
+          <div *ngIf="registerForm.get('email')?.errors?.['required']">Email is required.</div>
+          <div *ngIf="registerForm.get('email')?.errors?.['email']">Invalid email address.</div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group" [ngClass]="{'has-error': registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.dirty || registerForm.get('phoneNumber')?.touched)}">
-      <label for="phoneNumber">Phone Number</label>
-      <input id="phoneNumber" formControlName="phoneNumber" class="form-control" type="text" />
-      <div *ngIf="registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.dirty || registerForm.get('phoneNumber')?.touched)">
-        <div *ngIf="registerForm.get('phoneNumber')?.errors?.['required']">Phone number is required.</div>
-        <div *ngIf="registerForm.get('phoneNumber')?.errors?.['pattern']">Invalid phone number.</div>
+      <div class="form-group"
+           [ngClass]="{'has-error': registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.dirty || registerForm.get('phoneNumber')?.touched)}">
+        <label for="phoneNumber">Phone Number</label>
+        <input id="phoneNumber" formControlName="phoneNumber" class="form-control" type="text"/>
+        <div
+          *ngIf="registerForm.get('phoneNumber')?.invalid && (registerForm.get('phoneNumber')?.dirty || registerForm.get('phoneNumber')?.touched)">
+          <div *ngIf="registerForm.get('phoneNumber')?.errors?.['required']">Phone number is required.</div>
+          <div *ngIf="registerForm.get('phoneNumber')?.errors?.['pattern']">Invalid phone number.</div>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group" [ngClass]="{'has-error': registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)}">
-      <label for="password">Password</label>
-      <input id="password" formControlName="password" class="form-control" type="password" />
-      <div *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)">
-        <div *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</div>
-        <div *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters long.</div>
-        <div *ngIf="registerForm.get('password')?.errors?.['strongPassword']">Password must contain uppercase and lowercase letters, a number, and a special character.</div>
+      <div class="form-group"
+           [ngClass]="{'has-error': registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)}">
+        <label for="password">Password</label>
+        <input id="password" formControlName="password" class="form-control" type="password"/>
+        <div
+          *ngIf="registerForm.get('password')?.invalid && (registerForm.get('password')?.dirty || registerForm.get('password')?.touched)">
+          <div *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</div>
+          <div *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 8 characters
+            long.
+          </div>
+          <div *ngIf="registerForm.get('password')?.errors?.['strongPassword']">Password must contain uppercase and
+            lowercase letters, a number, and a special character.
+          </div>
+        </div>
       </div>
-    </div>
 
-    <button class="btn" type="submit" [disabled]="registerForm.invalid">Register</button>
-  </form>
+      <button class="btn btn-yellow-b" type="submit" [disabled]="registerForm.invalid">Register</button>
+    </form>
+  </div>
 </div>

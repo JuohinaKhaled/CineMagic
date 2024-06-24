@@ -10,9 +10,9 @@
   display: flex; /* Flex to avoid full width */
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
-  border-radius: 8px; /* Rounded corners */
+  border-radius: 4px; /* Rounded corners */
   margin: 0 auto; /* Center on the screen */
-  top: 20%; /* Adjust top position to be more centered */
+  top: 0; /* Adjust top position to be more centered */
   position: fixed; /* Fix position on screen */
   left: 50%;
   transform: translateX(-50%); /* Center horizontally */

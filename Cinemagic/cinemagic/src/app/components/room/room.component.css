@@ -9,3 +9,8 @@ screen{
 .modal-header h1{
   color: black;
 }
+
+.btn[disabled] {
+  background-color: #555555;
+  color: white;
+}

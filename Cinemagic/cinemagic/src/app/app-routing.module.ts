@@ -9,6 +9,7 @@ import {EventComponent} from "./components/event/event.component";
 import {AuthGuard} from "./guards/auth/auth.guard";
 import {ProfileComponent} from "./components/profile/profile.component";
 import {BookingComponent} from "./components/booking/booking.component";
+import {AllBookingsComponent} from "./components/booking/all-bookings.component";
 
 
 const routes: Routes = [
@@ -17,6 +18,8 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
+  {path: 'profile/all-bookings', component: AllBookingsComponent, canActivate: [AuthGuard]},
+  {path: 'profile/my-data', component: RegisterComponent, canActivate: [AuthGuard]},
   {path: 'room/:eventID/:movieID', component: RoomComponent},
   {path: 'movie-details/:movieID', component: MovieDetailsComponent},
   {path: 'event/', component: EventComponent},

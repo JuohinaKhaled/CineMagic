@@ -1,35 +1,30 @@
-hr {
-  border: 3px solid #FFD700;
-  width: 50px;
-  opacity: 1.0;
-}
-
 .h7 {
   color: #A6A4A4;
   font-size: 0.8rem;
 }
 
-h2, h4 {
+h5, h6 {
   color: black;
 }
 
-.date {
-  background-color: #FFD700;
+.overview{
+  width: 50%;
+}
+
+.bg-canceled {
+  background-color: #D90202;
   color: white;
 }
 
-.genre {
-  border: 2px solid #A6A4A4;
-  color: #A6A4A4;
+.bg-visited {
+  background-color: var(--cm-yellow);
+  background-color: #25F316;
+  color: white;
 }
 
-.date, .genre {
-  font-weight: 500;
-  font-size: 0.8rem;
-}
-
-.overview {
-  width: 50%;
+.bg-booked {
+  background-color: #25F316;
+  color: white;
 }
 
 @media only screen and (max-width: 950px) {
@@ -49,4 +44,3 @@ h2, h4 {
     width: 100%;
   }
 }
-

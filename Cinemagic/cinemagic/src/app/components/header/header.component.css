@@ -7,7 +7,7 @@ a:hover, a:hover svg{
 }
 
 li:hover button svg{
-  fill: black !important;
+  color: black !important;
 }
 
 li:hover svg{
@@ -20,7 +20,7 @@ li:hover svg{
 }
 
 button:hover svg{
-  fill: var(--cm-yellow);
+  color: var(--cm-yellow);
 }
 
 .iconLogout{

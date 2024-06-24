@@ -80,7 +80,7 @@ export class BookingComponent implements OnInit {
       if (result) {
         if (result === 'cancelBooking') {
           this.cancelBooking();
-          this.router.navigate(['/']);
+          this.router.navigate(['/all-bookings']);
         } else if (result === 'rateMovie') {
           this.rateMovie();
         }
@@ -93,7 +93,28 @@ export class BookingComponent implements OnInit {
   }
 
   cancelBooking() {
+    this.bookingService.deleteBooking(this.bookingID).subscribe({
+      next: (deletedBooking: any) => {
+        console.log('Booking_Component: Removing Booking successful:', deletedBooking);
+        this.updateBookingStatus();
+      },
+      error: (err) => {
+        console.log('Booking_Component: Error removing Booking:', err);
+        return throwError(err);
+      }
+    });
+  }
 
+  updateBookingStatus(){
+    this.bookingService.updateBooking(this.bookingID).subscribe({
+      next: (updateBooking: any) => {
+        console.log('Booking_Component: Updating Booking successful:', updateBooking)
+      },
+      error: (err) => {
+        console.log('Booking_Component: Error updating Booking:', err);
+        return throwError(err);
+      }
+    });
   }
 
   rateMovie() {

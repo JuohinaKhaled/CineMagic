@@ -1,0 +1,57 @@
+<div class="d-flex flex-column container text-white">
+  <div class="d-flex flex-row justify-content-center align-items-center">
+    <img src="/assets/images/BestellungIcon.svg" alt="Orders Icon">
+    <h1>Bookings</h1>
+  </div>
+  <ng-container *ngIf="bookingIDs.length > 0">
+    <ng-container *ngIf="bookings.length > 0">
+      <div *ngFor="let b of bookings" class="overview mt-4 bg-white rounded-2 p-4 container d-flex flex-column">
+        <div class="d-flex flex-row">
+          <h5>#{{b.BuchungsID}} Booking</h5>
+          <span [ngClass]="getStatusClass(getStatus(b.BuchungsStatus, b.EventDate))"
+                class="ms-auto h7 rounded-1 align-self-end px-1 mb-2">
+            {{ getStatus(b.BuchungsStatus, b.EventDate) }}
+          </span>
+        </div>
+        <div class="d-flex flex-row">
+          <span class="col-4 h7 m-0">Booking Date</span>
+          <span class="col-4 h7 m-0">Movie</span>
+          <span class="col-4 h7 m-0">Price</span>
+        </div>
+        <div class="d-flex flex-row">
+          <h6 class="col-4 m-0">{{b.BuchungsDatum | date:'dd.MM.yyyy'}}</h6>
+          <h6 class="col-4 m-0">{{b.Titel}}</h6>
+          <h6 class="col-4 m-0">{{b.GesamtPreisBrutto}}€ ({{b.GesamtPreisNetto}}€)</h6>
+        </div>
+        <div class="d-flex flex-row mt-2">
+          <span class="col-4 h7 m-0">Event Date</span>
+          <span class="col-4 h7 m-0">Event Time</span>
+          <span class="col-4 h7 m-0">Room</span>
+        </div>
+        <div class="d-flex flex-row">
+          <h6 class="col-4 m-0">{{b.Vorfuehrungsdatum | date:'dd.MM.yyyy'}}
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-calendar"
+                 viewBox="0 0 16 16">
+              <path
+                d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5M1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4z"/>
+            </svg>
+          </h6>
+          <h6 class="col-4 m-0">{{b.Vorfuehrungszeit |  slice:0:5}}
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-clock"
+                 viewBox="0 0 16 16">
+              <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
+              <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16m7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0"/>
+            </svg>
+          </h6>
+          <h6 class="col-4 m-0">{{b.Saalname}}</h6>
+        </div>
+        <button *ngIf="getStatus(b.BuchungsStatus, b.EventDate) !== 'Canceled'" class="btn btn-yellow-w mt-4" (click)="onNavigateBooking(b.BuchungsID)">Booking Overview</button>
+      </div>
+
+    </ng-container>
+  </ng-container>
+  <div *ngIf="bookingIDs.length === 0" class="align-self-center">
+    <p>No Bookings available.</p>
+  </div>
+</div>
+

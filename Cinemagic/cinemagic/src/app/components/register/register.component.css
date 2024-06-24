@@ -21,17 +21,18 @@
 }
 
 .btn {
-  background-color: #FF4500;
-  color: white;
   padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
   cursor: pointer;
   width: 100%;
 }
 
 .btn[disabled] {
   background-color: #555555;
+}
+
+.btn[disabled] {
+  background-color: #555555;
+  color: white;
 }
 
 .has-error input {
@@ -42,3 +43,6 @@
   box-shadow: 0 0 5px red;
 }
 
+svg{
+  color: var(--cm-yellow-light);
+}

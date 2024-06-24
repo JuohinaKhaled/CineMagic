@@ -103,7 +103,7 @@ export class SocketService {
 
   disconnect(): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('disconnect');
+      this.socket.emit('clientDisconnect');
     } else {
       console.error('Socket not connected');
     }

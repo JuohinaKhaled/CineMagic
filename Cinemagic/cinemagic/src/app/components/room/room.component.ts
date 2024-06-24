@@ -452,14 +452,16 @@ export class RoomComponent implements OnInit {
   }
 
   addBooking() {
-    this.bookingService.addBooking(1, this.setDate(), this.totalPriceNetto, this.totalPriceBrutto,
-      this.adultCounterValue, this.childCounterValue, this.studentCounterValue, false)
+    this.bookingService.addBooking(1, this.eventID, this.setDate(), this.totalPriceNetto, this.totalPriceBrutto,
+      this.adultCounterValue, this.childCounterValue, this.studentCounterValue)
       .subscribe({
         next: (bookingID) => {
           this.bookingID = bookingID;
           console.log('Booking_Component: Create Booking successful: ', bookingID);
           if (bookingID) {
             this.bookSeats(bookingID);
+            this.socketService.disconnect();
+            console.log('DDDDDDDDDD', bookingID);
             this.router.navigate(['/booking', this.bookingID]);
           }
         },
