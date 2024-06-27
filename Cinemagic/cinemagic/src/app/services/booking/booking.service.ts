@@ -20,13 +20,13 @@ export class BookingService {
   constructor(private http: HttpClient) {
   }
 
-  addBooking(customerID: number, eventID: number, purchaseDate: string, totalPriceNetto: number, totalPriceBrutto: number, counterTicketsAdult: number,
+  addBooking(customerID: number, eventID: number, bookingDate: string, totalPriceNetto: number, totalPriceBrutto: number, counterTicketsAdult: number,
              counterTicketsChild: number, counterTicketsStudent: number): Observable<number> {
     return this.http.post<number>(this.addBookingUrl,
       {
         customerID,
         eventID,
-        purchaseDate,
+        bookingDate,
         totalPriceNetto,
         totalPriceBrutto,
         counterTicketsAdult,
