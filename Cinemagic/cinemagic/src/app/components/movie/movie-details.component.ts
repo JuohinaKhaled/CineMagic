@@ -72,7 +72,18 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   groupEventsByDate() {
-    const grouped = _.groupBy(this.events, 'Vorfuehrungsdatum');
+    const today = new Date();
+    const oneWeekLater = new Date();
+    oneWeekLater.setDate(today.getDate() + 7);
+
+    // Filtere die Events nach dem Zeitraum und sortiere sie nach Datum
+    const filteredEvents = this.events.filter(event => {
+      const eventDate = new Date(event.Vorfuehrungsdatum);
+      return eventDate >= today && eventDate <= oneWeekLater;
+    }).sort((a, b) => new Date(a.Vorfuehrungsdatum).getDate() - new Date(b.Vorfuehrungsdatum).getDate());
+
+    // Gruppiere die gefilterten und sortierten Events nach Datum
+    const grouped = _.groupBy(filteredEvents, 'Vorfuehrungsdatum');
     this.groupedEvents = Object.keys(grouped).map(date => ({
       date,
       events: grouped[date],

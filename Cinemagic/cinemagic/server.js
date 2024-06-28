@@ -246,30 +246,6 @@ app.put('/customer/change-password', (req, res) => {
   });
 });
 
-// Fetch all bookings for the current user
-app.post('/allBooking', (req, res) => {
-  const { customerID } = req.body;
-
-  const query = `
-    SELECT b.BuchungsID
-    FROM Buchung b
-    WHERE b.KundenID = ?
-    ORDER BY b.BuchungsDatum DESC;
-  `;
-
-  con.query(query, [customerID], (error, results) => {
-    if (error) {
-      console.error('Error fetching all Booking for current User:', error);
-      res.status(500).json({error: 'Error fetching all Booking for current User:'});
-      return;
-    }
-    console.log('All Booking for current User fetched successfully.');
-    res.status(201).json(results);
-  });
-});
-
-
-
 //Display movies
 app.get('/movies', (req, res) => {
   const query = `

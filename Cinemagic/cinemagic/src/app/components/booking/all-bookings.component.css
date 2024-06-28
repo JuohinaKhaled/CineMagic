@@ -17,8 +17,7 @@ h5, h6 {
 }
 
 .bg-visited {
-  background-color: var(--cm-yellow);
-  background-color: #25F316;
+  background-color: var(--cm-yellow-light);
   color: white;
 }
 

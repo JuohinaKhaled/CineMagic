@@ -68,9 +68,9 @@ export class BookingComponent implements OnInit {
     });
   }
 
-  isEventFinished() {
+  isEventFinished(eventDate: Date) {
     const currentDate = new Date();
-    return this.isDateValid = currentDate >= this.booking.Vorfuehrungsdatum;
+    return this.isDateValid = new Date(currentDate) >= new Date(eventDate);
   }
 
   openModal(title: string, modalType: 'rateMovie' | 'cancelBooking' | undefined) {

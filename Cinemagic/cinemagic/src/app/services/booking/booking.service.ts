@@ -42,7 +42,7 @@ export class BookingService {
           }
         }),
         catchError(err => {
-          console.log('Booking_Service: Error creating Booking: ', err);
+          console.error('Booking_Service: Error creating Booking: ', err);
           return throwError(err);
         })
       );

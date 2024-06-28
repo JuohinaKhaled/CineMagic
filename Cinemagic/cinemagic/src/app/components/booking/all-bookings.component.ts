@@ -56,18 +56,18 @@ export class AllBookingsComponent implements OnInit {
   }
 
   isEventFinished(eventDate: Date) {
-    const currentDate = new Date();
-    return this.isDateValid = currentDate >= eventDate;
+    const currentDate = new Date().toISOString();
+    return this.isDateValid = new Date(currentDate) >= new Date(eventDate);
   }
 
-  getStatus(bookingStatus: string, eventDate: Date){
-    if(bookingStatus === 'Canceled'){
+  getStatus(bookingStatus: string, eventDate: Date) {
+    if (bookingStatus === 'Canceled') {
       return 'Canceled';
-    } else if (bookingStatus === 'Booked' && this.isEventFinished(eventDate)){
-      return 'Visited';
-    } else {
-      return 'Booked';
     }
+    if (bookingStatus === 'Booked') {
+      return this.isEventFinished(eventDate) ? 'Visited' : 'Booked';
+    }
+    return '';
   }
 
   getStatusClass(status: string): string {
