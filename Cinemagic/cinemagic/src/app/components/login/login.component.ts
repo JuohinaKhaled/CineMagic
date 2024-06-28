@@ -21,8 +21,6 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private bookingService: BookingService,
-    private router: Router,
     private snackBar: CustomSnackbarService
   ) {}
 

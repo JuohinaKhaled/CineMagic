@@ -147,7 +147,7 @@ app.post('/loginCustomer', (req, res) => {
   });
 });
 
-// Create a new Kunde
+// Create a new Customer
 app.post('/registerCustomer', (req, res) => {
   const {Vorname, Nachname, Email, Telefonnummer, Passwort} = req.body;
   const checkQuery = 'SELECT * FROM Kunden WHERE Email = ? OR Telefonnummer = ?';
@@ -181,6 +181,93 @@ app.post('/registerCustomer', (req, res) => {
     });
   });
 });
+
+// Get customer data
+app.post('/customer', (req, res) => {
+  const { customerID } = req.body;
+
+  const query = 'SELECT Vorname, Nachname, Email, Telefonnummer FROM Kunden WHERE KundenID = ?';
+  con.query(query, [customerID], (error, results) => {
+    if (error) {
+      console.error('Error fetching customer data:', error);
+      res.status(500).json({ status: 'error', message: 'Error fetching customer data' });
+      return;
+    }
+
+    res.status(200).json(results[0]);
+  });
+});
+
+// Update customer data
+app.put('/customer', (req, res) => {
+  const { customerID, Vorname, Nachname, Email, Telefonnummer, Passwort } = req.body;
+
+  const query = 'UPDATE Kunden SET Vorname = ?, Nachname = ?, Email = ?, Telefonnummer = ?, Passwort = ? WHERE KundenID = ?';
+  con.query(query, [Vorname, Nachname, Email, Telefonnummer, Passwort, customerID], (error, results) => {
+    if (error) {
+      console.error('Error updating customer data:', error);
+      res.status(500).json({ status: 'error', message: 'Error updating customer data' });
+      return;
+    }
+
+    res.status(200).json({ status: 'success', message: 'Customer data updated successfully' });
+  });
+});
+
+// Change customer password
+app.put('/customer/change-password', (req, res) => {
+  const { customerID, oldPassword, newPassword } = req.body;
+
+  // Verify old password
+  const verifyQuery = 'SELECT Passwort FROM Kunden WHERE KundenID = ?';
+  con.query(verifyQuery, [customerID], (verifyError, verifyResults) => {
+    if (verifyError) {
+      console.error('Error verifying old password:', verifyError);
+      res.status(500).json({ status: 'error', message: 'Error verifying old password' });
+      return;
+    }
+
+    if (verifyResults[0].Passwort !== oldPassword) {
+      res.status(400).json({ status: 'fail', message: 'Old password is incorrect' });
+      return;
+    }
+
+    // Update with new password
+    const updateQuery = 'UPDATE Kunden SET Passwort = ? WHERE KundenID = ?';
+    con.query(updateQuery, [newPassword, customerID], (updateError, updateResults) => {
+      if (updateError) {
+        console.error('Error updating password:', updateError);
+        res.status(500).json({ status: 'error', message: 'Error updating password' });
+        return;
+      }
+
+      res.status(200).json({ status: 'success', message: 'Password updated successfully' });
+    });
+  });
+});
+
+// Fetch all bookings for the current user
+app.post('/allBooking', (req, res) => {
+  const { customerID } = req.body;
+
+  const query = `
+    SELECT b.BuchungsID
+    FROM Buchung b
+    WHERE b.KundenID = ?
+    ORDER BY b.BuchungsDatum DESC;
+  `;
+
+  con.query(query, [customerID], (error, results) => {
+    if (error) {
+      console.error('Error fetching all Booking for current User:', error);
+      res.status(500).json({error: 'Error fetching all Booking for current User:'});
+      return;
+    }
+    console.log('All Booking for current User fetched successfully.');
+    res.status(201).json(results);
+  });
+});
+
 
 
 //Display movies

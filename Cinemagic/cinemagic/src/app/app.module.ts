@@ -35,6 +35,7 @@ import {BookingService} from "./services/booking/booking.service";
 import {VideoModalComponent} from './components/videomodal/videomodal.component';
 import {SafePipe} from './components/videomodal/safe.pipe';
 import { AllBookingsComponent } from './components/booking/all-bookings.component';
+import { MyDataComponent } from './components/my-data/my-data.component';
 
 @NgModule({
   declarations: [
@@ -56,7 +57,8 @@ import { AllBookingsComponent } from './components/booking/all-bookings.componen
     BookingComponent,
     VideoModalComponent,
     SafePipe,
-    AllBookingsComponent
+    AllBookingsComponent,
+    MyDataComponent
   ],
   imports: [
     BrowserModule,

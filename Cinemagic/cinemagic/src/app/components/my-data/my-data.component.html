@@ -1,0 +1,43 @@
+<div class="my-data-container">
+  <div class="my-data-header">
+    <h1>My Data</h1>
+  </div>
+  <form [formGroup]="profileForm" (ngSubmit)="onSave()">
+    <div>
+      <label>First Name:</label>
+      <input formControlName="firstName" />
+    </div>
+    <div>
+      <label>Last Name:</label>
+      <input formControlName="lastName" />
+    </div>
+    <div>
+      <label>Email:</label>
+      <input formControlName="email" />
+    </div>
+    <div>
+      <label>Phone Number:</label>
+      <input formControlName="phoneNumber" />
+    </div>
+    <button type="submit">Save</button>
+  </form>
+
+  <div class="my-data-header">
+    <h1>Change Password</h1>
+  </div>
+  <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+    <div>
+      <label>Old Password:</label>
+      <input type="password" formControlName="oldPassword" />
+    </div>
+    <div>
+      <label>New Password:</label>
+      <input type="password" formControlName="newPassword" />
+    </div>
+    <div>
+      <label>Confirm Password:</label>
+      <input type="password" formControlName="confirmPassword" />
+    </div>
+    <button type="submit">Change Password</button>
+  </form>
+</div>

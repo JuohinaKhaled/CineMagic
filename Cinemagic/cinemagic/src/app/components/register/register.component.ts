@@ -1,9 +1,7 @@
 import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {MatSnackBar} from '@angular/material/snack-bar';
 import {Router} from '@angular/router';
 import {strongPasswordValidator} from './strong-password.validator';
-import {CustomSnackbarComponent} from '../custom-snackbar/custom-snackbar.component';
 import {AuthService} from "../../services/auth/auth.service";
 import {CustomSnackbarService} from "../../services/custom-snackbar/custom-snackbar.service";
 
