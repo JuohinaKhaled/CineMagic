@@ -5,12 +5,11 @@
     </div>
     <div class="movie-info">
       <h1>{{ film.Titel }}</h1>
-      <app-rating
-        [maxStars]="5"
-        [averageRating]="film.Gesamtbewertung"
-        [readOnly]="true">
-      </app-rating>
-      <p>{{ film.Gesamtbewertung }}</p>
+      <div class="d-flex flex-row align-items-center">
+        <app-rating [maxStars]="5" [averageRating]="film.Gesamtbewertung" [readOnly]="true" class="me-3"></app-rating>
+        <span class="me-1">{{ film.Gesamtbewertung }}</span>
+        <span>({{ film.AnzahlBewertungen }})</span>
+      </div>
       <p>{{ film.Beschreibung }}</p>
       <p>Duration: {{ film.Dauer }} minutes</p>
       <p>Age rating: {{ film.Altersfreigabe }}</p>
@@ -32,7 +31,9 @@
           </button>
         </div>
       </div>
-      <button *ngIf="group.eventsToShow.length < group.events.length" class="more-button" (click)="showMore(group.date)">+ more</button>
+      <button *ngIf="group.eventsToShow.length < group.events.length" class="more-button"
+              (click)="showMore(group.date)">+ more
+      </button>
     </div>
   </div>
 </div>

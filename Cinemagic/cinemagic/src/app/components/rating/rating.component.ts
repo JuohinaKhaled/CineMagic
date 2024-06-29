@@ -10,7 +10,6 @@ export class RatingComponent implements OnInit {
   @Input() currentRate: number = 0; // Für den ersten Anwendungsfall
   @Input() averageRating: number = 0; // Für den zweiten Anwendungsfall
   @Input() readOnly: boolean = false; // Nur für den zweiten Anwendungsfall
-
   @Output() ratingUpdated = new EventEmitter<number>(); // Nur für den ersten Anwendungsfall
 
   hoveredStar: number = 0;
