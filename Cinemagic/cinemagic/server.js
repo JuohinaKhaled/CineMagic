@@ -54,7 +54,7 @@ const con = mysql.createConnection({
 
 //create WebSocket-Connection
 let reservedSeats = [];
-let bookedSeats = [];
+
 
 io.on('connection', (socket) => {
   console.log('Client connected', socket.id);
@@ -287,6 +287,8 @@ app.post('/movieDetails', (req, res) => {
            f.Genre,
            f.Regisseur,
            f.Erscheinungsdatum,
+           f.Gesamtbewertung,
+           f.AnzahlBewertungen,
            b.PfadGrossesBild,
            b.PfadKleinesBild
     FROM Filme f

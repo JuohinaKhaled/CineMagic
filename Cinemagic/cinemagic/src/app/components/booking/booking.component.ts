@@ -12,7 +12,6 @@ import {ModalService} from "../../services/modal/modal.service";
   styleUrl: './booking.component.css'
 })
 export class BookingComponent implements OnInit {
-
   bookingID: number = 0;
   isDateValid: boolean = false;
   booking: any;
@@ -118,6 +117,6 @@ export class BookingComponent implements OnInit {
   }
 
   rateMovie() {
-
+    console.log("HALLO RATING")
   }
 }

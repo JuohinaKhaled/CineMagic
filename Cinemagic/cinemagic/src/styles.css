@@ -13,27 +13,27 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-.bg-yellow{
+.bg-yellow {
   background-color: var(--cm-yellow);
   color: black;
 }
 
-.btn-outline-yellow, .btn-outline-yellow-b{
+.btn-outline-yellow, .btn-outline-yellow-b {
   border-color: var(--cm-yellow);
   color: var(--cm-yellow);
 }
 
-.btn-outline-yellow:hover{
+.btn-outline-yellow:hover {
   background-color: var(--cm-yellow);
   color: white;
 }
 
-.btn-outline-yellow-b:hover{
+.btn-outline-yellow-b:hover {
   background-color: var(--cm-yellow);
   color: black;
 }
 
-.btn-outline-yellow:disabled, btn.btn-outline-yellow-b:disabled, .btn-yellow-b:disabled, .btn-yellow-w:disabled{
+.btn-outline-yellow:disabled, btn.btn-outline-yellow-b:disabled, .btn-yellow-b:disabled, .btn-yellow-w:disabled {
   border-color: #646262;
   background-color: black;
   color: #646262;
@@ -53,12 +53,12 @@ body {
   color: black;
 }
 
-.btn-yellow-b:hover{
+.btn-yellow-b:hover {
   background-color: var(--cm-yellow-light);
   color: black;
 }
 
-.btn-yellow-w:hover{
+.btn-yellow-w:hover {
   background-color: var(--cm-yellow-light);
   color: white;
 }

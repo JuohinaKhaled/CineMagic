@@ -23,6 +23,13 @@
   <ng-container *ngIf="modalType === 'cancelBooking'">
     <p>Do you really want to cancel your booking?</p>
   </ng-container>
+  <ng-container *ngIf="modalType === 'rateMovie'">
+    <app-rating
+      [maxStars]="5"
+      [currentRate]="currentRating"
+      (ratingUpdated)="onRatingUpdated($event)">
+    </app-rating>
+  </ng-container>
 </div>
 
 <div class="modal-footer justify-content-center align-content-center">

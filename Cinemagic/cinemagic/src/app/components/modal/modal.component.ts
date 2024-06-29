@@ -9,9 +9,10 @@ export class ModalComponent {
   @Input() title = '';
   @Input() message = '';
   @Input() isLoggedIn = false;
+  @Input() currentRating = 0;
   @Input() modalType: 'confirmBooking' | 'cancelBooking' | 'warningMaxSeats' | 'rateMovie' | undefined;
   @Output() confirmBooking = new EventEmitter<void>();
-  @Output() rate = new EventEmitter<void>();
+  @Output() rate = new EventEmitter<number>();
   @Output() cancelEvent = new EventEmitter<void>();
   @Output() login = new EventEmitter<void>();
   @Output() register = new EventEmitter<void>();
@@ -38,7 +39,10 @@ export class ModalComponent {
   }
 
   onRate(){
-    this.rate.emit();
+    this.rate.emit(this.currentRating);
   }
 
+  onRatingUpdated(rating: number) {
+    this.currentRating = rating;
+  }
 }

@@ -36,6 +36,7 @@ import {VideoModalComponent} from './components/videomodal/videomodal.component'
 import {SafePipe} from './components/videomodal/safe.pipe';
 import { AllBookingsComponent } from './components/booking/all-bookings.component';
 import { MyDataComponent } from './components/my-data/my-data.component';
+import { RatingComponent } from './components/rating/rating.component';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { MyDataComponent } from './components/my-data/my-data.component';
     VideoModalComponent,
     SafePipe,
     AllBookingsComponent,
-    MyDataComponent
+    MyDataComponent,
+    RatingComponent
   ],
   imports: [
     BrowserModule,
