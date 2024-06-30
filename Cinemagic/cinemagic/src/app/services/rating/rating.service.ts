@@ -17,7 +17,7 @@ export class RatingService {
 
 
   addRating(customerID: number, movieID: number, rating: number): Observable<number> {
-    return this.http.post<any>(this.addRatingUrl,{customerID, movieID, rating}, this.httpOptions).pipe(
+    return this.http.put<any>(this.addRatingUrl,{customerID, movieID, rating}, this.httpOptions).pipe(
       tap((response) => {
           if (response) {
             console.log('Rating_Service: Creating Rating successful: ', response);

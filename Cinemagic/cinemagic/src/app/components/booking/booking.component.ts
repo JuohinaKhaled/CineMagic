@@ -1,8 +1,8 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {BookingService} from "../../services/booking/booking.service";
 import {catchError, tap} from "rxjs/operators";
-import {Observable, throwError} from "rxjs";
+import {Observable, Subscription, throwError} from "rxjs";
 import {AuthService} from "../../services/auth/auth.service";
 import {ModalService} from "../../services/modal/modal.service";
 import {RatingService} from "../../services/rating/rating.service";
@@ -12,7 +12,8 @@ import {RatingService} from "../../services/rating/rating.service";
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css'
 })
-export class BookingComponent implements OnInit {
+export class BookingComponent implements OnInit , OnDestroy{
+  private ratingSubscription?: Subscription;
   bookingID: number = 0;
   isDateValid: boolean = false;
   booking: any;
@@ -93,13 +94,14 @@ export class BookingComponent implements OnInit {
   openModal(title: string, modalType: 'rateMovie' | 'cancelBooking' | undefined) {
     let isLoggedIn = this.authService.isLoggedIn
 
-    this.modalService.open(title, isLoggedIn, modalType).then((result: string) => {
-      if (result) {
-        if (result === 'cancelBooking') {
+    this.modalService.open(title, isLoggedIn, modalType).then(({ action, value}) => {
+      if (action) {
+        console.log('DDDD', action);
+        if (action === 'cancelBooking') {
           this.cancelBooking();
           this.router.navigate(['/all-bookings']);
-        } else if (result === 'rateMovie') {
-          this.rateMovie();
+        } else if (action === 'rateMovie') {
+          this.rateMovie(value!);
         }
       } else {
         console.log('Booking_Component: Modal cancelled or closed!');
@@ -134,7 +136,23 @@ export class BookingComponent implements OnInit {
     });
   }
 
-  rateMovie() {
+  rateMovie(currentRate: number) {
+    console.log('DALAL', this.rating);
+    this.ratingService.addRating(5, this.booking.FilmID, currentRate).subscribe({
+      next: (addRating: any) => {
+        console.log('Booking_Component: Add Rating successful:', addRating);
+      },
+      error: (err) => {
+        console.log('Booking_Component: Error adding Booking:', err);
+        return throwError(err);
+      }
+    });
     console.log("HALLO RATING")
+  }
+
+  ngOnDestroy(): void {
+    if (this.ratingSubscription) {
+      this.ratingSubscription.unsubscribe();
+    }
   }
 }

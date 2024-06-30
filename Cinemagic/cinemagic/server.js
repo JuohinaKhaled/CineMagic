@@ -630,21 +630,21 @@ app.post('/rating', (req, res) => {
   });
 });
 
-app.post('/add/rating', (req, res) => {
+app.put('/add/rating', (req, res) => {
   const {customerID, movieID, rating} = req.body;
-
+  console.log('HAAAAAAAAAAAAAAAI', rating);
   const query = `
     INSERT INTO bewertet (KundenID, FilmID, Bewertung)
     VALUES (?, ?, ?);
   `;
 
-  con.query(query, [customerID], (error, results) => {
+  con.query(query, [customerID, movieID, rating], (error, results) => {
     if (error) {
-      console.error('Error fetching all Booking for current User:', error);
-      res.status(500).json({error: 'Error fetching all Booking for current User:'});
+      console.error('Error adding rating:', error);
+      res.status(500).json({error: 'Error adding rating:'});
       return;
     }
-    console.log('All Booking for current User fetched successful.');
+    console.log('Adding Rating successful.');
     res.status(201).json(results);
   });
 });

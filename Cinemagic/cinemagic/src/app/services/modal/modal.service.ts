@@ -11,35 +11,37 @@ export class ModalService {
 
   constructor(private ngbModal: NgbModal) { }
 
-  open(title: string, isLoggedIn: boolean, modalType: 'confirmBooking' | 'cancelBooking' | 'warningMaxSeats' | 'rateMovie' | undefined) {
+  open(title: string,
+       isLoggedIn: boolean,
+       modalType: 'confirmBooking' | 'cancelBooking' | 'warningMaxSeats' | 'rateMovie' | undefined): Promise<{ action: string, value?: number }>{
     this.modalRef = this.ngbModal.open(ModalComponent, { centered: true });
     this.modalRef.componentInstance.title = title;
     this.modalRef.componentInstance.isLoggedIn = isLoggedIn;
     this.modalRef.componentInstance.modalType = modalType;
 
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<{ action: string, value?: number }>((resolve) => {
       this.modalRef?.componentInstance.login.subscribe(() => {
-        resolve('login');
+        resolve({action: 'login'});
         this.modalRef?.close();
       });
       this.modalRef?.componentInstance.register.subscribe(() => {
-        resolve('register');
+        resolve({action:'register'});
         this.modalRef?.close();
       });
       this.modalRef?.componentInstance.confirmBooking.subscribe(() => {
-        resolve('confirmBooking');
+        resolve({action:'confirmBooking'});
         this.modalRef?.close();
       });
       this.modalRef?.componentInstance.cancelEvent.subscribe(() => {
-        resolve('close');
+        resolve({action:'close'});
         this.modalRef?.close();
       });
       this.modalRef?.componentInstance.cancelBooking.subscribe(() => {
-        resolve('cancelBooking');
+        resolve({action:'cancelBooking'});
         this.modalRef?.close();
       });
-      this.modalRef?.componentInstance.rate.subscribe(() => {
-        resolve('rateMovie');
+      this.modalRef?.componentInstance.rate.subscribe((currentRating: number) => {
+        resolve({action: 'rateMovie', value: currentRating} );
         this.modalRef?.close();
       });
     });

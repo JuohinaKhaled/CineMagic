@@ -112,7 +112,7 @@
         <ng-container *ngIf="!isEventFinished(booking.Vorfuehrungsdatum)">
           <button class="btn btn-yellow-w" (click)="openModal('Cancel Booking','cancelBooking')">Cancel Booking</button>
         </ng-container>
-        <ng-container *ngIf="isEventFinished(booking.Vorfuehrungsdatum) && !rating">
+        <ng-container *ngIf="isEventFinished(booking.Vorfuehrungsdatum) && rating">
           <button class="btn btn-yellow-w" (click)="openModal('Rate Movie','rateMovie')">Rate Movie</button>
         </ng-container>
       </div>

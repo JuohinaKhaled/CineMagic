@@ -417,27 +417,24 @@ export class RoomComponent implements OnInit {
     }
 
     console.log('Trying to open modal with title:', title, 'and type:', modalType);
-    this.modalService.open(title, isLoggedIn, modalType).then((result: string) => {
-      console.log('Modal opened successfully with result:', result);
+    this.modalService.open(title, isLoggedIn, modalType).then(({action}) => {
+      console.log('Modal opened successfully with result:', action);
       const navigationMap: { [key: string]: string } = {
         'login': '/login',
         'register': '/register',
         'confirmBooking': '/booking'
       };
 
-      if (result && navigationMap[result]) {
-        if (result === 'login') {
+      if (action && navigationMap[action]) {
+        if (action === 'login') {
           const roomUrl = `/room/${this.eventID}/${this.movieID}`;
           this.authService.setRedirectUrl(roomUrl);
         }
-        if (result === 'confirmBooking') {
+        if (action === 'confirmBooking') {
           this.addBooking();
-          if (this.bookingID) {
-            this.addBooking();
-          }
           console.log(this.bookingID);
         } else {
-          this.router.navigate([navigationMap[result]]);
+          this.router.navigate([navigationMap[action]]);
         }
       } else {
         console.log('Room_Component: Modal cancelled or closed!');
