@@ -37,6 +37,7 @@ export class RoomComponent implements OnInit {
   selectedSeats: any[] = [];
   otherSelectedSeats: any[] = [];
   tickets: any[] = [];
+  customerID!: number;
   bookingID?: number;
   currentDate: string = '';
 
@@ -55,6 +56,7 @@ export class RoomComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getCustomerID();
     this.getEventID();
     this.getMovieID();
     this.getMovie();
@@ -65,6 +67,10 @@ export class RoomComponent implements OnInit {
     this.getCurrentClientSeats();
     this.getSeatsReleasedByOtherClient();
     this.setCounter();
+  }
+
+  getCustomerID() {
+    this.customerID = this.authService.getCustomerID()!;
   }
 
   getEventID() {
@@ -449,7 +455,7 @@ export class RoomComponent implements OnInit {
   }
 
   addBooking() {
-    this.bookingService.addBooking(1, this.eventID, this.setDate(), this.totalPriceNetto, this.totalPriceBrutto,
+    this.bookingService.addBooking(this.customerID, this.eventID, this.setDate(), this.totalPriceNetto, this.totalPriceBrutto,
       this.adultCounterValue, this.childCounterValue, this.studentCounterValue)
       .subscribe({
         next: (bookingID) => {

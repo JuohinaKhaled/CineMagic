@@ -38,7 +38,6 @@ export class RatingComponent implements OnInit {
       } else {
         this.currentRate = index + 1;
       }
-      console.log("RATE", this.currentRate);
       this.ratingUpdated.emit(this.currentRate);
     }
   }

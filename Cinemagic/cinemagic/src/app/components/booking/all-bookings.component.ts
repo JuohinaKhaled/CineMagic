@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {BookingService} from "../../services/booking/booking.service";
 import {catchError, tap} from "rxjs/operators";
 import {Router} from "@angular/router";
+import {AuthService} from "../../services/auth/auth.service";
 
 @Component({
   selector: 'app-all-bookings',
@@ -12,15 +13,20 @@ export class AllBookingsComponent implements OnInit {
   isDateValid: boolean = false;
   bookingIDs: any[] = [];
   bookings: any[] = [];
-  customerID: number = 1;
+  customerID!: number;
 
-  constructor(private bookingService: BookingService, private router: Router) {
+  constructor(private bookingService: BookingService, private router: Router,
+              private authService: AuthService) {
   }
 
   ngOnInit(): void {
+    this.getCustomer();
     this.getBookingIDs();
   }
 
+  getCustomer() {
+    this.customerID = this.authService.getCustomerID()!;
+  }
 
   getBookingIDs() {
     this.bookingService.fetchAllBooking(this.customerID).pipe(

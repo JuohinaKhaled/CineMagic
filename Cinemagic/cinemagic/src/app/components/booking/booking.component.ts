@@ -17,6 +17,7 @@ export class BookingComponent implements OnInit , OnDestroy{
   bookingID: number = 0;
   isDateValid: boolean = false;
   booking: any;
+  customerID!: number;
   rating!: number;
   seats$: Observable<any[]> | undefined;
 
@@ -31,6 +32,7 @@ export class BookingComponent implements OnInit , OnDestroy{
   }
 
   ngOnInit(): void {
+    this.getCustomerID();
     this.getEventID();
     this.getBooking();
     this.getAllBookedSeats();
@@ -73,7 +75,7 @@ export class BookingComponent implements OnInit , OnDestroy{
   }
 
   getRating() {
-    this.ratingService.fetchRating(1, this.booking.FilmID).subscribe({
+    this.ratingService.fetchRating(this.customerID, this.booking.FilmID).subscribe({
       next: (rating: any) => {
         this.rating = rating[0].Bewertung;
         this.cdRef.detectChanges();
@@ -96,7 +98,6 @@ export class BookingComponent implements OnInit , OnDestroy{
 
     this.modalService.open(title, isLoggedIn, modalType).then(({ action, value}) => {
       if (action) {
-        console.log('DDDD', action);
         if (action === 'cancelBooking') {
           this.cancelBooking();
           this.router.navigate(['/all-bookings']);
@@ -138,7 +139,7 @@ export class BookingComponent implements OnInit , OnDestroy{
 
   rateMovie(currentRate: number) {
     console.log('DALAL', this.rating);
-    this.ratingService.addRating(5, this.booking.FilmID, currentRate).subscribe({
+    this.ratingService.addRating(this.customerID, this.booking.FilmID, currentRate).subscribe({
       next: (addRating: any) => {
         console.log('Booking_Component: Add Rating successful:', addRating);
       },
@@ -154,5 +155,9 @@ export class BookingComponent implements OnInit , OnDestroy{
     if (this.ratingSubscription) {
       this.ratingSubscription.unsubscribe();
     }
+  }
+
+  getCustomerID() {
+    this.customerID = this.authService.getCustomerID()!;
   }
 }

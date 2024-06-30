@@ -1,9 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
 import {AuthService} from "../../services/auth/auth.service";
-import {BookingService} from "../../services/booking/booking.service";
 import {CustomSnackbarService} from "../../services/custom-snackbar/custom-snackbar.service";
 
 @Component({
