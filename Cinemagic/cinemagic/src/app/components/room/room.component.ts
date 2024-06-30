@@ -451,7 +451,7 @@ export class RoomComponent implements OnInit {
   }
 
   setDate() {
-    return this.currentDate = this.currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    return this.currentDate = new Date().toISOString().slice(0, 19).replace('T', ' ');
   }
 
   addBooking() {
@@ -464,7 +464,6 @@ export class RoomComponent implements OnInit {
           if (bookingID) {
             this.bookSeats(bookingID);
             this.socketService.disconnect();
-            console.log('DDDDDDDDDD', bookingID);
             this.router.navigate(['/booking', this.bookingID]);
           }
         },
@@ -476,7 +475,7 @@ export class RoomComponent implements OnInit {
 
   bookSeats(bookingID: number) {
     this.selectedSeats.forEach(seat => {
-      this.bookingService.bookTickets(bookingID, 1, this.eventID, seat.SitzplatzID, seat.ticketID).subscribe({
+      this.bookingService.bookTickets(bookingID, this.customerID, this.eventID, seat.SitzplatzID, seat.ticketID).subscribe({
         next: (result: any) => {
           if (result) {
             console.log('Booking tickets for seat successful:', result);
