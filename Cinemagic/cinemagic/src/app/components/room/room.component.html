@@ -5,10 +5,10 @@
     <span class="badge bg-yellow">{{room.roomType}}</span>
   </div>
 
-  <div *ngFor="let e of event" class="row justify-content-center d-flex mt-2">
+  <div *ngFor="let e of event" class="row justify-content-center d-flex mt-2 text-center">
 
     <div *ngFor="let m of movie" class="col-auto justify-content-start d-flex flex-column">
-      <h1 class="align-self-center mb-3">{{m.Titel}}</h1>
+      <h1 class="align-self-center mb-3 titel">{{m.Titel}}</h1>
       <h6 class="align-self-center text-white mb-3">
         {{e.Vorfuehrungsdatum | date:'dd.MM.yyyy'}} {{' | ' + (e.Vorfuehrungszeit |  slice:0:5)}}
       </h6>
@@ -20,7 +20,7 @@
         <app-counter [headline]="'Child'" [eventID]="eventID"
                      (counterValueChanged)="onCounterValueChanged('Child', $event)"></app-counter>
       </div>
-      <div class="selected-seats">
+      <div class="selected-seats align-self-center">
         <div *ngFor="let seat of selectedSeats">
           <app-ticket [seat]="seat" (remove)="removeSeat($event)"></app-ticket>
         </div>

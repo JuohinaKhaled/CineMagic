@@ -14,3 +14,11 @@ screen{
   background-color: #555555;
   color: white;
 }
+
+.selected-seats{
+  max-width: 450px;
+}
+
+.titel{
+  max-width: 500px;
+}

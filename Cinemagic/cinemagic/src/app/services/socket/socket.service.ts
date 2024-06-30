@@ -15,7 +15,6 @@ export class SocketService {
   }
 
   reserveSeat(seat: any, eventID: number): void {
-    console.log('SOCKETEVENTID', eventID);
     if (this.socket && this.socket.connected) {
       this.socket.emit('reserveSeat', {seat, eventID});
       console.log('reserveSeat: ', seat, eventID);
