@@ -7,17 +7,19 @@ import { Observable } from 'rxjs';
 })
 export class UserService {
 
+  private baseUrl = 'http://localhost:4200/api/customer';
+
   constructor(private http: HttpClient) {}
 
   getUserData(customerID: number): Observable<any> {
-    return this.http.get<any>(`/api/customer/${customerID}`);
+    return this.http.get<any>(`${this.baseUrl}/${customerID}`);
   }
 
   updateUserData(data: any): Observable<any> {
-    return this.http.put<any>('/api/customer', data);
+    return this.http.put<any>(this.baseUrl, data);
   }
 
   changePassword(data: any): Observable<any> {
-    return this.http.put<any>('/api/customer/change-password', data);
+    return this.http.put<any>(`${this.baseUrl}/change-password`, data);
   }
 }

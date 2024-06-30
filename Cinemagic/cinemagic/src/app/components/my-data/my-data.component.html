@@ -5,24 +5,26 @@
   <form [formGroup]="profileForm" (ngSubmit)="onSave()">
     <div>
       <label>First Name:</label>
-      <input formControlName="firstName" />
+      <input formControlName="firstName" placeholder="Enter your first name" />
     </div>
     <div>
       <label>Last Name:</label>
-      <input formControlName="lastName" />
+      <input formControlName="lastName" placeholder="Enter your last name" />
     </div>
     <div>
       <label>Email:</label>
-      <input formControlName="email" />
+      <input formControlName="email" placeholder="Enter your email" [disabled]="true" />
     </div>
     <div>
       <label>Phone Number:</label>
-      <input formControlName="phoneNumber" />
+      <input formControlName="phoneNumber" placeholder="Enter your phone number" />
     </div>
     <button type="submit">Save</button>
+    <div *ngIf="profileSaveSuccess" class="success-message">Profile updated successfully!</div>
+    <div *ngIf="profileSaveError" class="error-message">Error updating profile. Please try again.</div>
   </form>
 
-  <div class="my-data-header">
+  <div class="my-data-header change-password-header">
     <h1>Change Password</h1>
   </div>
   <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
@@ -33,11 +35,26 @@
     <div>
       <label>New Password:</label>
       <input type="password" formControlName="newPassword" />
+      <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+        <small *ngIf="passwordForm.get('newPassword')?.errors?.['strongPassword']">
+          Password must be at least 8 characters long.
+        </small>
+        <small *ngIf="passwordForm.get('newPassword')?.errors?.['strongPassword']">
+          Password must contain uppercase and lowercase
+          letters, a number, and a special character.
+        </small>
+      </div>
     </div>
     <div>
       <label>Confirm Password:</label>
       <input type="password" formControlName="confirmPassword" />
+      <div *ngIf="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched">
+        <small *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']">Confirm password is required.</small>
+        <small *ngIf="passwordForm.get('confirmPassword')?.value !== passwordForm.get('newPassword')?.value && passwordForm.get('confirmPassword')?.touched">
+          Passwords do not match.
+        </small>
+      </div>
     </div>
-    <button type="submit">Change Password</button>
+    <button type="submit" [disabled]="passwordForm.invalid">Change Password</button>
   </form>
 </div>

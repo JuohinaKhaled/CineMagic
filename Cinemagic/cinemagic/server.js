@@ -128,6 +128,7 @@ io.on('connection', (socket) => {
 });
 
 // Routes
+
 // Login endpoint
 app.post('/loginCustomer', (req, res) => {
   const {email, password} = req.body;
@@ -182,28 +183,40 @@ app.post('/registerCustomer', (req, res) => {
   });
 });
 
-// Get customer data
-app.post('/customer', (req, res) => {
-  const { customerID } = req.body;
+//Update Customer Data
+app.put('/api/customer', (req, res) => {
+  const { customerID, Vorname, Nachname, Email, Telefonnummer } = req.body;
 
-  const query = 'SELECT Vorname, Nachname, Email, Telefonnummer FROM Kunden WHERE KundenID = ?';
-  con.query(query, [customerID], (error, results) => {
-    if (error) {
-      console.error('Error fetching customer data:', error);
-      res.status(500).json({ status: 'error', message: 'Error fetching customer data' });
-      return;
-    }
+  let query = 'UPDATE Kunden SET';
+  const fields = [];
+  const values = [];
 
-    res.status(200).json(results[0]);
-  });
-});
+  if (Vorname) {
+    fields.push('Vorname = ?');
+    values.push(Vorname);
+  }
+  if (Nachname) {
+    fields.push('Nachname = ?');
+    values.push(Nachname);
+  }
+  if (Email) {
+    fields.push('Email = ?');
+    values.push(Email);
+  }
+  if (Telefonnummer) {
+    fields.push('Telefonnummer = ?');
+    values.push(Telefonnummer);
+  }
 
-// Update customer data
-app.put('/customer', (req, res) => {
-  const { customerID, Vorname, Nachname, Email, Telefonnummer, Passwort } = req.body;
+  if (fields.length === 0) {
+    res.status(400).json({ status: 'fail', message: 'No fields to update' });
+    return;
+  }
 
-  const query = 'UPDATE Kunden SET Vorname = ?, Nachname = ?, Email = ?, Telefonnummer = ?, Passwort = ? WHERE KundenID = ?';
-  con.query(query, [Vorname, Nachname, Email, Telefonnummer, Passwort, customerID], (error, results) => {
+  query += ` ${fields.join(', ')} WHERE KundenID = ?`;
+  values.push(customerID);
+
+  con.query(query, values, (error, results) => {
     if (error) {
       console.error('Error updating customer data:', error);
       res.status(500).json({ status: 'error', message: 'Error updating customer data' });
@@ -214,11 +227,9 @@ app.put('/customer', (req, res) => {
   });
 });
 
-// Change customer password
-app.put('/customer/change-password', (req, res) => {
+app.put('/api/customer/change-password', (req, res) => {
   const { customerID, oldPassword, newPassword } = req.body;
 
-  // Verify old password
   const verifyQuery = 'SELECT Passwort FROM Kunden WHERE KundenID = ?';
   con.query(verifyQuery, [customerID], (verifyError, verifyResults) => {
     if (verifyError) {
@@ -232,7 +243,6 @@ app.put('/customer/change-password', (req, res) => {
       return;
     }
 
-    // Update with new password
     const updateQuery = 'UPDATE Kunden SET Passwort = ? WHERE KundenID = ?';
     con.query(updateQuery, [newPassword, customerID], (updateError, updateResults) => {
       if (updateError) {
@@ -245,6 +255,7 @@ app.put('/customer/change-password', (req, res) => {
     });
   });
 });
+
 
 //Display movies
 app.get('/movies', (req, res) => {

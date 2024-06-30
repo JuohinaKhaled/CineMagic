@@ -5,10 +5,20 @@
   text-align: center;
 }
 
-.header h1 {
-  margin-bottom: 20px;
+.my-data-header h1 {
+  font-weight: bold;
   font-size: 2em;
-  text-transform: capitalize;
+}
+
+.my-data-header {
+  margin-bottom: 20px;
+}
+
+.change-password-header {
+  font-weight: bold;
+  font-size: 2em;
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
 
 .navigation {
@@ -43,7 +53,7 @@
 .icons {
   display: flex;
   justify-content: center;
-  gap: 60px; /* Increased space between icons */
+  gap: 60px;
 }
 
 .icon {
@@ -51,7 +61,7 @@
 }
 
 .icon a {
-  text-decoration: none; /* Remove underline from links */
+  text-decoration: none;
   color: #FFD700;
   transition: color 0.3s;
 }
@@ -71,5 +81,5 @@
   margin: 0;
   text-transform: capitalize;
   font-size: 1em;
-  color: #FFD700; /* Set the color to yellow */
+  color: #FFD700;
 }
