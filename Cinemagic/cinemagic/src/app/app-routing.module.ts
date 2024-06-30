@@ -11,6 +11,7 @@ import {ProfileComponent} from "./components/profile/profile.component";
 import {BookingComponent} from "./components/booking/booking.component";
 import {AllBookingsComponent} from "./components/booking/all-bookings.component";
 import { MyDataComponent } from './components/my-data/my-data.component';
+import { NewsletterComponent} from "./newsletter/newsletter.component";
 
 
 const routes: Routes = [
@@ -24,7 +25,8 @@ const routes: Routes = [
   {path: 'movie-details/:movieID', component: MovieDetailsComponent},
   {path: 'event/', component: EventComponent},
   {path: 'booking/:bookingID', component: BookingComponent, canActivate: [AuthGuard]},
-  { path: 'profile/my-data', component: MyDataComponent, canActivate: [AuthGuard] }
+  { path: 'profile/my-data', component: MyDataComponent, canActivate: [AuthGuard] },
+  { path: 'profile/newsletter', component: NewsletterComponent}
 ];
 
 @NgModule({

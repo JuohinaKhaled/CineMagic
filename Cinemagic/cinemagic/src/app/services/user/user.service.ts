@@ -11,10 +11,6 @@ export class UserService {
 
   constructor(private http: HttpClient) {}
 
-  getUserData(customerID: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${customerID}`);
-  }
-
   updateUserData(data: any): Observable<any> {
     return this.http.put<any>(this.baseUrl, data);
   }
