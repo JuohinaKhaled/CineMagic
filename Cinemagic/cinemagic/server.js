@@ -495,6 +495,7 @@ app.post('/booking', (req, res) => {
                     b.BuchungsStatus,
                     v.Vorfuehrungsdatum,
                     v.Vorfuehrungszeit,
+                    f.FilmID,
                     f.Titel,
                     f.Dauer,
                     f.Altersfreigabe,
@@ -559,6 +560,7 @@ app.delete('/deleteBooking/:bookingID', (req, res) => {
     res.status(201).json(results);
   });
 });
+
 app.post('/bookedSeats', (req, res) => {
   const {bookingID} = req.body;
 
@@ -614,24 +616,21 @@ app.post('/rating', (req, res) => {
   const {customerID, movieID} = req.body;
 
   const query = `
-    SELECT b.Bewertung
-    FROM bewertet b
-    WHERE b.KundenID = ?
-      AND b.FilmID = ?;
+    SELECT b.Bewertung FROM bewertet b WHERE b.KundenID = ? AND b.FilmID = ?;
   `;
 
   con.query(query, [customerID, movieID], (error, results) => {
     if (error) {
-      console.error('Error fetching all Booking for current User:', error);
-      res.status(500).json({error: 'Error fetching all Booking for current User:'});
+      console.error('Error fetching Rating:', error);
+      res.status(500).json({error: 'Error fetching Rating: '});
       return;
     }
-    console.log('All Booking for current User fetched successful.');
+    console.log('Rating fetched successful.');
     res.status(201).json(results);
   });
 });
 
-app.post('/rate', (req, res) => {
+app.post('/add/rating', (req, res) => {
   const {customerID, movieID, rating} = req.body;
 
   const query = `

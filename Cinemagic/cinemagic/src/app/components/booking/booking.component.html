@@ -30,6 +30,13 @@
           <span class="genre rounded-1 align-self-start p-1 mb-2 mt-2">FSK {{booking.Altersfreigabe }}</span>
         </div>
         <hr class="w-100 border border-1">
+        <ng-container *ngIf="rating">
+          <div class="d-flex flex-row align-items-center">
+            <app-rating [maxStars]="5" [averageRating]="rating" [readOnly]="true" class="me-3"></app-rating>
+            <span class="me-1">Your Rating</span>
+          </div>
+          <hr class="w-100 border border-1">
+        </ng-container>
         <div class="d-flex flex-row">
           <div class="col-4">
             <span class="h7 m-0">Booking ID</span>
@@ -105,7 +112,7 @@
         <ng-container *ngIf="!isEventFinished(booking.Vorfuehrungsdatum)">
           <button class="btn btn-yellow-w" (click)="openModal('Cancel Booking','cancelBooking')">Cancel Booking</button>
         </ng-container>
-        <ng-container *ngIf="isEventFinished(booking.Vorfuehrungsdatum)">
+        <ng-container *ngIf="isEventFinished(booking.Vorfuehrungsdatum) && !rating">
           <button class="btn btn-yellow-w" (click)="openModal('Rate Movie','rateMovie')">Rate Movie</button>
         </ng-container>
       </div>

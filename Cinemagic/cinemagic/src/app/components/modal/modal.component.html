@@ -24,6 +24,7 @@
     <p>Do you really want to cancel your booking?</p>
   </ng-container>
   <ng-container *ngIf="modalType === 'rateMovie'">
+    <p>What do you think of the movie? Rate it now!</p>
     <app-rating
       [maxStars]="5"
       [currentRate]="currentRating"
@@ -46,7 +47,8 @@
   <button type="button" class="btn btn-yellow-w" (click)="onCancelBooking()" *ngIf="modalType === 'cancelBooking' && isLoggedIn">
     Cancel Booking
   </button>
-  <button type="button" class="btn btn-yellow-w" (click)="onRate()" *ngIf="modalType === 'rateMovie' && isLoggedIn">
+  <button type="button" class="btn btn-yellow-w" (click)="onRate()" *ngIf="modalType === 'rateMovie' && isLoggedIn"
+          [disabled]="currentRating === 0">
     Rate Movie
   </button>
 </div>
