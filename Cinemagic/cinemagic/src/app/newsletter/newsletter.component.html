@@ -4,17 +4,17 @@
   </div>
   <div class="newsletter-content">
     <h2>Offers and the Latest Cinema Program</h2>
-    <p>Just enter your email address, choose your favorite cinema, and click "Register". You will then receive an email to confirm your address.</p>
+    <p>Just enter your email address and give your consent to receive our newsletter. You will then receive an email to confirm your address.</p>
     <form [formGroup]="newsletterForm" (ngSubmit)="onSubmit()">
       <div>
         <label for="email">Email Address</label>
-        <input id="email" formControlName="email" placeholder="Email Address" />
+        <input id="email" type="email" formControlName="email" placeholder="Email Address" />
       </div>
       <div>
-        <label for="cinema">My Cinema</label>
-        <select id="cinema" formControlName="cinema">
-          <option *ngFor="let location of locations" [value]="location">{{ location }}</option>
-        </select>
+        <label for="consent">
+          <input type="checkbox" id="consent" formControlName="consent" />
+          I agree to receive newsletters and promotional offers.
+        </label>
       </div>
       <button type="submit">Register</button>
     </form>

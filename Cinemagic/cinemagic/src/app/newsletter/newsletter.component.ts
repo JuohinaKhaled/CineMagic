@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CustomSnackbarComponent } from '../components/custom-snackbar/custom-snackbar.component';
 
 @Component({
   selector: 'app-newsletter',
@@ -8,23 +10,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class NewsletterComponent implements OnInit {
   newsletterForm: FormGroup;
-  locations: string[] = [
-    'Cinemagic New York',
-    'Cinemagic Los Angeles',
-    'Cinemagic Chicago',
-    'Cinemagic Houston',
-    'Cinemagic Phoenix',
-    'Cinemagic Philadelphia',
-    'Cinemagic San Antonio',
-    'Cinemagic San Diego',
-    'Cinemagic Dallas',
-    'Cinemagic San Jose',
-  ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.newsletterForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      cinema: ['', Validators.required]
+      consent: [false, Validators.requiredTrue]
     });
   }
 
@@ -33,7 +23,26 @@ export class NewsletterComponent implements OnInit {
   onSubmit(): void {
     if (this.newsletterForm.valid) {
       const formData = this.newsletterForm.value;
+      this.showNotification('Successfully signed up for the newsletter!', 'success');
       console.log('Newsletter Registration:', formData);
+      this.newsletterForm.reset();
+      location.reload();
+    } else {
+      if (!this.newsletterForm.controls['consent'].value) {
+        this.showNotification('Agree to terms first', 'error');
+      } else if (!this.newsletterForm.controls['email'].valid) {
+        this.showNotification('Wrong email format', 'error');
+      }
     }
+  }
+
+  private showNotification(message: string, type: string): void {
+    this.snackBar.openFromComponent(CustomSnackbarComponent, {
+      data: { message },
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: [type === 'success' ? 'snackbar-success' : 'snackbar-error']
+    });
   }
 }

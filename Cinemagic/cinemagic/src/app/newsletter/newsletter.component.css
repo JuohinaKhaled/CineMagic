@@ -37,13 +37,29 @@ label {
   font-weight: bold;
 }
 
-input, select {
+input[type="email"], input[type="checkbox"] {
+  margin-top: 5px;
   width: 50%;
   max-width: 300px;
   padding: 10px;
   border: 1px solid #FFD700;
   border-radius: 5px;
   background-color: #222;
+  color: #FFD700;
+}
+
+input[type="checkbox"] {
+  width: auto;
+  margin-top: 0;
+}
+
+input[type="email"] {
+  border: 2px solid #FFD700;
+  background-color: #333;
+  color: #FFD700;
+}
+
+input[type="email"]::placeholder {
   color: #FFD700;
 }
 
@@ -60,4 +76,12 @@ button {
 
 button:hover {
   background-color: #FF4500;
+}
+
+.snackbar-success {
+  background-color: green;
+}
+
+.snackbar-error {
+  background-color: red;
 }
