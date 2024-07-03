@@ -101,7 +101,6 @@ export class BookingComponent implements OnInit , OnDestroy{
       if (action) {
         if (action === 'cancelBooking') {
           this.cancelBooking();
-          this.router.navigate(['/all-bookings']);
         } else if (action === 'rateMovie') {
           this.rateMovie(value!);
         }
@@ -117,6 +116,7 @@ export class BookingComponent implements OnInit , OnDestroy{
     this.bookingService.deleteBooking(this.bookingID).subscribe({
       next: (deletedBooking: any) => {
         this.snackBar.openSnackBar("Cancel booking successful.");
+        this.router.navigate(['profile/all-bookings']);
         console.log('Booking_Component: Removing Booking successful:', deletedBooking);
         this.updateBookingStatus();
       },
