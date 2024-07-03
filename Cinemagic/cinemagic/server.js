@@ -600,7 +600,7 @@ app.post('/allBooking', (req, res) => {
     SELECT b.BuchungsID
     FROM Buchung b
     WHERE b.KundenID = ?
-    ORDER BY b.BuchungsDatum DESC;
+    ORDER BY b.BuchungsID DESC;
   `;
 
   con.query(query, [customerID], (error, results) => {
