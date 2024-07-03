@@ -23,10 +23,10 @@ export class SocketService {
     }
   }
 
-  releaseSeat(seat: any, eventID: number): void {
+  releaseSeat(seat: any, eventID: number, isBooked: boolean): void {
     if (this.socket && this.socket.connected) {
-      this.socket.emit('releaseSeat', {seat, eventID});
-      console.log('releaseSeat: ', seat, eventID);
+      this.socket.emit('releaseSeat', {seat, eventID, isBooked});
+      console.log('releaseSeat: ', seat, eventID, isBooked);
     } else {
       console.error('Socket not connected');
     }

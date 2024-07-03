@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
     console.log(reservedSeats);
   });
 
-  socket.on('releaseSeat', ({seat, eventID}) => {
+  socket.on('releaseSeat', ({seat, eventID, isBooked}) => {
     const seatIndex = reservedSeats.findIndex(s =>
       s.id === socket.id &&
       s.seat.Sitztyp === seat.Sitztyp &&
@@ -78,7 +78,8 @@ io.on('connection', (socket) => {
       s.eventID === eventID
     );
     if (seatIndex !== -1) {
-      socket.broadcast.emit('seatReleased', reservedSeats[seatIndex]);
+      reservedSeats[seatIndex].seat.isBooked = isBooked;
+      socket.broadcast.emit('seatReleased',  reservedSeats[seatIndex]);
       reservedSeats.splice(seatIndex, 1);
       io.emit('reservedSeats', reservedSeats);
     } else {
@@ -113,10 +114,11 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('clientDisconnect', () => {
+  socket.on('disconnect', () => {
     console.log('Client disconnected');
     for (let i = reservedSeats.length - 1; i >= 0; i--) {
       if (reservedSeats[i].id === socket.id) {
+        reservedSeats[i].seat.isBooked = false;
         socket.broadcast.emit('seatReleased', reservedSeats[i]);
         reservedSeats.splice(i, 1);
         io.emit('reservedSeats', reservedSeats);
@@ -613,13 +615,13 @@ app.post('/allBooking', (req, res) => {
 });
 
 app.post('/rating', (req, res) => {
-  const {customerID, movieID} = req.body;
+  const {bookingID, movieID} = req.body;
 
   const query = `
-    SELECT b.Bewertung FROM bewertet b WHERE b.KundenID = ? AND b.FilmID = ?;
+    SELECT b.Bewertung FROM bewertet b WHERE b.BuchungsID = ? AND b.FilmID = ?;
   `;
 
-  con.query(query, [customerID, movieID], (error, results) => {
+  con.query(query, [bookingID, movieID], (error, results) => {
     if (error) {
       console.error('Error fetching Rating:', error);
       res.status(500).json({error: 'Error fetching Rating: '});
@@ -631,14 +633,13 @@ app.post('/rating', (req, res) => {
 });
 
 app.put('/add/rating', (req, res) => {
-  const {customerID, movieID, rating} = req.body;
-  console.log('HAAAAAAAAAAAAAAAI', rating);
+  const {bookingID, movieID, rating} = req.body;
   const query = `
-    INSERT INTO bewertet (KundenID, FilmID, Bewertung)
+    INSERT INTO bewertet (BuchungsID, FilmID, Bewertung)
     VALUES (?, ?, ?);
   `;
 
-  con.query(query, [customerID, movieID, rating], (error, results) => {
+  con.query(query, [bookingID, movieID, rating], (error, results) => {
     if (error) {
       console.error('Error adding rating:', error);
       res.status(500).json({error: 'Error adding rating:'});

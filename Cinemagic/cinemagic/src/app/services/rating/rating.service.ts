@@ -16,8 +16,9 @@ export class RatingService {
   private addRatingUrl = '/add/rating';
 
 
-  addRating(customerID: number, movieID: number, rating: number): Observable<number> {
-    return this.http.put<any>(this.addRatingUrl,{customerID, movieID, rating}, this.httpOptions).pipe(
+  addRating(bookingID: number, movieID: number, rating: number): Observable<number> {
+    console.log(bookingID);
+    return this.http.put<any>(this.addRatingUrl,{bookingID, movieID, rating}, this.httpOptions).pipe(
       tap((response) => {
           if (response) {
             console.log('Rating_Service: Creating Rating successful: ', response);
@@ -32,8 +33,8 @@ export class RatingService {
       );
   }
 
-  fetchRating(customerID: number, movieID: number): Observable<number> {
-    return this.http.post<any>(this.fetchRatingUrl,{customerID, movieID}, this.httpOptions).pipe(
+  fetchRating(bookingID: number, movieID: number): Observable<number> {
+    return this.http.post<any>(this.fetchRatingUrl,{bookingID, movieID}, this.httpOptions).pipe(
       tap((response) => {
         if (response) {
           console.log('Rating_Service: Fetching Rating successful: ', response);

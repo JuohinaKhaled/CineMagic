@@ -12,6 +12,7 @@ import {AuthService} from "../../services/auth/auth.service";
 import {ModalComponent} from "../modal/modal.component";
 import {ModalService} from "../../services/modal/modal.service";
 import {BookingService} from "../../services/booking/booking.service";
+import {CustomSnackbarService} from "../../services/custom-snackbar/custom-snackbar.service";
 
 
 @Component({
@@ -51,7 +52,8 @@ export class RoomComponent implements OnInit {
     private eventService: EventService,
     private authService: AuthService,
     private modalService: ModalService,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private snackBar: CustomSnackbarService
   ) {
   }
 
@@ -130,7 +132,7 @@ export class RoomComponent implements OnInit {
       (seat) => {
         const seatToUpdate = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
         if (seatToUpdate) {
-          seatToUpdate.Buchungsstatus = 'Free';
+          seatToUpdate.Buchungsstatus = seat.isBooked ? 'Occupied' : 'Free';
         }
       },
       (error) => {
@@ -271,7 +273,7 @@ export class RoomComponent implements OnInit {
         console.log("RemovedSeat", removedSeat);
         const seatToDeselect = this.seats.find(s => s.Reihennummer === removedSeat.Reihennummer && s.Sitznummer === removedSeat.Sitznummer);
         console.log("SeatToDeselect", seatToDeselect);
-        this.socketService.releaseSeat(seatToDeselect, this.eventID);
+        this.socketService.releaseSeat(seatToDeselect, this.eventID, false);
         if (seatToDeselect) {
           seatToDeselect.selected = false;
         }
@@ -399,7 +401,7 @@ export class RoomComponent implements OnInit {
     if (index > -1) {
       const removeSeat = this.seats.find(s => s.Reihennummer === seat.Reihennummer && s.Sitznummer === seat.Sitznummer);
       if (removeSeat) {
-        this.socketService.releaseSeat(removeSeat, this.eventID);
+        this.socketService.releaseSeat(removeSeat, this.eventID, false);
         removeSeat.selected = false;
         console.log('Room_Component: Seat removed:', removeSeat);
       } else {
@@ -463,7 +465,6 @@ export class RoomComponent implements OnInit {
           console.log('Booking_Component: Create Booking successful: ', bookingID);
           if (bookingID) {
             this.bookSeats(bookingID);
-            this.socketService.disconnect();
             this.router.navigate(['/booking', this.bookingID]);
           }
         },
@@ -478,12 +479,15 @@ export class RoomComponent implements OnInit {
       this.bookingService.bookTickets(bookingID, this.customerID, this.eventID, seat.SitzplatzID, seat.ticketID).subscribe({
         next: (result: any) => {
           if (result) {
+            this.socketService.releaseSeat(seat, this.eventID, true);
+            this.snackBar.openSnackBar("Booking successful");
             console.log('Booking tickets for seat successful:', result);
           } else {
             console.error('Error booking tickets for seat:', result);
           }
         },
         error: (error) => {
+          this.snackBar.openSnackBar("Error during your booking. Please try again.");
           console.error('Error booking tickets for seat:', seat, error);
           return throwError(error);
         }

@@ -7,7 +7,7 @@
       <h1>{{ film.Titel }}</h1>
       <div class="d-flex flex-row align-items-center">
         <app-rating [maxStars]="5" [averageRating]="film.Gesamtbewertung" [readOnly]="true" class="me-3"></app-rating>
-        <span class="me-1">{{ film.Gesamtbewertung }}</span>
+        <span class="me-1">{{ film.Gesamtbewertung.toFixed(2) }}</span>
         <span>({{ film.AnzahlBewertungen }})</span>
       </div>
       <p>{{ film.Beschreibung }}</p>

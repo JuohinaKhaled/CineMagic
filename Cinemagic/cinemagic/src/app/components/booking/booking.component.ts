@@ -6,6 +6,7 @@ import {Observable, Subscription, throwError} from "rxjs";
 import {AuthService} from "../../services/auth/auth.service";
 import {ModalService} from "../../services/modal/modal.service";
 import {RatingService} from "../../services/rating/rating.service";
+import {CustomSnackbarService} from "../../services/custom-snackbar/custom-snackbar.service";
 
 @Component({
   selector: 'app-booking',
@@ -28,7 +29,9 @@ export class BookingComponent implements OnInit , OnDestroy{
               private modalService: ModalService,
               private router: Router,
               private ratingService: RatingService,
-              private cdRef: ChangeDetectorRef) {
+              private cdRef: ChangeDetectorRef,
+              private snackBar: CustomSnackbarService
+  ) {
   }
 
   ngOnInit(): void {
@@ -63,8 +66,6 @@ export class BookingComponent implements OnInit , OnDestroy{
         this.booking = booking[0];
         this.cdRef.detectChanges();
         this.getRating()
-        console.log('GGGG', this.booking);
-        console.log('GGGG', this.booking.FilmID);
         console.log('Booking_Component: Fetching Booking successful:', booking[0])
       },
       error: (err) => {
@@ -75,7 +76,7 @@ export class BookingComponent implements OnInit , OnDestroy{
   }
 
   getRating() {
-    this.ratingService.fetchRating(this.customerID, this.booking.FilmID).subscribe({
+    this.ratingService.fetchRating(this.bookingID, this.booking.FilmID).subscribe({
       next: (rating: any) => {
         this.rating = rating[0].Bewertung;
         this.cdRef.detectChanges();
@@ -115,10 +116,12 @@ export class BookingComponent implements OnInit , OnDestroy{
   cancelBooking() {
     this.bookingService.deleteBooking(this.bookingID).subscribe({
       next: (deletedBooking: any) => {
+        this.snackBar.openSnackBar("Cancel booking successful.");
         console.log('Booking_Component: Removing Booking successful:', deletedBooking);
         this.updateBookingStatus();
       },
       error: (err) => {
+        this.snackBar.openSnackBar("Error during your cancelling booking. Please try again.");
         console.log('Booking_Component: Error removing Booking:', err);
         return throwError(err);
       }
@@ -138,17 +141,19 @@ export class BookingComponent implements OnInit , OnDestroy{
   }
 
   rateMovie(currentRate: number) {
-    console.log('DALAL', this.rating);
-    this.ratingService.addRating(this.customerID, this.booking.FilmID, currentRate).subscribe({
+    console.log('DALAL', this.bookingID);
+    this.ratingService.addRating(this.bookingID, this.booking.FilmID, currentRate).subscribe({
       next: (addRating: any) => {
+        this.getRating();
+        this.snackBar.openSnackBar("Rating of movie successful.");
         console.log('Booking_Component: Add Rating successful:', addRating);
       },
       error: (err) => {
+        this.snackBar.openSnackBar("Error during your rating movie . Please try again.");
         console.log('Booking_Component: Error adding Booking:', err);
         return throwError(err);
       }
     });
-    console.log("HALLO RATING")
   }
 
   ngOnDestroy(): void {
