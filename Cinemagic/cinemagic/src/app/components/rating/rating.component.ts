@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-rating',
   templateUrl: './rating.component.html',
-  styleUrl: './rating.component.css'
+  styleUrls: ['./rating.component.css']
 })
 export class RatingComponent implements OnInit {
   @Input() maxStars: number = 5;
@@ -11,7 +11,6 @@ export class RatingComponent implements OnInit {
   @Input() averageRating: number = 0; // Für den zweiten Anwendungsfall
   @Input() readOnly: boolean = false; // Nur für den zweiten Anwendungsfall
   @Output() ratingUpdated = new EventEmitter<number>(); // Nur für den ersten Anwendungsfall
-
   hoveredStar: number = 0;
   stars: number[] = [];
 
@@ -52,10 +51,10 @@ export class RatingComponent implements OnInit {
         return 'empty';
       }
     } else {
-      const flooredRating = Math.floor(this.averageRating);
+      const flooredRating = Math.floor(this.averageRating || 0);
       if (index < flooredRating) {
         return 'filled';
-      } else if (index === flooredRating && this.averageRating % 1 !== 0) {
+      } else if (index === flooredRating && (this.averageRating % 1 || 0) !== 0) {
         return 'partial';
       } else {
         return 'empty';

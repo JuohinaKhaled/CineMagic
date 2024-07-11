@@ -1,10 +1,8 @@
-// noinspection JSDeprecatedSymbols
-
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieService } from '../../services/movie/movie.service';
 import { EventService } from '../../services/event/event.service';
-import * as _ from 'lodash';
+import { groupBy } from 'lodash-es'; // Updated import statement
 
 @Component({
   selector: 'app-movie-details',
@@ -76,14 +74,14 @@ export class MovieDetailsComponent implements OnInit {
     const oneWeekLater = new Date();
     oneWeekLater.setDate(today.getDate() + 7);
 
-    // Filtere die Events nach dem Zeitraum und sortiere sie nach Datum
+    // Filter the events by date range and sort them by date
     const filteredEvents = this.events.filter(event => {
       const eventDate = new Date(event.Vorfuehrungsdatum);
       return eventDate >= today && eventDate <= oneWeekLater;
-    }).sort((a, b) => new Date(a.Vorfuehrungsdatum).getDate() - new Date(b.Vorfuehrungsdatum).getDate());
+    }).sort((a, b) => new Date(a.Vorfuehrungsdatum).getTime() - new Date(b.Vorfuehrungsdatum).getTime());
 
-    // Gruppiere die gefilterten und sortierten Events nach Datum
-    const grouped = _.groupBy(filteredEvents, 'Vorfuehrungsdatum');
+    // Group the filtered and sorted events by date
+    const grouped = groupBy(filteredEvents, 'Vorfuehrungsdatum');
     this.groupedEvents = Object.keys(grouped).map(date => ({
       date,
       events: grouped[date],
