@@ -1,8 +1,7 @@
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import {Subscription, throwError} from "rxjs";
+import {Subscription} from "rxjs";
 import {CounterService} from "../../services/counter/counter.service";
 import {SocketService} from "../../services/socket/socket.service";
-import {catchError, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-counter',
@@ -16,7 +15,6 @@ export class CounterComponent implements OnInit, OnDestroy, OnChanges {
   counterValue: number = 0;
   totalCounterValue: number = 0;
   subscription: Subscription = new Subscription();
-  counterInitialized: boolean = false;
 
   constructor(private counterService: CounterService, private socketService: SocketService) {
   }

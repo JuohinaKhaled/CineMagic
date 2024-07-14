@@ -10,6 +10,7 @@ import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.comp
 })
 export class NewsletterComponent implements OnInit {
   newsletterForm: FormGroup;
+  isRegistered = false;
 
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar) {
     this.newsletterForm = this.fb.group({
@@ -21,12 +22,21 @@ export class NewsletterComponent implements OnInit {
   ngOnInit(): void {}
 
   onSubmit(): void {
+    if (!this.isRegistered) {
+      this.register();
+    } else {
+      this.unregister();
+    }
+  }
+
+  private register(): void {
     if (this.newsletterForm.valid) {
+      this.isRegistered = true;
       const formData = this.newsletterForm.value;
       this.showNotification('Successfully signed up for the newsletter!', 'success');
       console.log('Newsletter Registration:', formData);
-      this.newsletterForm.reset();
-      location.reload();
+      this.newsletterForm.controls['consent'].setValue(false);
+      this.newsletterForm.controls['consent'].disable();
     } else {
       if (!this.newsletterForm.controls['consent'].value) {
         this.showNotification('Agree to terms first', 'error');
@@ -34,6 +44,13 @@ export class NewsletterComponent implements OnInit {
         this.showNotification('Wrong email format', 'error');
       }
     }
+  }
+
+  private unregister(): void {
+    this.isRegistered = false;
+    this.newsletterForm.reset();
+    this.newsletterForm.controls['consent'].enable();
+    this.showNotification('Successfully unsubscribed from the newsletter!', 'success');
   }
 
   private showNotification(message: string, type: string): void {
