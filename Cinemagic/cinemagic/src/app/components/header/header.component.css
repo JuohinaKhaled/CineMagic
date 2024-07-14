@@ -31,6 +31,10 @@ button:hover svg{
   display: block;
 }
 
+.cine-logo{
+  margin-top: -80px;
+}
+
 @media only screen and (max-width: 650px) {
   .iconLogout{
     display: block;
@@ -39,6 +43,7 @@ button:hover svg{
   .textLogout{
     display: none;
   }
+
 }
 
 

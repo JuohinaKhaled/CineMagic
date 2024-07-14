@@ -11,7 +11,7 @@ import {ProfileComponent} from "./components/profile/profile.component";
 import {BookingComponent} from "./components/booking/booking.component";
 import {AllBookingsComponent} from "./components/booking/all-bookings.component";
 import { MyDataComponent } from './components/my-data/my-data.component';
-import { NewsletterComponent} from "./newsletter/newsletter.component";
+import { NewsletterComponent} from "./components/newsletter/newsletter.component";
 
 
 const routes: Routes = [
