@@ -37,7 +37,7 @@ import {SafePipe} from './components/videomodal/safe.pipe';
 import { AllBookingsComponent } from './components/booking/all-bookings.component';
 import { MyDataComponent } from './components/my-data/my-data.component';
 import { RatingComponent } from './components/rating/rating.component';
-import { NewsletterComponent } from './newsletter/newsletter.component';
+import { NewsletterComponent } from './components/newsletter/newsletter.component';
 
 @NgModule({
   declarations: [

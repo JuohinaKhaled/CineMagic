@@ -10,13 +10,13 @@
         <label for="email">Email Address</label>
         <input id="email" type="email" formControlName="email" placeholder="Email Address" />
       </div>
-      <div>
+      <div *ngIf="!isRegistered">
         <label for="consent">
           <input type="checkbox" id="consent" formControlName="consent" />
           I agree to receive newsletters and promotional offers.
         </label>
       </div>
-      <button type="submit">Register</button>
+      <button type="submit">{{ isRegistered ? 'Unregister' : 'Register' }}</button>
     </form>
   </div>
 </div>

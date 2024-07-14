@@ -4,7 +4,6 @@ import {Router} from "@angular/router";
 @Component({
   selector: 'app-event',
   templateUrl: './event.component.html',
-  styleUrl: './event.component.css'
 })
 export class EventComponent {
   @Input() event: any;

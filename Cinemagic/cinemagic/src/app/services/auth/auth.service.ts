@@ -86,7 +86,4 @@ export class AuthService {
     return this.telefonnummer;
   }
 
-  getCustomerPassword(): string | null {
-    return this.passwort;
-  }
 }
