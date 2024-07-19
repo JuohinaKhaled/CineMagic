@@ -4,7 +4,6 @@ export class Event {
   roomID: number;
   eventDate: string;
   eventTime: string;
-  soldTickets: number;
   roomName: string;
   roomType: string;
 
@@ -15,7 +14,6 @@ export class Event {
     roomID: number,
     eventDate: string,
     eventTime: string,
-    soldTickets: number,
     roomName: string,
     roomType: string
   ) {
@@ -24,7 +22,6 @@ export class Event {
     this.roomID = roomID;
     this.eventDate = eventDate;
     this.eventTime = eventTime;
-    this.soldTickets = soldTickets;
     this.roomName = roomName;
     this.roomType = roomType;
   }

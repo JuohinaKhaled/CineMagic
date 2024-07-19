@@ -8,7 +8,7 @@ import {SocketService} from "../../services/socket/socket.service";
   templateUrl: './counter.component.html',
   styleUrl: './counter.component.css'
 })
-export class CounterComponent implements OnInit, OnDestroy, OnChanges {
+export class CounterComponent implements OnInit, OnDestroy {
   @Input() headline: string = '';
   @Input() eventID: number = 0;
   @Output() counterValueChanged = new EventEmitter<number>();
@@ -27,14 +27,15 @@ export class CounterComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   startCounterValue() {
-    this.socketService.getCurrentCount(this.headline, this.eventID).subscribe(
-      startValue => {
+    this.socketService.getCurrentCount(this.headline, this.eventID).subscribe({
+      next: (startValue) => {
         this.counterValue = startValue;
         this.counterValueChanged.emit(this.counterValue);
       },
-      error => {
-        console.error("Counter_Component: Error fetching counter:", error);
-      });
+      error: (err) => {
+        console.error("Counter_Component: Error fetching counter:", err);
+      }
+    });
   }
 
   increment() {
@@ -65,12 +66,6 @@ export class CounterComponent implements OnInit, OnDestroy, OnChanges {
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-    console.log('DESTROY called', this.subscription);
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-
-      console.log('ngOnChanges called', changes);
-
-  }
 }

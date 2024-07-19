@@ -7,20 +7,23 @@ import {AuthService} from "../../services/auth/auth.service";
 import {ModalService} from "../../services/modal/modal.service";
 import {RatingService} from "../../services/rating/rating.service";
 import {CustomSnackbarService} from "../../services/custom-snackbar/custom-snackbar.service";
+import {BookingTicket} from "../../models/bookingTicket/booking-ticket";
+import {Booking} from "../../models/booking/booking";
 
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css'
 })
-export class BookingComponent implements OnInit , OnDestroy{
-  private ratingSubscription?: Subscription;
+export class BookingComponent implements OnInit, OnDestroy {
+  ratingSubscription?: Subscription;
   bookingID: number = 0;
   isDateValid: boolean = false;
-  booking: any;
+  booking$: Observable<Booking> | undefined;
+  movieID!: number;
   customerID!: number;
   rating!: number;
-  seats$: Observable<any[]> | undefined;
+  bookedTickets$: Observable<BookingTicket[]> | undefined;
 
 
   constructor(private bookingService: BookingService,
@@ -38,7 +41,7 @@ export class BookingComponent implements OnInit , OnDestroy{
     this.getCustomerID();
     this.getEventID();
     this.getBooking();
-    this.getAllBookedSeats();
+    this.getAllBookedTickets();
   }
 
   getEventID() {
@@ -46,44 +49,47 @@ export class BookingComponent implements OnInit , OnDestroy{
   }
 
 
-  getAllBookedSeats() {
-    this.seats$ = this.bookingService.fetchAllBookedSeats(this.bookingID).pipe(
-      tap((seats: any[]) => {
-        this.cdRef.detectChanges();
-        console.log('Booking_Component: Fetching booked Seats successful:', seats)
-        return seats;
+  getAllBookedTickets() {
+    this.bookedTickets$ = this.bookingService.fetchAllBookedTickets(this.bookingID).pipe(
+      tap((bookingTickets: BookingTicket[]) => {
+        console.log('Booking_Component: Fetching booked Seats successful:', bookingTickets)
+        return bookingTickets;
       }),
       catchError(err => {
-        console.log('Booking_Component: Error fetching booked Seats:', err);
+        console.error('Booking_Component: Error fetching booked Seats:', err);
         return throwError(err);
       })
     );
   }
 
   getBooking() {
-    this.bookingService.fetchBooking(this.bookingID).subscribe({
-      next: (booking: any) => {
-        this.booking = booking[0];
-        this.cdRef.detectChanges();
-        this.getRating()
-        console.log('Booking_Component: Fetching Booking successful:', booking[0])
-      },
-      error: (err) => {
-        console.log('Booking_Component: Error fetching Booking:', err);
+    this.booking$ = this.bookingService.fetchBooking(this.bookingID).pipe(
+      tap(booking => {
+        console.log('Booking_Component: Fetching Booking successful: ', booking)
+        this.movieID = booking.movieID;
+        this.getRating();
+        return booking;
+      }),
+      catchError(err => {
+        console.error('Booking_Component: Error fetching Booking: ', err);
         return throwError(err);
-      }
-    });
+      })
+    );
   }
 
   getRating() {
-    this.ratingService.fetchRating(this.bookingID, this.booking.FilmID).subscribe({
+    this.ratingService.fetchRating(this.bookingID, this.movieID).subscribe({
       next: (rating: any) => {
-        this.rating = rating[0].Bewertung;
-        this.cdRef.detectChanges();
-        console.log('Booking_Component: Fetching Rating successful:', rating)
+        if(rating) {
+          this.rating = rating.rating;
+          this.cdRef.detectChanges();
+          console.log('Booking_Component: Fetching Rating successful:', rating)
+        } else {
+          console.log('Booking_Component: No Rating existing!')
+        }
       },
       error: (err) => {
-        console.log('Booking_Component: Error fetching Rating:', err);
+        console.error('Booking_Component: Error fetching Rating:', err);
         return throwError(err);
       }
     });
@@ -97,7 +103,7 @@ export class BookingComponent implements OnInit , OnDestroy{
   openModal(title: string, modalType: 'rateMovie' | 'cancelBooking' | undefined) {
     let isLoggedIn = this.authService.isLoggedIn
 
-    this.modalService.open(title, isLoggedIn, modalType).then(({ action, value}) => {
+    this.modalService.open(title, isLoggedIn, modalType).then(({action, value}) => {
       if (action) {
         if (action === 'cancelBooking') {
           this.cancelBooking();
@@ -115,14 +121,14 @@ export class BookingComponent implements OnInit , OnDestroy{
   cancelBooking() {
     this.bookingService.deleteBooking(this.bookingID).subscribe({
       next: (deletedBooking: any) => {
-        this.snackBar.openSnackBar("Cancel booking successful.");
-        this.router.navigate(['profile/all-bookings']);
+        this.snackBar.openSnackBar('Cancel booking successful.');
         console.log('Booking_Component: Removing Booking successful:', deletedBooking);
+        this.router.navigate(['profile/all-bookings']);
         this.updateBookingStatus();
       },
       error: (err) => {
-        this.snackBar.openSnackBar("Error during your cancelling booking. Please try again.");
-        console.log('Booking_Component: Error removing Booking:', err);
+        this.snackBar.openSnackBar('Error during your cancelling booking. Please try again.');
+        console.error('Booking_Component: Error removing Booking:', err);
         return throwError(err);
       }
     });
@@ -131,25 +137,24 @@ export class BookingComponent implements OnInit , OnDestroy{
   updateBookingStatus() {
     this.bookingService.updateBooking(this.bookingID).subscribe({
       next: (updateBooking: any) => {
-        console.log('Booking_Component: Updating Booking successful:', updateBooking)
+        console.log('Booking_Component: Updating Booking successful: ', updateBooking)
       },
       error: (err) => {
-        console.log('Booking_Component: Error updating Booking:', err);
+        console.error('Booking_Component: Error updating Booking: ', err);
         return throwError(err);
       }
     });
   }
 
   rateMovie(currentRate: number) {
-    console.log('DALAL', this.bookingID);
-    this.ratingService.addRating(this.bookingID, this.booking.FilmID, currentRate).subscribe({
+    this.ratingService.addRating(this.bookingID, this.movieID, currentRate).subscribe({
       next: (addRating: any) => {
         this.getRating();
         this.snackBar.openSnackBar("Rating of movie successful.");
-        console.log('Booking_Component: Add Rating successful:', addRating);
+        console.log('Booking_Component: Rating added successful:', addRating);
       },
       error: (err) => {
-        this.snackBar.openSnackBar("Error during your rating movie . Please try again.");
+        this.snackBar.openSnackBar("Error during your rating movie. Please try again.");
         console.log('Booking_Component: Error adding Booking:', err);
         return throwError(err);
       }
@@ -163,6 +168,6 @@ export class BookingComponent implements OnInit , OnDestroy{
   }
 
   getCustomerID() {
-    this.customerID = this.authService.getCustomerID()!;
+    this.customerID = this.authService.getCurrentUser()?.customerID!;
   }
 }

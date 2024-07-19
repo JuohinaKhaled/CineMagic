@@ -1,55 +1,44 @@
-import {Injectable, OnInit} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {map, Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
 import {Room} from "../../models/room/room";
+import {Seat} from "../../models/seat/seat";
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoomService {
 
+  httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
+  private fetchSeatsAllUrl = '/api/seats';
+  private fetchRoomUrl = '/api/room';
+
   constructor(private http: HttpClient) {
   }
 
-  getSeats(eventID: number): Observable<any> {
-    return this.http.post<any>('/seats', {eventID}).pipe(
-      tap(response => {
-        if (response.length > 0) {
-          console.log('Sitzplatz-Daten abgerufen: ', response);
-        } else {
-          console.log('Fehler beim Abrufen der Sitzplatz-Daten, Antwort: ', response);
-        }
+  fetchAllSeats(eventID: number): Observable<Seat[]> {
+    return this.http.post<Seat[]>(this.fetchSeatsAllUrl, {eventID}, this.httpOptions).pipe(
+      tap(seats => {
+        console.log('Room_Service: Seats fetched successful: ', seats);
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Sitzplatz-Daten: ', err);
+        console.error('Room_Service: Error fetching Seats: ', err);
         return throwError(err);
       })
     );
   }
 
-  getRoom(eventID: number): Observable<Room[]> {
-    return this.http.post<any[]>('/room', {eventID}).pipe(
-      map(response => {
-        return response.map(item => ({
-          roomID: item.SaalID,
-          roomName: item.Saalname,
-          roomCapacity: item.AnzahlSitzplaetze,
-          roomType: item.Saaltyp
-        }));
-      }),
-      tap(response => {
-        if (response.length > 0) {
-          console.log('Saal-Daten abgerufen: ', response);
-        } else {
-          console.log('Fehler beim Abrufen der Saal-Daten, Antwort: ', response);
-        }
+  fetchRoom(eventID: number): Observable<Room> {
+    return this.http.post<Room>(this.fetchRoomUrl, {eventID}, this.httpOptions).pipe(
+      tap(room => {
+        console.log('Room_Service: Room fetched successful: ', room);
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Saal-Daten: ', err);
+        console.error('Room_Service: Error fetching Room: ', err);
         return throwError(err);
       })
     );
-
   }
+
 }

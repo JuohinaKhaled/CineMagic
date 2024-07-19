@@ -9,6 +9,9 @@ export class Seat {
   personType: string;
   priceBrutto: number;
   priceNetto: number;
+  selected: boolean;
+  isBooked:boolean;
+
 
   constructor
   (
@@ -29,6 +32,8 @@ export class Seat {
     this.personType = '';
     this.priceBrutto = 0;
     this.priceNetto = 0;
+    this.selected = false;
+    this.isBooked = false;
   }
 
 }

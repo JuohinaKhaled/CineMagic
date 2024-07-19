@@ -1,34 +1,59 @@
 export class Booking {
   bookingID: number;
-  customerID: number;
-  purchaseDate: string;
+  bookingDate: string;
   totalPriceNetto: number;
   totalPriceBrutto: number;
   counterTicketsAdult: number;
   counterTicketsChild: number;
   counterTicketsStudent: number;
-  paid: boolean;
+  bookingStatus: string;
+  eventDate: Date;
+  eventTime: string;
+  movieID: number;
+  movieName: string;
+  duration: number;
+  age: number;
+  genre: string;
+  roomName: string;
+  roomType: string;
+
 
   constructor
   (
     bookingID: number,
-    customerID: number,
-    purchaseDate: string,
+    bookingDate: string,
     totalPriceNetto: number,
     totalPriceBrutto: number,
     counterTicketsAdult: number,
     counterTicketsChild: number,
     counterTicketsStudent: number,
-    paid: boolean
+    bookingStatus: string,
+    eventDate: Date,
+    eventTime: string,
+    movieID: number,
+    movieName: string,
+    duration: number,
+    age: number,
+    genre: string,
+    roomName: string,
+    roomType: string,
   ) {
     this.bookingID = bookingID;
-    this.customerID = customerID;
-    this.purchaseDate = purchaseDate;
+    this.bookingDate = bookingDate;
     this.totalPriceNetto = totalPriceNetto;
     this.totalPriceBrutto = totalPriceBrutto;
     this.counterTicketsAdult = counterTicketsAdult;
     this.counterTicketsChild = counterTicketsChild;
     this.counterTicketsStudent = counterTicketsStudent;
-    this.paid = paid;
+    this.bookingStatus = bookingStatus;
+    this.eventDate = eventDate;
+    this.eventTime = eventTime;
+    this.movieID = movieID;
+    this.movieName = movieName;
+    this.duration = duration;
+    this.age = age;
+    this.genre = genre;
+    this.roomName = roomName;
+    this.roomType = roomType;
   }
 }

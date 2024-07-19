@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-rating',
@@ -7,10 +7,10 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange
 })
 export class RatingComponent implements OnInit {
   @Input() maxStars: number = 5;
-  @Input() currentRate: number = 0; // Für den ersten Anwendungsfall
-  @Input() averageRating: number = 0; // Für den zweiten Anwendungsfall
-  @Input() readOnly: boolean = false; // Nur für den zweiten Anwendungsfall
-  @Output() ratingUpdated = new EventEmitter<number>(); // Nur für den ersten Anwendungsfall
+  @Input() currentRate: number = 0; // For the first use case
+  @Input() averageRating: number = 0; // For the second use case
+  @Input() readOnly: boolean = false; // Only for the first use case
+  @Output() ratingUpdated = new EventEmitter<number>(); // Only for the first use case
   hoveredStar: number = 0;
   stars: number[] = [];
 

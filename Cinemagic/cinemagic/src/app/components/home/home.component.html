@@ -1,42 +1,48 @@
 <div class="container mt-4">
   <!-- Carousel -->
-  <div *ngIf="films.length > 0">
-    <div id="filmCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
-      <div class="carousel-inner">
-        <div *ngFor="let film of films; let i = index" [ngClass]="{'carousel-item': true, 'active': i === 0}">
-          <img [src]="film.PfadGrossesBild" class="bigPicture w-100" [alt]="film.Titel">
-          <img [src]="film.PfadMittleresBild" class="middlePicture w-100" [alt]="film.Titel">
-          <div class="play-button" (click)="openVideoModal('https://www.youtube.com/embed/'+ film.PfadTrailerVideo)">
-            &#9658;
+  <ng-container *ngIf="movies$ | async as movies">
+    <div *ngIf="movies.length > 0; else noMovies">
+      <div id="filmCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+        <div class="carousel-inner">
+          <div *ngFor="let movie of movies; let i = index" [ngClass]="{'carousel-item': true, 'active': i === 0}">
+            <img [src]="movie.pathPictureLarge" class="bigPicture w-100" [alt]="movie.movieName">
+            <img [src]="movie.pathPictureMiddle" class="middlePicture w-100" [alt]="movie.movieName">
+            <div class="play-button" (click)="openVideoModal('https://www.youtube.com/embed/'+ movie.pathTrailerVideo)">
+              &#9658;
+            </div>
+          </div>
+        </div>
+        <button id="prevBtn" class="carousel-control-prev" type="button" data-bs-target="#filmCarousel"
+                data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button id="nextBtn" class="carousel-control-next" type="button" data-bs-target="#filmCarousel"
+                data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Film Panels -->
+    <div class="row mt-4">
+      <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let movie of movies"> <!-- Responsive columns -->
+        <div class="card h-100" (click)="routeMovieDetails(movie.movieID)">
+          <img [src]="movie.pathPictureSmall" class="card-img-top" [alt]="movie.movieName">
+          <div class="overlay">
+            <div class="overlay-text">More Info</div>
+          </div>
+          <div class="card-body">
+            <h5 class="card-title">{{ movie.movieName }}</h5>
           </div>
         </div>
       </div>
-      <button id="prevBtn" class="carousel-control-prev" type="button" data-bs-target="#filmCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button id="nextBtn" class="carousel-control-next" type="button" data-bs-target="#filmCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
     </div>
-  </div>
-
-  <!-- Film Panels -->
-  <div class="row mt-4" *ngIf="films.length > 0">
-    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4" *ngFor="let film of films"> <!-- Responsive columns -->
-      <div class="card h-100" (click)="routeMovieDetails(film.FilmID)">
-        <img [src]="film.PfadKleinesBild" class="card-img-top" [alt]="film.Titel">
-        <div class="overlay">
-          <div class="overlay-text">More Info</div>
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">{{ film.Titel }}</h5>
-        </div>
-      </div>
+  </ng-container>
+  <ng-template #noMovies>
+    <div class="mt-5 d-flex flex-row justify-content-center align-items-center">
+      <p>No films available.</p>
     </div>
-  </div>
-  <div *ngIf="films.length === 0" class="mt-5 d-flex flex-row justify-content-center align-items-center">
-    <p>No films available.</p>
-  </div>
+  </ng-template>
 </div>

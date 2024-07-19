@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import {Component} from '@angular/core';
+import {Router, NavigationEnd} from '@angular/router';
+import {filter} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +9,7 @@ import { filter } from 'rxjs/operators';
 })
 export class AppComponent {
   title = 'cinemagic';
+
   constructor(private router: Router) {
     router.events.pipe(
       filter(event => event instanceof NavigationEnd)

@@ -19,4 +19,5 @@ export class CustomSnackbarService {
       panelClass: 'custom-snackbar'
     });
   }
+
 }

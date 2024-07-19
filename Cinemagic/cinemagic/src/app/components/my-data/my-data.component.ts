@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CustomSnackbarService } from '../../services/custom-snackbar/custom-snackbar.service';
-import { UserService } from '../../services/user/user.service';
-import { AuthService } from '../../services/auth/auth.service';
-import { catchError, tap } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { strongPasswordValidator } from './strong-password.validator';
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {CustomSnackbarService} from '../../services/custom-snackbar/custom-snackbar.service';
+import {UserService} from '../../services/user/user.service';
+import {AuthService} from '../../services/auth/auth.service';
+import {catchError, tap} from 'rxjs/operators';
+import {of} from 'rxjs';
+import {strongPasswordValidator} from "../register/strong-password.validator";
+import {User} from "../../models/user/user";
+
 
 @Component({
   selector: 'app-my-data',
@@ -16,6 +18,7 @@ export class MyDataComponent implements OnInit {
   profileForm: FormGroup;
   passwordForm: FormGroup;
   customerID: number | null = null;
+  user: User | null = null;
 
   profileSaveSuccess = false;
   profileSaveError = false;
@@ -31,7 +34,7 @@ export class MyDataComponent implements OnInit {
     this.profileForm = this.fb.group({
       firstName: [''],
       lastName: [''],
-      email: [{ value: '', disabled: true }],
+      email: [{value: '', disabled: true}],
       phoneNumber: [''],
       password: ['']
     });
@@ -44,17 +47,31 @@ export class MyDataComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.populateUserData();
+    this.getCustomer();
   }
 
+  getCustomer() {
+    this.customerID = this.authService.getCurrentUser()?.customerID!;
+    this.userService.fetchUserData(this.customerID).subscribe({
+      next: user => {
+        this.user = user;
+        console.log('My-Data_Component: User-Data fetched successful: ', this.user);
+        this.populateUserData();
+      },
+      error: err => {
+        console.error('My-Data_Component: Error fetching User-Data:', err);
+      }
+    })
+  }
+
+
   populateUserData() {
-    this.customerID = this.authService.getCustomerID();
     if (this.customerID !== null) {
       this.profileForm.patchValue({
-        firstName: this.authService.getCustomerName()?.split(' ')[0] || '',
-        lastName: this.authService.getCustomerName()?.split(' ')[1] || '',
-        email: this.authService.getCustomerEmail(),
-        phoneNumber: this.authService.getCustomerPhoneNumber(),
+        firstName: this.user?.firstName,
+        lastName: this.user?.lastName,
+        email: this.user?.email,
+        phoneNumber: this.user?.phoneNumber,
         password: '********'
       });
       this.profileForm.get('email')?.disable();
@@ -62,7 +79,7 @@ export class MyDataComponent implements OnInit {
   }
 
   onSave(): void {
-    const updateData: any = { customerID: this.customerID };
+    const updateData: any = {customerID: this.customerID};
 
     if (this.profileForm.value.firstName) {
       updateData.Vorname = this.profileForm.value.firstName;
@@ -82,12 +99,13 @@ export class MyDataComponent implements OnInit {
         this.profileSaveSuccess = true;
         this.profileSaveError = false;
         this.snackBar.openSnackBar('Changes have been successfully saved');
+        console.log('My-Data_Component: Profil-Update successful: ', response);
       }),
       catchError(err => {
-        console.error('Error updating profile:', err);
         this.profileSaveError = true;
         this.profileSaveSuccess = false;
         this.snackBar.openSnackBar('Error updating profile. Please try again.');
+        console.error('My-Data_Component: Error updating Profile:', err);
         return of(null);
       })
     ).subscribe();
@@ -95,7 +113,7 @@ export class MyDataComponent implements OnInit {
 
   onChangePassword(): void {
     if (this.passwordForm.valid) {
-      const { newPassword, confirmPassword } = this.passwordForm.value;
+      const {newPassword, confirmPassword} = this.passwordForm.value;
       if (newPassword === confirmPassword) {
         this.userService.changePassword({
           customerID: this.customerID,
@@ -106,13 +124,14 @@ export class MyDataComponent implements OnInit {
             this.passwordChangeSuccess = true;
             this.passwordChangeError = false;
             this.snackBar.openSnackBar('Password changed successfully');
+            console.log('My-Data_Component: Password changed successful: ', response);
             this.passwordForm.reset();
           }),
           catchError(err => {
-            console.error('Error changing password:', err);
             this.passwordChangeError = true;
             this.passwordChangeSuccess = false;
             this.snackBar.openSnackBar('Error changing password. Please try again.');
+            console.error('My-Data_Component: Error changing password:', err);
             return of(null);
           })
         ).subscribe();

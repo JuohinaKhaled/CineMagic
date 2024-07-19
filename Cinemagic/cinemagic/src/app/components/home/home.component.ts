@@ -1,8 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 
-import {ActivatedRoute, Route, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {MovieService} from "../../services/movie/movie.service";
 import {ModalService} from "../../services/modal/modal.service";
+import {Observable, throwError} from "rxjs";
+import {Movie} from "../../models/movie/movie";
+import {catchError, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -10,7 +13,7 @@ import {ModalService} from "../../services/modal/modal.service";
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  films: any[] = [];
+  movies$: Observable<|Movie[]> | undefined;
 
   constructor(private movieService: MovieService,
               private router: Router,
@@ -18,25 +21,30 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.movieService.getFilms().subscribe(
-      (data: any[]) => {
-        this.films = data;
-        console.log("Films loaded:", this.films);
-      },
-      (error) => {
-        console.error("Error loading films:", error);
-      }
-    );
+    this.getMovies();
   }
 
-  routeMovieDetails(FilmID: any) {
-    console.log('Navigating to movie-details with film: ' + FilmID);
-    this.router.navigate(['/movie-details', FilmID]);
+  routeMovieDetails(movieID: any) {
+    console.log('Home_Component: Navigating to movie-details: ' + movieID);
+    this.router.navigate(['/movie-details', movieID]);
   }
 
   openVideoModal(videoUrl: string) {
     this.modalService.openVideoModal(videoUrl);
   }
+
+  getMovies() {
+    this.movies$ = this.movieService.fetchAllMovies().pipe(
+      tap(movies => {
+        console.log('Home_Component: Movies fetched successful: ', movies);
+      }),
+      catchError(err => {
+        console.error('Home_Component: Error loading Movies: ', err);
+        return throwError(err);
+      })
+    );
+  }
+
 }
 
 

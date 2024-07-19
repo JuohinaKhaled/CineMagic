@@ -1,14 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
+import {Component} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {CustomSnackbarComponent} from '../custom-snackbar/custom-snackbar.component';
 
 @Component({
   selector: 'app-newsletter',
   templateUrl: './newsletter.component.html',
   styleUrls: ['./newsletter.component.css']
 })
-export class NewsletterComponent implements OnInit {
+export class NewsletterComponent {
   newsletterForm: FormGroup;
   isRegistered = false;
 
@@ -19,8 +19,6 @@ export class NewsletterComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
-
   onSubmit(): void {
     if (!this.isRegistered) {
       this.register();
@@ -29,7 +27,7 @@ export class NewsletterComponent implements OnInit {
     }
   }
 
-  private register(): void {
+  register(): void {
     if (this.newsletterForm.valid) {
       this.isRegistered = true;
       const formData = this.newsletterForm.value;
@@ -46,20 +44,21 @@ export class NewsletterComponent implements OnInit {
     }
   }
 
-  private unregister(): void {
+  unregister(): void {
     this.isRegistered = false;
     this.newsletterForm.reset();
     this.newsletterForm.controls['consent'].enable();
     this.showNotification('Successfully unsubscribed from the newsletter!', 'success');
   }
 
-  private showNotification(message: string, type: string): void {
+  showNotification(message: string, type: string): void {
     this.snackBar.openFromComponent(CustomSnackbarComponent, {
-      data: { message },
+      data: {message},
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'top',
       panelClass: [type === 'success' ? 'snackbar-success' : 'snackbar-error']
     });
   }
+
 }

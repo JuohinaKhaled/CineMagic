@@ -1,39 +1,48 @@
-<div *ngIf="film" class="container px-3">
-  <div class="movie-header mb-3 gap-3">
-    <div class="movie-poster">
-      <img [src]="film.PfadGrossesBild" alt="{{ film.Titel }}" class="img-fluid"/>
-    </div>
-    <div class="movie-info">
-      <h1>{{ film.Titel }}</h1>
-      <div class="d-flex flex-row align-items-center">
-        <app-rating [maxStars]="5" [averageRating]="film.Gesamtbewertung" [readOnly]="true" class="me-3"></app-rating>
-        <span class="me-1">{{ film.Gesamtbewertung.toFixed(2) }}</span>
-        <span>({{ film.AnzahlBewertungen }})</span>
+<div class="container px-3 mt-4">
+
+  <ng-container *ngIf="movie$ | async as movie; else noMovie">
+    <div *ngIf="movie; else noMovie" class="movie-header mb-3 gap-3">
+      <div class="movie-poster">
+        <img [src]="movie.pathPictureLarge" alt="{{ movie.movieName }}" class="img-fluid"/>
       </div>
-      <p>{{ film.Beschreibung }}</p>
-      <p>Duration: {{ film.Dauer }} minutes</p>
-      <p>Age rating: {{ film.Altersfreigabe }}</p>
-      <p>Genre: {{ film.Genre }}</p>
-      <p>Director: {{ film.Regisseur }}</p>
-      <p>Release date: {{ film.Erscheinungsdatum | date }}</p>
-    </div>
-  </div>
-  <div *ngIf="groupedEvents.length > 0" class="showtimes">
-    <h2>Showtimes</h2>
-    <div *ngFor="let group of groupedEvents">
-      <h3>{{ group.date | date:'fullDate' }}</h3>
-      <div class="event-buttons">
-        <div *ngFor="let event of group.eventsToShow" class="event-button-wrapper">
-          <button class="event-button" (click)="goToRoom(event.VorfuehrungsID)">
-            <div class="cinema-info">{{ event.Saalname }}</div>
-            <div class="time">{{ event.Vorfuehrungszeit }}</div>
-            <div class="saal-type">{{ event.Saaltyp }}</div>
-          </button>
+      <div class="movie-info">
+        <h1>{{ movie.movieName }}</h1>
+        <div class="d-flex flex-row align-items-center">
+          <app-rating [maxStars]="5" [averageRating]="movie.overallRating" [readOnly]="true" class="me-3"></app-rating>
+          <span class="me-1">{{ movie.overallRating.toFixed(2) }}</span>
+          <span>({{ movie.numberRatings }})</span>
         </div>
+        <p>{{ movie.movieDescription }}</p>
+        <p>Duration: {{ movie.duration }} minutes</p>
+        <p>Age rating: {{ movie.age }}</p>
+        <p>Genre: {{ movie.genre }}</p>
+        <p>Director: {{ movie.director }}</p>
+        <p>Release date: {{ movie.releaseDate | date }}</p>
       </div>
-      <button *ngIf="group.eventsToShow.length < group.events.length" class="more-button"
-              (click)="showMore(group.date)">+ more
-      </button>
     </div>
-  </div>
+    <div *ngIf="groupedEvents$ | async as groupedEvents" class="showtimes">
+      <h2>Showtimes</h2>
+      <div *ngFor="let group of groupedEvents">
+        <h3>{{ group.date | date:'fullDate' }}</h3>
+        <div class="event-buttons">
+          <div *ngFor="let event of group.eventsToShow" class="event-button-wrapper">
+            <button class="event-button" (click)="goToRoom(event.eventID)">
+              <div class="cinema-info">{{ event.roomName }}</div>
+              <div class="time">{{ event.eventTime }}</div>
+              <div class="saal-type">{{ event.roomType }}</div>
+            </button>
+          </div>
+        </div>
+        <button class="more-button" *ngIf="group.eventsToShow.length < group.events.length"
+                (click)="showMore(group.date)">+ more
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #noMovie>
+    <div class="mt-5 d-flex flex-row justify-content-center align-items-center">
+      <p>No film details available.</p>
+    </div>
+  </ng-template>
 </div>
