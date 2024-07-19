@@ -1,44 +1,43 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
+import {Event} from "../../models/event/event";
 
 @Injectable({
   providedIn: 'root'
 })
 export class EventService {
 
-  constructor(private http: HttpClient) { }
+  httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
+  private fetchEventsAllUrl = '/api/events';
+  private fetchEventUrl = '/api/event';
 
-  getEvents(movieID: number): Observable<any[]> {
-    return this.http.post<any[]>('/events', { movieID }).pipe(
-      tap(response => {
-        if (response.length > 0) {
-          console.log('Vorfuehrungen abgerufen: ', response);
-        } else {
-          console.log('Keine Vorfuehrungen gefunden, Antwort: ', response);
-        }
+  constructor(private http: HttpClient) {
+  }
+
+  fetchAllEvents(movieID: number): Observable<Event[]> {
+    return this.http.post<Event[]>(this.fetchEventsAllUrl, {movieID}, this.httpOptions).pipe(
+      tap(events => {
+        console.log('Event_Service: Events fetched successful: ', events);
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Vorfuehrungen: ', err);
+        console.log('Event_Service: Error fetching Events: ', err);
         return throwError(err);
       })
     );
   }
 
-  getEvent(eventID: number): Observable<any> {
-    return this.http.post<any>('/event', { eventID }).pipe(
-      tap(response => {
-        if (response.length > 0) {
-          console.log('Vorfuehrung abgerufen: ', response);
-        } else {
-          console.log('Keine Vorfuehrung gefunden, Antwort: ', response);
-        }
+  fetchEvent(eventID: number): Observable<Event> {
+    return this.http.post<Event>(this.fetchEventUrl, {eventID}, this.httpOptions).pipe(
+      tap(event => {
+        console.log('Event_Service: Event fetched successful: ', event);
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Vorfuehrung: ', err);
+        console.log('Event_Service: Error fetching Event: ', err);
         return throwError(err);
       })
     );
   }
+
 }

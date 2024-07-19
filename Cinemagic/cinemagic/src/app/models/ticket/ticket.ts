@@ -1,7 +1,7 @@
 export class Ticket {
   ticketID: number;
   roomType: string;
-  ticketType: string;
+  personType: string;
   seatType: string;
   priceNetto: number;
   priceBrutto: number;
@@ -10,14 +10,14 @@ export class Ticket {
   (
     ticketID: number,
     roomType: string,
-    ticketType: string,
+    personType: string,
     seatType: string,
     priceNetto: number,
     priceBrutto: number
   ) {
     this.ticketID = ticketID;
     this.roomType = roomType;
-    this.ticketType = ticketType;
+    this.personType = personType;
     this.seatType = seatType;
     this.priceNetto = priceNetto;
     this.priceBrutto = priceBrutto;

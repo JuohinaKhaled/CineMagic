@@ -1,28 +1,30 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable, throwError} from "rxjs";
 import {catchError, tap} from "rxjs/operators";
+import {Ticket} from "../../models/ticket/ticket";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TicketService {
 
-  constructor(private http: HttpClient) { }
+  httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
+  private fetchTicketsAllUrl = '/api/tickets';
 
-  getTickets(roomType: string): Observable<any[]> {
-    return this.http.post<any[]>('/tickets', { roomType }).pipe(
-      tap(response => {
-        if (response.length > 0) {
-          console.log('Tickets abgerufen: ', response);
-        } else {
-          console.log('Keine Tickets gefunden, Antwort: ', response);
-        }
+  constructor(private http: HttpClient) {
+  }
+
+  fetchTickets(roomType: string): Observable<Ticket[]> {
+    return this.http.post<Ticket[]>(this.fetchTicketsAllUrl, {roomType}, this.httpOptions).pipe(
+      tap(tickets => {
+        console.log('Ticket_Service: Tickets fetches successful: ', tickets);
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Tickets: ', err);
+        console.error('Ticket_Service: Error fetching Tickets: ', err);
         return throwError(err);
       })
     );
   }
+
 }

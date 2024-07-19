@@ -3,6 +3,8 @@ import {BookingService} from "../../services/booking/booking.service";
 import {catchError, tap} from "rxjs/operators";
 import {Router} from "@angular/router";
 import {AuthService} from "../../services/auth/auth.service";
+import {Observable, of} from "rxjs";
+import {Booking} from "../../models/booking/booking";
 
 @Component({
   selector: 'app-all-bookings',
@@ -11,49 +13,33 @@ import {AuthService} from "../../services/auth/auth.service";
 })
 export class AllBookingsComponent implements OnInit {
   isDateValid: boolean = false;
-  bookingIDs: any[] = [];
-  bookings: any[] = [];
   customerID!: number;
+  bookings$: Observable<Booking[]> | undefined;
 
-  constructor(private bookingService: BookingService, private router: Router,
+  constructor(private bookingService: BookingService,
+              private router: Router,
               private authService: AuthService) {
   }
 
   ngOnInit(): void {
     this.getCustomer();
-    this.getBookingIDs();
+    this.getBookings();
   }
 
   getCustomer() {
-    this.customerID = this.authService.getCustomerID()!;
-  }
-
-  getBookingIDs() {
-    this.bookingService.fetchAllBooking(this.customerID).pipe(
-      tap(bookingIDs => {
-        this.bookingIDs = bookingIDs;
-        console.log('All_Bookings_Component: BookingIDs fetched succesful:', bookingIDs);
-        this.getBookings();
-      }),
-      catchError(err => {
-        console.log('All_Bookings_Component: Error fetching succesful: ', err)
-        return err;
-      })).subscribe();
+    this.customerID = this.authService.getCurrentUser()?.customerID!;
   }
 
   getBookings() {
-    this.bookingIDs.forEach(bookingID => {
-        this.bookingService.fetchBooking(bookingID.BuchungsID).pipe(
-          tap(booking => {
-            this.bookings.push(booking[0]);
-            console.log('All_Bookings_Component: BookingIDs fetched succesful:', booking);
-          }),
-          catchError(err => {
-            console.log('All_Bookings_Component: Error fetching succesful: ', err)
-            return err;
-          })
-        ).subscribe()
-      }
+    this.bookings$ = this.bookingService.fetchAllBookings(this.customerID).pipe(
+      tap(bookings => {
+        console.log('All_Bookings_Component: Bookings fetched successful:', bookings);
+        return bookings;
+      }),
+      catchError(err => {
+        console.log('All_Bookings_Component: Error fetching Bookings: ', err)
+        return of([]);
+      }),
     );
   }
 
@@ -88,4 +74,5 @@ export class AllBookingsComponent implements OnInit {
         return '';
     }
   }
+
 }

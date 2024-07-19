@@ -1,5 +1,5 @@
-<ng-container *ngIf="booking">
-  <ng-container *ngIf="seats$ | async as seats">
+<ng-container *ngIf="booking$ | async as booking">
+  <ng-container *ngIf="bookedTickets$ | async as seats">
     <div class="d-flex flex-column justify-content-center align-items-center container">
       <div class="d-flex flex-row justify-content-center align-items-center mb-4">
         <img src="/assets/images/BestellungIcon.svg" alt="Orders Icon">
@@ -11,13 +11,13 @@
         </div>
         <span class="h7 m-0">Movie</span>
         <div class="d-flex flex-row">
-          <h1 class="m-0 pe-2">{{booking.Titel}}</h1>
-          <span class="date rounded-1 align-self-end px-1 mb-2">{{booking.Saaltyp}}</span>
+          <h1 class="m-0 pe-2">{{booking.movieName}}</h1>
+          <span class="date rounded-1 align-self-end px-1 mb-2">{{booking.roomType}}</span>
         </div>
         <div class="d-flex flex-row gap-2">
-          <span class="genre rounded-1 align-self-start p-1 mb-2 mt-2">{{booking.Genre | uppercase}}</span>
+          <span class="genre rounded-1 align-self-start p-1 mb-2 mt-2">{{booking.genre | uppercase}}</span>
           <span class="genre rounded-1 align-self-start p-1 mb-2 mt-2 gap-1 d-flex align-items-center">
-            {{booking.Dauer }} MIN
+            {{booking.duration }} MIN
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor"
                  class="bi bi-clock-history" viewBox="0 0 16 16">
               <path
@@ -27,7 +27,7 @@
                 d="M7.5 3a.5.5 0 0 1 .5.5v5.21l3.248 1.856a.5.5 0 0 1-.496.868l-3.5-2A.5.5 0 0 1 7 9V3.5a.5.5 0 0 1 .5-.5"/>
             </svg>
           </span>
-          <span class="genre rounded-1 align-self-start p-1 mb-2 mt-2">FSK {{booking.Altersfreigabe }}</span>
+          <span class="genre rounded-1 align-self-start p-1 mb-2 mt-2">FSK {{booking.age }}</span>
         </div>
         <hr class="w-100 border border-1">
         <ng-container *ngIf="rating">
@@ -40,12 +40,12 @@
         <div class="d-flex flex-row">
           <div class="col-4">
             <span class="h7 m-0">Booking ID</span>
-            <h6>#{{booking.BuchungsID}}</h6>
+            <h6>#{{booking.bookingID}}</h6>
           </div>
           <div class="col-5">
             <span class="h7 m-0">Booking Date</span>
             <h6 class="gap-1 d-flex align-items-center">
-              {{booking.BuchungsDatum | date:'dd.MM.yyyy'}}
+              {{booking.bookingDate | date:'dd.MM.yyyy'}}
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-calendar"
                    viewBox="0 0 16 16">
                 <path
@@ -55,18 +55,18 @@
           </div>
           <div class="col-3">
             <span class="h7 m-0">Total Price</span>
-            <h6>{{booking.GesamtPreisBrutto}}€ ({{booking.GesamtPreisNetto}}€)</h6>
+            <h6>{{booking.totalPriceBrutto}}€ ({{booking.totalPriceNetto}}€)</h6>
           </div>
         </div>
         <div class="d-flex flex-row">
           <div class="col-4">
             <span class="h7 m-0">Room</span>
-            <h6>{{booking.Saalname}}</h6>
+            <h6>{{booking.roomName}}</h6>
           </div>
           <div class="col-5">
             <span class="h7 m-0">Event Date</span>
             <h6 class="gap-1 d-flex align-items-center">
-              {{booking.Vorfuehrungsdatum | date:'dd.MM.yyyy'}}
+              {{booking.eventDate | date:'dd.MM.yyyy'}}
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-calendar"
                    viewBox="0 0 16 16">
                 <path
@@ -77,7 +77,7 @@
           <div class="col-3">
             <span class="h7 m-0">Event Time</span>
             <h6 class="gap-1 d-flex align-items-center">
-              {{booking.Vorfuehrungszeit |  slice:0:5}}
+              {{booking.eventTime |  slice:0:5}}
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-clock"
                    viewBox="0 0 16 16">
                 <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71z"/>
@@ -89,7 +89,7 @@
         <hr class="w-100 border border-1">
         <ng-container *ngFor="let seat of seats">
           <h6 class="gap-1 d-flex align-items-center">
-            1x {{seat.Tickettyp}}
+            1x {{seat.personType}}
             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-person-fill"
                  viewBox="0 0 16 16">
               <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
@@ -102,17 +102,17 @@
             <span class="col-3 h7 m-0">Price</span>
           </div>
           <div class="d-flex flex-row">
-            <h6 class="col-2">{{seat.Reihennummer}}</h6>
-            <h6 class="col-2">{{seat.Sitznummer}}</h6>
-            <h6 class="col-5">{{seat.Sitztyp}}</h6>
-            <h6 class="col-3">{{seat.PreisBrutto}}€ ({{seat.PreisNetto}}€)</h6>
+            <h6 class="col-2">{{seat.rowNumber}}</h6>
+            <h6 class="col-2">{{seat.seatNumber}}</h6>
+            <h6 class="col-5">{{seat.seatType}}</h6>
+            <h6 class="col-3">{{seat.priceBrutto}}€ ({{seat.priceNetto}}€)</h6>
           </div>
           <hr class="w-100 border border-1">
         </ng-container>
-        <ng-container *ngIf="!isEventFinished(booking.Vorfuehrungsdatum)">
+        <ng-container *ngIf="!isEventFinished(booking.eventDate)">
           <button class="btn btn-yellow-w" (click)="openModal('Cancel Booking','cancelBooking')">Cancel Booking</button>
         </ng-container>
-        <ng-container *ngIf="isEventFinished(booking.Vorfuehrungsdatum) && !rating">
+        <ng-container *ngIf="isEventFinished(booking.eventDate) && !rating">
           <button class="btn btn-yellow-w" (click)="openModal('Rate Movie','rateMovie')">Rate Movie</button>
         </ng-container>
       </div>

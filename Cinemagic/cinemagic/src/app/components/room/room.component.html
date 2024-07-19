@@ -1,49 +1,58 @@
 <div class="container justify-content-center align-items-center d-flex flex-column">
 
-  <div *ngIf="room" class="row mb-5 d-flex flex-column">
-    <h1 class="align-self-center">{{room.roomName}}</h1>
-    <span class="badge bg-yellow">{{room.roomType}}</span>
-  </div>
-
-  <div *ngFor="let e of event" class="row justify-content-center d-flex mt-2 text-center">
-
-    <div *ngFor="let m of movie" class="col-auto justify-content-start d-flex flex-column">
-      <h1 class="align-self-center mb-3 titel">{{m.Titel}}</h1>
-      <h6 class="align-self-center text-white mb-3">
-        {{e.Vorfuehrungsdatum | date:'dd.MM.yyyy'}} {{' | ' + (e.Vorfuehrungszeit |  slice:0:5)}}
-      </h6>
-      <div class="col-auto justify-content-center d-flex mb-3">
-        <app-counter [headline]="'Adult'" [eventID]="eventID"
-                     (counterValueChanged)="onCounterValueChanged('Adult', $event)"></app-counter>
-        <app-counter [headline]="'Student'" [eventID]="eventID"
-                     (counterValueChanged)="onCounterValueChanged('Student', $event)"></app-counter>
-        <app-counter [headline]="'Child'" [eventID]="eventID"
-                     (counterValueChanged)="onCounterValueChanged('Child', $event)"></app-counter>
-      </div>
-      <div class="selected-seats align-self-center">
-        <div *ngFor="let seat of selectedSeats">
-          <app-ticket [seat]="seat" (remove)="removeSeat($event)"></app-ticket>
-        </div>
-      </div>
-      <div class="d-flex flex-row text-white justify-content-center align-items-center mb-3">
-        <h2 class="me-1">Total Price: {{ totalPriceBrutto }}€ </h2>
-        <h5> ({{ totalPriceNetto }} €)</h5>
-      </div>
-      <button class="row btn btn-yellow-b align-self-center mb-3" [disabled]="selectedSeats.length === 0"
-              (click)="openModal('Booking confirmation','confirmBooking')">Booking
-      </button>
+  <ng-container *ngIf="room$ | async as room">
+    <div *ngIf="room !== null; else noRoom" class="row mb-5 d-flex flex-column">
+      <h1 class="align-self-center">{{room.roomName}}</h1>
+      <span class="badge bg-yellow">{{room.roomType}}</span>
     </div>
-    <div *ngIf="groupedSeats" class="col-auto container justify-content-center d-flex flex-column">
-      <img src="/assets/images/Screen.svg" alt="screen" class="screen row align-self-center w-75">
-      <h2 class="row align-self-center">Screen</h2>
-      <div *ngFor="let row of groupedSeats; let i = index" class="row justify-content-center align-items-center">
-        <h5 class="col-1">{{ row[0]?.Reihennummer }}</h5>
-        <div *ngFor="let seat of row" class="col-1 d-flex justify-content-center">
-          <app-seat [seat]="seat" (seatSelected)="onSeatSelected($event)"></app-seat>
+
+    <div *ngIf="event$ | async as event" class="row justify-content-center d-flex mt-2 text-center">
+
+      <div *ngIf="movie$ | async as movie" class="col-auto justify-content-start d-flex flex-column">
+        <h1 class="align-self-center mb-3 titel">{{movie?.movieName}}</h1>
+        <h6 class="align-self-center text-white mb-3">
+          {{event.eventDate | date:'dd.MM.yyyy'}} {{' | ' + (event.eventTime |  slice:0:5)}}
+        </h6>
+        <div class="col-auto justify-content-center d-flex mb-3">
+          <app-counter [headline]="'Adult'" [eventID]="eventID"
+                       (counterValueChanged)="onCounterValueChanged('Adult', $event)"></app-counter>
+          <app-counter [headline]="'Student'" [eventID]="eventID"
+                       (counterValueChanged)="onCounterValueChanged('Student', $event)"></app-counter>
+          <app-counter [headline]="'Child'" [eventID]="eventID"
+                       (counterValueChanged)="onCounterValueChanged('Child', $event)"></app-counter>
         </div>
+        <div class="selected-seats align-self-center">
+          <div *ngFor="let seat of selectedSeats">
+            <app-ticket [seat]="seat" (remove)="removeSeat($event)"></app-ticket>
+          </div>
+        </div>
+        <div class="d-flex flex-row text-white justify-content-center align-items-center mb-3">
+          <h2 class="me-1">Total Price: {{ totalPriceBrutto }}€ </h2>
+          <h5> ({{ totalPriceNetto }} €)</h5>
+        </div>
+        <button class="row btn btn-yellow-b align-self-center mb-3" [disabled]="selectedSeats.length === 0"
+                (click)="openModal('Booking confirmation','confirmBooking')">Booking
+        </button>
       </div>
+      <div *ngIf="groupedSeats$ | async as groupedSeats"
+           class="col-auto container justify-content-center d-flex flex-column">
+        <img src="/assets/images/Screen.svg" alt="screen" class="screen row align-self-center w-75">
+        <h2 class="row align-self-center">Screen</h2>
+        <div *ngFor="let row of groupedSeats; let i = index" class="row justify-content-center align-items-center">
+          <h5 class="col-1">{{ row[0].rowNumber }}</h5>
+          <div *ngFor="let seat of row" class="col-1 d-flex justify-content-center">
+            <app-seat [seat]="seat" (seatSelected)="onSeatSelected($event)"></app-seat>
+          </div>
+        </div>
 
+      </div>
     </div>
-  </div>
+  </ng-container>
 
+  <ng-template #noRoom>
+    <div class="mt-5 d-flex flex-row justify-content-center align-items-center">
+      <p>No event available.</p>
+    </div>
+  </ng-template>
 </div>
+

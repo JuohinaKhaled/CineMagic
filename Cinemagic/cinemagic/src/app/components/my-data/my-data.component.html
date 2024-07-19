@@ -30,11 +30,11 @@
   <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
     <div>
       <label>Old Password:</label>
-      <input type="password" formControlName="oldPassword" />
+      <input type="password" formControlName="oldPassword" placeholder="Enter old password"/>
     </div>
     <div>
       <label>New Password:</label>
-      <input type="password" formControlName="newPassword" />
+      <input type="password" formControlName="newPassword" placeholder="Enter new password"/>
       <div *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
         <small *ngIf="passwordForm.get('newPassword')?.errors?.['strongPassword']">
           Password must be at least 8 characters long.
@@ -47,7 +47,7 @@
     </div>
     <div>
       <label>Confirm Password:</label>
-      <input type="password" formControlName="confirmPassword" />
+      <input type="password" formControlName="confirmPassword" placeholder="Confirm new password"/>
       <div *ngIf="passwordForm.get('confirmPassword')?.invalid && passwordForm.get('confirmPassword')?.touched">
         <small *ngIf="passwordForm.get('confirmPassword')?.errors?.['required']">Confirm password is required.</small>
         <small *ngIf="passwordForm.get('confirmPassword')?.value !== passwordForm.get('newPassword')?.value && passwordForm.get('confirmPassword')?.touched">

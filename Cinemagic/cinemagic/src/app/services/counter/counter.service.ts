@@ -10,7 +10,6 @@ export class CounterService {
 
   getTotalCounterValue() {
     return this.totalCounterValue.asObservable();
-    console.log('Counter', this.totalCounterValue)
   }
 
   incrementTotal() {

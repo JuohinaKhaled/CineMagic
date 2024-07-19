@@ -1,5 +1,4 @@
 export class Movie {
-
   movieID: number;
   movieName: string;
   movieDescription: string;
@@ -11,7 +10,9 @@ export class Movie {
   overallRating: number;
   numberRatings: number;
   pathPictureLarge: string;
+  pathPictureMiddle: string;
   pathPictureSmall: string;
+  pathTrailerVideo: string;
 
   constructor
   (
@@ -26,7 +27,9 @@ export class Movie {
     overallRating: number,
     numberRatings: number,
     pathPictureLarge: string,
-    pathPictureSmall: string
+    pathPictureMiddle: string,
+    pathPictureSmall: string,
+    pathTrailerVideo: string
   ) {
     this.movieID = movieID;
     this.movieName = movieName;
@@ -39,7 +42,9 @@ export class Movie {
     this.overallRating = overallRating;
     this.numberRatings = numberRatings;
     this.pathPictureLarge = pathPictureLarge;
+    this.pathPictureMiddle = pathPictureMiddle;
     this.pathPictureSmall = pathPictureSmall;
+    this.pathTrailerVideo = pathTrailerVideo;
   }
 
 }

@@ -1,7 +1,7 @@
 <div class="d-flex flex-row rounded-1 border border-2 py-2 px-3 mb-3 justify-content-center text-white align-content-center"
-     [ngClass]="{'border-yellow': seat.Sitztyp === 'Premium'}">
+     [ngClass]="{'border-yellow': seat?.seatType === 'Premium'}">
   <p class="m-0 me-auto">
-    {{seat.personType}} | Row: {{ seat.Reihennummer }} Seat: {{ seat.Sitznummer }} | Price: {{ seat.priceBrutto }}€ ({{ seat.priceNetto }}€)
+    {{seat?.personType}} | Row: {{ seat?.rowNumber }} Seat: {{ seat?.seatNumber }} | Price: {{ seat?.priceBrutto }}€ ({{ seat?.priceNetto }}€)
   </p>
   <div class="removeTicket ps-2" (click)="onRemoveSeat()">
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" class="bi bi-x-lg" viewBox="0 0 16 16">

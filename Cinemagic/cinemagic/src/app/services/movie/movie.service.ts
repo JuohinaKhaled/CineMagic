@@ -1,34 +1,43 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError, tap} from "rxjs/operators";
+import {Movie} from "../../models/movie/movie";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MovieService {
-  private apiUrl = 'http://localhost:4200/movies';
 
-  constructor(private http: HttpClient) { }
+  httpOptions = {headers: new HttpHeaders({'Content-Type': 'application/json'})};
+  private fetchMoviesAllUrl = '/api/movies';
+  private fetchMovieUrl = '/api/movie';
 
-  getFilms(): Observable<any[]> {
-    console.log("Fetching films from API...");
-    return this.http.get<any[]>(this.apiUrl);
+  constructor(private http: HttpClient) {
   }
 
-  getMovieDetails(movieID: number): Observable<any> {
-    return this.http.post<any>('/movieDetails', { movieID }).pipe(
-      tap(response => {
-        if (response.length > 0) {
-          console.log('Film-Details abgerufen: ', response);
-        } else {
-          console.log('Keine Film-Details gefunden, Antwort: ', response);
-        }
+  fetchAllMovies(): Observable<Movie[]> {
+    return this.http.get<Movie[]>(this.fetchMoviesAllUrl, this.httpOptions).pipe(
+      tap(movies => {
+        console.log('Movie_Service: Movies fetched successful: ', movies);
       }),
       catchError(err => {
-        console.log('Fehler beim Abrufen der Film-Details: ', err);
+        console.error('Movie_Service: Error fetching Movies: ', err);
         return throwError(err);
       })
     );
   }
+
+  fetchMovie(movieID: number): Observable<Movie> {
+    return this.http.post<Movie>(this.fetchMovieUrl, {movieID}).pipe(
+      tap(movie => {
+        console.log('Movie_Service: Movie fetched successful: ', movie);
+      }),
+      catchError(err => {
+        console.error('Movie_Service: Error fetching Movies: ', err);
+        return throwError(err);
+      })
+    );
+  }
+
 }

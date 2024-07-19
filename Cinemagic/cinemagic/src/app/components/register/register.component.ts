@@ -38,8 +38,8 @@ export class RegisterComponent {
         Passwort: this.registerForm.value.password
       };
 
-      this.authService.registerCustomer(formData).subscribe(
-        response => {
+      this.authService.registerCustomer(formData).subscribe({
+        next: (response) => {
           if (response.status === 'success') {
             this.snackBar.openSnackBar('Registration successful!');
             this.registerForm.reset();
@@ -48,15 +48,15 @@ export class RegisterComponent {
             this.snackBar.openSnackBar(response.message);
           }
         },
-        error => {
-          console.error('Error during registration:', error);
-          if (error.error && error.error.message) {
-            this.snackBar.openSnackBar(error.error.message);
+        error: (err) => {
+          console.error('Register_Component: Error during Registration:', err);
+          if (err.error && err.error.message) {
+            this.snackBar.openSnackBar(err.error.message);
           } else {
             this.snackBar.openSnackBar('Registration failed!');
           }
         }
-      );
+      });
     } else {
       this.snackBar.openSnackBar('Please fill all fields correctly.');
     }

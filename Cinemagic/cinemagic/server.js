@@ -14,10 +14,7 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 app.use(session({
-  secret: 'c1n3m4g1c',
-  resave: false,
-  saveUninitialized: true,
-  cookie: {secure: false}
+  secret: 'c1n3m4g1c', resave: false, saveUninitialized: true, cookie: {secure: false}
 }));
 
 bodyParser = require('body-parser');
@@ -57,7 +54,7 @@ let reservedSeats = [];
 
 
 io.on('connection', (socket) => {
-  console.log('Client connected', socket.id);
+  console.log('WebSocket: Client connected', socket.id);
 
   setInterval(() => {
     io.emit('reservedSeats', reservedSeats);
@@ -66,33 +63,30 @@ io.on('connection', (socket) => {
   socket.on('reserveSeat', ({seat, eventID}) => {
     reservedSeats.push({seat: {...seat}, id: socket.id, eventID: eventID});
     io.emit('reservedSeats', reservedSeats);
-    console.log(reservedSeats);
+    console.log('WebSocket: Reserved Seats: ', reservedSeats);
   });
 
   socket.on('releaseSeat', ({seat, eventID, isBooked}) => {
     const seatIndex = reservedSeats.findIndex(s =>
       s.id === socket.id &&
-      s.seat.Sitztyp === seat.Sitztyp &&
-      s.seat.Reihennummer === seat.Reihennummer &&
-      s.seat.Sitznummer === seat.Sitznummer &&
-      s.eventID === eventID
-    );
+      s.seat.seatType === seat.seatType &&
+      s.seat.rowNumber === seat.rowNumber &&
+      s.seat.seatNumber === seat.seatNumber &&
+      s.eventID === eventID);
     if (seatIndex !== -1) {
       reservedSeats[seatIndex].seat.isBooked = isBooked;
-      socket.broadcast.emit('seatReleased',  reservedSeats[seatIndex]);
+      socket.broadcast.emit('seatReleased', reservedSeats[seatIndex]);
       reservedSeats.splice(seatIndex, 1);
       io.emit('reservedSeats', reservedSeats);
     } else {
-      console.log("Seat not found in reservedSeats:", seat, eventID);
+      console.error('WebSocket: Seat not found in reservedSeats: ', seat, eventID);
     }
   });
 
   socket.on('counterValue', ({personType, eventID}) => {
     let count = 0
     reservedSeats.forEach(s => {
-      if (s.id === socket.id &&
-        s.seat.personType === personType &&
-        s.eventID === eventID) {
+      if (s.id === socket.id && s.seat.personType === personType && s.eventID === eventID) {
         count++;
       }
     });
@@ -102,20 +96,19 @@ io.on('connection', (socket) => {
   socket.on('updateSeat', ({seat, eventID}) => {
     const existingSeatIndex = reservedSeats.findIndex(s =>
       s.id === socket.id &&
-      s.seat.Reihennummer === seat.Reihennummer &&
-      s.seat.Sitznummer === seat.Sitznummer &&
-      s.eventID === eventID
-    );
+      s.seat.rowNumber === seat.rowNumber &&
+      s.seat.seatNumber === seat.seatNumber &&
+      s.eventID === eventID);
     if (existingSeatIndex !== -1) {
       reservedSeats[existingSeatIndex] = {seat: {...seat}, id: socket.id, eventID: eventID};
       io.emit('reservedSeats', reservedSeats);
     } else {
-      console.log("Seat not found in reservedSeats:", seat, eventID);
+      console.error('WebSocket: Seat not found in reservedSeats:', seat, eventID);
     }
   });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log('WebSocket: Client disconnected');
     for (let i = reservedSeats.length - 1; i >= 0; i--) {
       if (reservedSeats[i].id === socket.id) {
         reservedSeats[i].seat.isBooked = false;
@@ -123,7 +116,7 @@ io.on('connection', (socket) => {
         reservedSeats.splice(i, 1);
         io.emit('reservedSeats', reservedSeats);
       } else {
-        console.log("Seat not found in reservedSeats:", reservedSeats[i]);
+        console.error('WebSocket: Seat not found in reservedSeats:', reservedSeats[i]);
       }
     }
   });
@@ -132,26 +125,32 @@ io.on('connection', (socket) => {
 // Routes
 
 // Login endpoint
-app.post('/loginCustomer', (req, res) => {
+app.post('/api/login', (req, res) => {
   const {email, password} = req.body;
-  const kundeQuery = 'SELECT * FROM Kunden WHERE Email = ? AND Passwort = ?';
+  const query = `
+    SELECT k.KundenID      AS customerID,
+           k.Email         AS email,
+           k.Telefonnummer AS phoneNumber,
+           k.Passwort      AS password,
+           k.Vorname       AS firstName,
+           k.Nachname      AS lastName
+    FROM Kunden k
+    WHERE Email = ?
+      AND Passwort = ?`;
 
-  con.query(kundeQuery, [email, password], function (kundeError, kundeResults) {
-    if (kundeError) throw kundeError;
+  con.query(query, [email, password], function (error, results) {
+    if (error) throw error;
 
-    if (kundeResults.length > 0) {
-      // User found
-      const user = kundeResults[0];
-      res.send({status: 'success', message: 'Login successful as Kunde', data: user});
+    if (results.length > 0) {
+      res.send({status: 'success', message: 'Login successful as Kunde', data: results[0]});
     } else {
-      // User not found
       res.send({status: 'fail', message: 'Invalid email or password'});
     }
   });
 });
 
 // Create a new Customer
-app.post('/registerCustomer', (req, res) => {
+app.post('/api/register', (req, res) => {
   const {Vorname, Nachname, Email, Telefonnummer, Passwort} = req.body;
   const checkQuery = 'SELECT * FROM Kunden WHERE Email = ? OR Telefonnummer = ?';
 
@@ -185,9 +184,9 @@ app.post('/registerCustomer', (req, res) => {
   });
 });
 
-//Update Customer Data
-app.put('/api/customer', (req, res) => {
-  const { customerID, Vorname, Nachname, Email, Telefonnummer } = req.body;
+// Update Customer Data
+app.put('/api/user/update', (req, res) => {
+  const {customerID, Vorname, Nachname, Email, Telefonnummer} = req.body;
 
   let query = 'UPDATE Kunden SET';
   const fields = [];
@@ -211,7 +210,7 @@ app.put('/api/customer', (req, res) => {
   }
 
   if (fields.length === 0) {
-    res.status(400).json({ status: 'fail', message: 'No fields to update' });
+    res.status(400).json({status: 'fail', message: 'No fields to update'});
     return;
   }
 
@@ -221,27 +220,30 @@ app.put('/api/customer', (req, res) => {
   con.query(query, values, (error, results) => {
     if (error) {
       console.error('Error updating customer data:', error);
-      res.status(500).json({ status: 'error', message: 'Error updating customer data' });
+      res.status(500).json({status: 'error', message: 'Error updating customer data'});
       return;
     }
-
-    res.status(200).json({ status: 'success', message: 'Customer data updated successfully' });
+    if(results) {
+      res.status(200).json({status: 'success', message: 'Customer data updated successfully'});
+    }
   });
 });
 
-app.put('/api/customer/change-password', (req, res) => {
-  const { customerID, oldPassword, newPassword } = req.body;
+// Change User Password
+app.put('/api/user/change-password', (req, res) => {
+  const {customerID, oldPassword, newPassword} = req.body;
 
   const verifyQuery = 'SELECT Passwort FROM Kunden WHERE KundenID = ?';
+
   con.query(verifyQuery, [customerID], (verifyError, verifyResults) => {
     if (verifyError) {
       console.error('Error verifying old password:', verifyError);
-      res.status(500).json({ status: 'error', message: 'Error verifying old password' });
+      res.status(500).json({status: 'error', message: 'Error verifying old password'});
       return;
     }
 
     if (verifyResults[0].Passwort !== oldPassword) {
-      res.status(400).json({ status: 'fail', message: 'Old password is incorrect' });
+      res.status(400).json({status: 'fail', message: 'Old password is incorrect'});
       return;
     }
 
@@ -249,61 +251,94 @@ app.put('/api/customer/change-password', (req, res) => {
     con.query(updateQuery, [newPassword, customerID], (updateError, updateResults) => {
       if (updateError) {
         console.error('Error updating password:', updateError);
-        res.status(500).json({ status: 'error', message: 'Error updating password' });
+        res.status(500).json({status: 'error', message: 'Error updating password'});
         return;
       }
-
-      res.status(200).json({ status: 'success', message: 'Password updated successfully' });
+      if (updateResults) {
+        res.status(200).json({status: 'success', message: 'Password updated successfully'});
+      }
     });
   });
 });
 
-
-//Display movies
-app.get('/movies', (req, res) => {
+// Fetch User-Data
+app.post('/api/user', (req, res) => {
+  const {customerID} = req.body;
   const query = `
-    SELECT f.FilmID,
-           f.Titel,
-           f.Beschreibung,
-           f.Dauer,
-           f.Altersfreigabe,
-           f.Genre,
-           f.Regisseur,
-           f.Erscheinungsdatum,
-           b.PfadGrossesBild,
-           b.PfadMittleresBild,
-           b.PfadKleinesBild,
-           b.PfadTrailerVideo
+    SELECT k.KundenID      AS customerID,
+           k.Email         AS email,
+           k.Telefonnummer AS phoneNumber,
+           k.Passwort      AS password,
+           k.Vorname       AS firstName,
+           k.Nachname      AS lastName
+    FROM Kunden k
+    WHERE KundenID = ?`;
+
+  con.query(query, [customerID], function (error, results) {
+    if (error) {
+      console.error('Error fetching User-Data:', error);
+      res.status(500).json({error: 'Database query error'});
+    } else {
+      if (results.length > 0) {
+        console.log('User-Data fetched successfully:', results[0]);
+        res.status(200).json(results[0]);
+      } else {
+        console.error('User-Data not found for customer ID:', customerID);
+        res.status(404).json({error: 'User-Data not found not found'});
+      }
+    }
+  });
+});
+
+// Display Movies
+app.get('/api/movies', (req, res) => {
+  const query = `
+    SELECT f.FilmID            AS movieID,
+           f.Titel             AS movieName,
+           f.Beschreibung      AS movieDescription,
+           f.Dauer             AS duration,
+           f.Altersfreigabe    AS age,
+           f.Genre             AS genre,
+           f.Regisseur         AS director,
+           f.Erscheinungsdatum AS releaseDate,
+           f.Gesamtbewertung   AS overallRating,
+           f.AnzahlBewertungen AS numberRatings,
+           b.PfadGrossesBild   AS pathPictureLarge,
+           b.PfadMittleresBild AS pathPictureMiddle,
+           b.PfadKleinesBild   AS pathPictureSmall,
+           b.PfadTrailerVideo  AS pathTrailerVideo
     FROM Filme f
            LEFT JOIN Bilder b ON f.FilmID = b.FilmID`;
 
   con.query(query, (error, results) => {
     if (error) {
-      console.error("Error fetching films:", error);
+      console.error('Error fetching films:', error);
       res.status(500).json({error: 'Database query error'});
     } else {
-      console.log("Films fetched successfully:", results);
+      console.log('Films fetched successfully:', results);
       res.json(results);
     }
   });
 });
 
 //Display Movie Details
-app.post('/movieDetails', (req, res) => {
+app.post('/api/movie', (req, res) => {
   const {movieID} = req.body;
   const query = `
-    SELECT f.FilmID,
-           f.Titel,
-           f.Beschreibung,
-           f.Dauer,
-           f.Altersfreigabe,
-           f.Genre,
-           f.Regisseur,
-           f.Erscheinungsdatum,
-           f.Gesamtbewertung,
-           f.AnzahlBewertungen,
-           b.PfadGrossesBild,
-           b.PfadKleinesBild
+    SELECT f.FilmID            AS movieID,
+           f.Titel             AS movieName,
+           f.Beschreibung      AS movieDescription,
+           f.Dauer             AS duration,
+           f.Altersfreigabe    AS age,
+           f.Genre             AS genre,
+           f.Regisseur         AS director,
+           f.Erscheinungsdatum AS releaseDate,
+           f.Gesamtbewertung   AS overallRating,
+           f.AnzahlBewertungen AS numberRatings,
+           b.PfadGrossesBild   AS pathPictureLarge,
+           b.PfadMittleresBild AS pathPictureMiddle,
+           b.PfadKleinesBild   AS pathPictureSmall,
+           b.PfadTrailerVideo  AS pathTrailerVideo
     FROM Filme f
            LEFT JOIN Bilder b ON f.FilmID = b.FilmID
     WHERE f.FilmID = ?`;
@@ -314,20 +349,21 @@ app.post('/movieDetails', (req, res) => {
       res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Film fetched successfully:", results[0]);
-      res.json(results);
+      res.status(200).json(results[0]);
     }
   });
 });
 
-app.post('/seats', (req, res) => {
+// Fetch Seats
+app.post('/api/seats', (req, res) => {
   const {eventID} = req.body;
   const query = `
-    SELECT sp.SitzplatzID,
-           sp.SaalID,
-           sp.Reihennummer,
-           sp.Sitznummer,
-           sp.Sitztyp,
-           IF(bt.SitzplatzID IS NOT NULL, 'Occupied', 'Free') AS Buchungsstatus
+    SELECT sp.SitzplatzID                                     AS seatID,
+           sp.SaalID                                          AS roomID,
+           sp.Reihennummer                                    AS rowNumber,
+           sp.Sitznummer                                      AS seatNumber,
+           sp.Sitztyp                                         AS seatType,
+           IF(bt.SitzplatzID IS NOT NULL, 'Occupied', 'Free') AS bookingStatus
     FROM Sitzplaetze sp
            LEFT JOIN buchtTicket bt ON sp.SitzplatzID = bt.SitzplatzID AND bt.VorfuehrungsID = ?
     WHERE sp.SaalID = (SELECT SaalID FROM Vorfuehrungen WHERE VorfuehrungsID = ?)`;
@@ -339,19 +375,24 @@ app.post('/seats', (req, res) => {
     } else {
       if (results.length > 0) {
         console.log("Seats fetched successfully:", results);
-        res.json(results);
+        res.status(200).json(results);
       } else {
         console.error("Seats not found for event ID:", eventID);
         res.status(404).json({error: 'Seats not found'});
       }
     }
   });
+
 });
 
-app.post('/room', (req, res) => {
+// Fetch Room
+app.post('/api/room', (req, res) => {
   const {eventID} = req.body;
   const query = `
-    SELECT s.SaalID, s.Saalname, s.AnzahlSitzplaetze, s.Saaltyp
+    SELECT s.SaalID            AS roomID,
+           s.Saalname          AS roomName,
+           s.AnzahlSitzplaetze AS roomCapacity,
+           s.Saaltyp           AS roomType
     FROM Saele s
     WHERE s.SaalID = (SELECT v.SaalID FROM Vorfuehrungen v WHERE v.VorfuehrungsID = ?)`;
 
@@ -361,8 +402,8 @@ app.post('/room', (req, res) => {
       res.status(500).json({error: 'Database query error'});
     } else {
       if (results.length > 0) {
-        console.log("Room fetched successfully:", results);
-        res.json(results);
+        console.log("Room fetched successfully:", results[0]);
+        res.json(results[0]);
       } else {
         console.error("Room not found for event ID:", eventID);
         res.status(404).json({error: 'Room not found'});
@@ -371,10 +412,17 @@ app.post('/room', (req, res) => {
   });
 });
 
-app.post('/events', (req, res) => {
+// Fetch Events
+app.post('/api/events', (req, res) => {
   const {movieID} = req.body;
   const query = `
-    SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
+    SELECT v.VorfuehrungsID    AS eventID,
+           v.FilmID            AS movieID,
+           v.SaalID            AS roomID,
+           v.Vorfuehrungsdatum AS eventDate,
+           v.Vorfuehrungszeit  AS eventTime,
+           s.Saalname          AS roomName,
+           s.Saaltyp           AS roomType
     FROM Vorfuehrungen v
            JOIN Saele s ON v.SaalID = s.SaalID
     WHERE v.FilmID = ?`;
@@ -390,10 +438,17 @@ app.post('/events', (req, res) => {
   });
 });
 
-app.post('/event', (req, res) => {
+// Fetch Event Details
+app.post('/api/event', (req, res) => {
   const {eventID} = req.body;
   const query = `
-    SELECT v.VorfuehrungsID, v.FilmID, v.SaalID, v.Vorfuehrungsdatum, v.Vorfuehrungszeit, s.Saalname, s.Saaltyp
+    SELECT v.VorfuehrungsID    AS eventID,
+           v.FilmID            AS movieID,
+           v.SaalID            AS roomID,
+           v.Vorfuehrungsdatum AS eventDate,
+           v.Vorfuehrungszeit  AS eventTime,
+           s.Saalname          AS roomName,
+           s.Saaltyp           AS roomType
     FROM Vorfuehrungen v
            JOIN Saele s ON v.SaalID = s.SaalID
     WHERE v.VorfuehrungsID = ?`;
@@ -403,30 +458,37 @@ app.post('/event', (req, res) => {
       console.error("Error fetching event:", error);
       res.status(500).json({error: 'Database query error'});
     } else {
-      console.log("Event fetched successfully:", results);
-      res.json(results);
+      console.log("Event fetched successfully:", results[0]);
+      res.json(results[0]);
     }
   });
 });
 
-app.post('/tickets', (req, res) => {
+// Fetch Tickets
+app.post('/api/tickets', (req, res) => {
   const {roomType} = req.body;
-  const query = `SELECT t.TicketID, t.Saaltyp, t.Tickettyp, t.Sitztyp, t.PreisNetto, t.PreisBrutto
-                 FROM Tickets t
-                 WHERE t.Saaltyp = ?`;
+  const query = `
+    SELECT t.TicketID    AS ticketID,
+           t.Saaltyp     AS roomType,
+           t.Tickettyp   AS personType,
+           t.Sitztyp     AS seatType,
+           t.PreisNetto  AS priceNetto,
+           t.PreisBrutto AS priceBrutto
+    FROM Tickets t
+    WHERE t.Saaltyp = ?`;
   con.query(query, [roomType], (error, results) => {
     if (error) {
       console.error("Error fetching tickets:", error);
       res.status(500).json({error: 'Database query error'});
     } else {
       console.log("Tickets fetched successfully:", results);
-      res.json(results);
+      res.status(200).json(results);
     }
   });
 });
 
-
-app.post('/addBooking', (req, res) => {
+// Add Booking
+app.post('/api/add-booking', (req, res) => {
   const {
     customerID,
     eventID,
@@ -444,8 +506,7 @@ app.post('/addBooking', (req, res) => {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  con.query(query, [customerID, eventID, bookingDate, totalPriceNetto, totalPriceBrutto,
-    counterTicketsAdult, counterTicketsChild, counterTicketsStudent], (error, results) => {
+  con.query(query, [customerID, eventID, bookingDate, totalPriceNetto, totalPriceBrutto, counterTicketsAdult, counterTicketsChild, counterTicketsStudent], (error, results) => {
     if (error) {
       console.error('Error inserting booking:', error);
       res.status(500).json({error: error.message}); // Fehlermeldung an den Client senden
@@ -457,8 +518,8 @@ app.post('/addBooking', (req, res) => {
   });
 });
 
-
-app.put('/bookSeats', (req, res) => {
+// Add Tickets
+app.put('/api/add-booking-tickets', (req, res) => {
   const {bookingID, customerID, eventID, seatID, ticketID} = req.body;
 
   const query = `
@@ -477,40 +538,35 @@ app.put('/bookSeats', (req, res) => {
   });
 });
 
-
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/cinemagic/browser/index.html'));
-});
-
-app.post('/booking', (req, res) => {
+// Fetch Booking
+app.post('/api/booking', (req, res) => {
   const {bookingID} = req.body;
-  console.log('ID :', bookingID);
 
   const query = `
-    SELECT DISTINCT b.BuchungsID,
-                    b.BuchungsDatum,
-                    b.GesamtPreisNetto,
-                    b.GesamtPreisBrutto,
-                    b.AnzahlTicketsErwachsene,
-                    b.AnzahlTicketsKinder,
-                    b.AnzahlTicketsStudenten,
-                    b.BuchungsStatus,
-                    v.Vorfuehrungsdatum,
-                    v.Vorfuehrungszeit,
-                    f.FilmID,
-                    f.Titel,
-                    f.Dauer,
-                    f.Altersfreigabe,
-                    f.Genre,
-                    s.Saalname,
-                    s.Saaltyp
+    SELECT DISTINCT b.BuchungsID              AS bookingID,
+                    b.BuchungsDatum           AS bookingDate,
+                    b.GesamtPreisNetto        AS totalPriceNetto,
+                    b.GesamtPreisBrutto       AS totalPriceBrutto,
+                    b.AnzahlTicketsErwachsene AS counterTicketsAdult,
+                    b.AnzahlTicketsKinder     AS counterTicketsChild,
+                    b.AnzahlTicketsStudenten  AS counterTicketsStudent,
+                    b.BuchungsStatus          AS bookingStatus,
+                    v.Vorfuehrungsdatum       AS eventDate,
+                    v.Vorfuehrungszeit        AS eventTime,
+                    f.FilmID                  AS movieID,
+                    f.Titel                   AS movieName,
+                    f.Dauer                   AS duration,
+                    f.Altersfreigabe          AS age,
+                    f.Genre                   AS genre,
+                    s.Saalname                AS roomName,
+                    s.Saaltyp                 AS roomType
     FROM Buchung b
            JOIN Vorfuehrungen v ON b.VorfuehrungsID = v.VorfuehrungsID
            JOIN Saele s ON v.SaalID = s.SaalID
            JOIN Filme f ON v.FilmID = f.FilmID
-    WHERE b.BuchungsID  = ?
-`;
-  console.log("Executing query with bookingID:", bookingID);
+    WHERE b.BuchungsID = ?
+  `;
+
   con.query(query, [bookingID], (error, results) => {
     if (error) {
       console.error('Error fetching booking:', error);
@@ -518,18 +574,18 @@ app.post('/booking', (req, res) => {
       return;
     }
     console.log('Booking fetched succesfully');
-    res.status(201).json(results);
+    res.status(201).json(results[0]);
   });
 });
 
-app.put('/updateBooking', (req, res) => {
+// Update Booking
+app.put('/api/update-booking', (req, res) => {
   const {bookingID} = req.body;
   console.log('UPDATEID', bookingID);
-  const query =
-    `UPDATE Buchung
-     SET BuchungsStatus = 'Canceled'
-     WHERE BuchungsID = ?;
-    `;
+  const query = `UPDATE Buchung
+                 SET BuchungsStatus = 'Canceled'
+                 WHERE BuchungsID = ?;
+  `;
 
   con.query(query, [bookingID], (error, results) => {
     if (error) {
@@ -542,15 +598,14 @@ app.put('/updateBooking', (req, res) => {
   });
 });
 
-app.delete('/deleteBooking/:bookingID', (req, res) => {
+// Cancel Booking
+app.delete('/api/delete-booking/:bookingID', (req, res) => {
   const bookingID = req.params.bookingID;
-  console.log('Attempting to delete booking with ID:', bookingID);
 
-  const query =
-    `DELETE
-     FROM buchtTicket
-     WHERE BuchungsID = ?
-    `;
+  const query = `DELETE
+                 FROM buchtTicket
+                 WHERE BuchungsID = ?
+  `;
 
   con.query(query, [bookingID], (error, results) => {
     if (error) {
@@ -563,19 +618,20 @@ app.delete('/deleteBooking/:bookingID', (req, res) => {
   });
 });
 
-app.post('/bookedSeats', (req, res) => {
+//Fetch booked Tickets
+app.post('/api/booked-tickets', (req, res) => {
   const {bookingID} = req.body;
 
   const query = `
-    SELECT s.SitzplatzID,
-           s.SaalID,
-           s.Reihennummer,
-           s.Sitznummer,
-           s.Sitztyp,
-           t.Saaltyp,
-           t.Tickettyp,
-           t.PreisNetto,
-           t.PreisBrutto
+    SELECT s.SitzplatzID  AS seatID,
+           s.SaalID       AS roomID,
+           s.Reihennummer AS rowNumber,
+           s.Sitznummer   AS seatNumber,
+           s.Sitztyp      AS seatType,
+           t.Saaltyp      AS roomType,
+           t.Tickettyp    AS personType,
+           t.PreisNetto   AS priceNetto,
+           t.PreisBrutto  AS priceBrutto
     FROM buchtTicket bt
            JOIN Sitzplaetze s ON bt.SitzplatzID = s.SitzplatzID
            JOIN Tickets t ON bt.TicketID = t.TicketID
@@ -588,17 +644,37 @@ app.post('/bookedSeats', (req, res) => {
       res.status(500).json({error: 'Error fetching booked Seats:'});
       return;
     }
-    console.log('Booked Seats fetched succesfully');
+    console.log('Booked Seats fetched succesfully', results);
     res.status(201).json(results);
   });
 });
 
-app.post('/allBooking', (req, res) => {
+// Fetch Bookings
+app.post('/api/bookings', (req, res) => {
   const {customerID} = req.body;
 
   const query = `
-    SELECT b.BuchungsID
+    SELECT b.BuchungsID              AS bookingID,
+           b.BuchungsDatum           AS bookingDate,
+           b.GesamtPreisNetto        AS totalPriceNetto,
+           b.GesamtPreisBrutto       AS totalPriceBrutto,
+           b.AnzahlTicketsErwachsene AS counterTicketsAdult,
+           b.AnzahlTicketsKinder     AS counterTicketsChild,
+           b.AnzahlTicketsStudenten  AS counterTicketsStudent,
+           b.BuchungsStatus          AS bookingStatus,
+           v.Vorfuehrungsdatum       AS eventDate,
+           v.Vorfuehrungszeit        AS eventTime,
+           f.FilmID                  AS movieID,
+           f.Titel                   AS movieName,
+           f.Dauer                   AS duration,
+           f.Altersfreigabe          AS age,
+           f.Genre                   AS genre,
+           s.Saalname                AS roomName,
+           s.Saaltyp                 AS roomType
     FROM Buchung b
+           JOIN Vorfuehrungen v ON b.VorfuehrungsID = v.VorfuehrungsID
+           JOIN Saele s ON v.SaalID = s.SaalID
+           JOIN Filme f ON v.FilmID = f.FilmID
     WHERE b.KundenID = ?
     ORDER BY b.BuchungsID DESC;
   `;
@@ -609,16 +685,20 @@ app.post('/allBooking', (req, res) => {
       res.status(500).json({error: 'Error fetching all Booking for current User:'});
       return;
     }
-    console.log('All Booking for current User fetched successful.');
+    console.log('All Booking for current User fetched successful.', results);
     res.status(201).json(results);
   });
 });
 
-app.post('/rating', (req, res) => {
+// Fetch Rating
+app.post('/api/rating', (req, res) => {
   const {bookingID, movieID} = req.body;
 
   const query = `
-    SELECT b.Bewertung FROM bewertet b WHERE b.BuchungsID = ? AND b.FilmID = ?;
+    SELECT b.Bewertung AS rating
+    FROM bewertet b
+    WHERE b.BuchungsID = ?
+      AND b.FilmID = ?;
   `;
 
   con.query(query, [bookingID, movieID], (error, results) => {
@@ -627,12 +707,13 @@ app.post('/rating', (req, res) => {
       res.status(500).json({error: 'Error fetching Rating: '});
       return;
     }
-    console.log('Rating fetched successful.');
-    res.status(201).json(results);
+    console.log('Rating fetched successful.', results);
+    res.status(201).json(results[0]);
   });
 });
 
-app.put('/add/rating', (req, res) => {
+// Add Rating
+app.put('/api/add-rating', (req, res) => {
   const {bookingID, movieID, rating} = req.body;
   const query = `
     INSERT INTO bewertet (BuchungsID, FilmID, Bewertung)

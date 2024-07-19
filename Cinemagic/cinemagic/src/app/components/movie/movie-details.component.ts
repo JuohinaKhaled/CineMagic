@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieService } from '../../services/movie/movie.service';
 import { EventService } from '../../services/event/event.service';
-import { groupBy } from 'lodash-es'; // Updated import statement
+import { groupBy } from 'lodash-es';
+import { Movie } from '../../models/movie/movie';
+import { Event } from '../../models/event/event';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-movie-details',
@@ -10,11 +14,13 @@ import { groupBy } from 'lodash-es'; // Updated import statement
   styleUrls: ['./movie-details.component.css']
 })
 export class MovieDetailsComponent implements OnInit {
-  filmID: number = 0;
-  film: any = {};
-  events: any[] = [];
-  groupedEvents: any[] = [];
+  movieID: number = 0;
+  movie$: Observable<Movie> | undefined;
+  events$: Observable<Event[]> | undefined;
+  groupedEvents$ = new BehaviorSubject<any[]>([]);
   displayLimit: number = 3;
+  maxDaysToShow: number = 3;
+  Math = Math;
 
   constructor(
     private movieService: MovieService,
@@ -24,65 +30,57 @@ export class MovieDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getFilmID();
-    this.getFilm();
+    this.getMovieID();
+    this.getMovie();
     this.getEvents();
   }
 
-  getFilmID() {
-    this.filmID = +this.route.snapshot.paramMap.get('movieID')!;
-    console.log('Film ID:', this.filmID);
-
-    if (!this.filmID) {
-      console.error('No film data found in state. Redirecting to film list.');
-    } else {
-      console.log('Film data loaded:', this.filmID);
-    }
+  getMovieID() {
+    this.movieID = +this.route.snapshot.paramMap.get('movieID')!;
+    console.log('Movie-Details_Component: Fetching MovieID successful:', this.movieID);
   }
 
-  getFilm() {
-    this.movieService.getMovieDetails(this.filmID).subscribe(
-      (data) => {
-        if (data && data.length > 0) {
-          this.film = data[0];
-          console.log('Film loaded:', this.film);
-        } else {
-          console.error('No film data found');
-        }
-      },
-      (error) => {
-        console.error('Error fetching film details:', error);
-      }
+  getMovie() {
+    this.movie$ = this.movieService.fetchMovie(this.movieID).pipe(
+      tap(movie => {
+        console.log('Movie_Details_Component: Movie fetched successfully: ', movie);
+      }),
+      catchError(err => {
+        console.error('Movie_Details_Component: Error fetching Movie: ', err);
+        return throwError(err);
+      })
     );
   }
 
   getEvents() {
-    this.eventService.getEvents(this.filmID).subscribe(
-      (data) => {
-        this.events = data;
-        this.groupEventsByDate();
-        console.log('Events loaded:', this.events);
-      },
-      (error) => {
-        console.error('Error fetching events:', error);
-      }
+    this.events$ = this.eventService.fetchAllEvents(this.movieID).pipe(
+      tap(events => {
+        console.log('Movie_Details_Component: Events loaded successfully:', events);
+      }),
+      catchError(err => {
+        console.error('Movie_Details_Component: Error fetching Events: ', err);
+        return throwError(err);
+      }),
+      map(events => this.groupEventsByDate(events))
     );
+
+    this.events$.subscribe(groupedEvents => {
+      this.groupedEvents$.next(groupedEvents);
+    });
   }
 
-  groupEventsByDate() {
+  groupEventsByDate(events: Event[]): any[] {
     const today = new Date();
     const oneWeekLater = new Date();
     oneWeekLater.setDate(today.getDate() + 7);
 
-    // Filter the events by date range and sort them by date
-    const filteredEvents = this.events.filter(event => {
-      const eventDate = new Date(event.Vorfuehrungsdatum);
+    const filteredEvents = events.filter(event => {
+      const eventDate = new Date(event.eventDate);
       return eventDate >= today && eventDate <= oneWeekLater;
-    }).sort((a, b) => new Date(a.Vorfuehrungsdatum).getTime() - new Date(b.Vorfuehrungsdatum).getTime());
+    }).sort((a: Event, b: Event) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
 
-    // Group the filtered and sorted events by date
-    const grouped = groupBy(filteredEvents, 'Vorfuehrungsdatum');
-    this.groupedEvents = Object.keys(grouped).map(date => ({
+    const grouped = groupBy(filteredEvents, 'eventDate');
+    return Object.keys(grouped).map(date => ({
       date,
       events: grouped[date],
       eventsToShow: grouped[date].slice(0, this.displayLimit)
@@ -90,16 +88,20 @@ export class MovieDetailsComponent implements OnInit {
   }
 
   goToRoom(eventID: number) {
-    this.router.navigate(['/room', eventID, this.filmID]);
+    this.router.navigate(['/room', eventID, this.movieID]);
   }
 
   showMore(date: string) {
-    this.groupedEvents = this.groupedEvents.map(group => {
+    this.groupedEvents$.next(this.groupedEvents$.getValue().map(group => {
       if (group.date === date) {
         const newLimit = group.eventsToShow.length + this.displayLimit;
         return { ...group, eventsToShow: group.events.slice(0, newLimit) };
       }
       return group;
-    });
+    }));
+  }
+
+  showMoreDays() {
+    this.maxDaysToShow = Math.min(this.maxDaysToShow + 3, 7);
   }
 }
