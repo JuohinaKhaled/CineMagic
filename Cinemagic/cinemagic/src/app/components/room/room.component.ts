@@ -142,7 +142,7 @@ export class RoomComponent implements OnInit {
       next: (seat) => {
         const seatToUpdate = this.seats.find(s => s.rowNumber === seat.rowNumber && s.seatNumber === seat.seatNumber);
         if (seatToUpdate) {
-          seatToUpdate.bookingStatus = seat.bookingStatus ? 'Occupied' : 'Free';
+          seatToUpdate.bookingStatus = seat.isBooked ? 'Occupied' : 'Free';
         }
         console.log('Room_Component: Released Seat fetched successful:', seat);
       },
