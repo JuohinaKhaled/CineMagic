@@ -1,12 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {MovieService} from '../../services/movie/movie.service';
-import {EventService} from '../../services/event/event.service';
-import {groupBy} from 'lodash-es';
-import {Movie} from "../../models/movie/movie";
-import {Event} from "../../models/event/event";
-import {BehaviorSubject, map, Observable, throwError} from "rxjs";
-import {catchError, tap} from "rxjs/operators";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { MovieService } from '../../services/movie/movie.service';
+import { EventService } from '../../services/event/event.service';
+import { groupBy } from 'lodash-es';
+import { Movie } from '../../models/movie/movie';
+import { Event } from '../../models/event/event';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-movie-details',
@@ -15,18 +15,19 @@ import {catchError, tap} from "rxjs/operators";
 })
 export class MovieDetailsComponent implements OnInit {
   movieID: number = 0;
-  movie$: Observable<|Movie> | undefined;
+  movie$: Observable<Movie> | undefined;
   events$: Observable<Event[]> | undefined;
   groupedEvents$ = new BehaviorSubject<any[]>([]);
   displayLimit: number = 3;
+  maxDaysToShow: number = 3;
+  Math = Math;
 
   constructor(
     private movieService: MovieService,
     private eventService: EventService,
     private route: ActivatedRoute,
     private router: Router
-  ) {
-  }
+  ) {}
 
   ngOnInit(): void {
     this.getMovieID();
@@ -42,7 +43,7 @@ export class MovieDetailsComponent implements OnInit {
   getMovie() {
     this.movie$ = this.movieService.fetchMovie(this.movieID).pipe(
       tap(movie => {
-        console.log('Movie_Details_Component: Movie fetched successful: ', movie);
+        console.log('Movie_Details_Component: Movie fetched successfully: ', movie);
       }),
       catchError(err => {
         console.error('Movie_Details_Component: Error fetching Movie: ', err);
@@ -54,7 +55,7 @@ export class MovieDetailsComponent implements OnInit {
   getEvents() {
     this.events$ = this.eventService.fetchAllEvents(this.movieID).pipe(
       tap(events => {
-        console.log('Movie_Details_Component: Events loaded successful:', events);
+        console.log('Movie_Details_Component: Events loaded successfully:', events);
       }),
       catchError(err => {
         console.error('Movie_Details_Component: Error fetching Events: ', err);
@@ -73,13 +74,11 @@ export class MovieDetailsComponent implements OnInit {
     const oneWeekLater = new Date();
     oneWeekLater.setDate(today.getDate() + 7);
 
-    // Filter the events by date range and sort them by date
     const filteredEvents = events.filter(event => {
       const eventDate = new Date(event.eventDate);
       return eventDate >= today && eventDate <= oneWeekLater;
     }).sort((a: Event, b: Event) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime());
 
-    // Group the filtered and sorted events by date
     const grouped = groupBy(filteredEvents, 'eventDate');
     return Object.keys(grouped).map(date => ({
       date,
@@ -102,4 +101,7 @@ export class MovieDetailsComponent implements OnInit {
     }));
   }
 
+  showMoreDays() {
+    this.maxDaysToShow = Math.min(this.maxDaysToShow + 3, 7);
+  }
 }

@@ -1,8 +1,8 @@
 <div class="container px-3 mt-4">
   <ng-container *ngIf="movie$ | async as movie; else noMovie">
-    <div *ngIf="movie; else noMovie" class="movie-header mb-3 gap-3">
+    <div *ngIf="movie" class="movie-header mb-3 gap-3">
       <div class="movie-poster">
-        <img [src]="movie.pathPictureLarge" alt="{{ movie.movieName }}" class="img-fluid"/>
+        <img [src]="movie.pathPictureLarge" alt="{{ movie.movieName }}" class="img-fluid" />
       </div>
       <div class="movie-info">
         <h1>{{ movie.movieName }}</h1>
@@ -21,21 +21,22 @@
     </div>
     <div *ngIf="groupedEvents$ | async as groupedEvents" class="showtimes">
       <h2>Showtimes</h2>
-      <div *ngFor="let group of groupedEvents">
-        <h3>{{ group.date | date:'fullDate' }}</h3>
-        <div class="event-buttons">
-          <div *ngFor="let event of group.eventsToShow" class="event-button-wrapper">
-            <button class="event-button" (click)="goToRoom(event.eventID)">
-              <div class="cinema-info">{{ event.roomName }}</div>
-              <div class="time">{{ event.eventTime }}</div>
-              <div class="saal-type">{{ event.roomType }}</div>
-            </button>
+      <ng-container *ngFor="let group of groupedEvents; let i = index">
+        <ng-container *ngIf="i < maxDaysToShow">
+          <h3>{{ group.date | date:'fullDate' }}</h3>
+          <div class="event-buttons">
+            <div *ngFor="let event of group.eventsToShow" class="event-button-wrapper">
+              <button class="event-button" (click)="goToRoom(event.eventID)">
+                <div class="cinema-info">{{ event.roomName }}</div>
+                <div class="time">{{ event.eventTime }}</div>
+                <div class="saal-type">{{ event.roomType }}</div>
+              </button>
+            </div>
           </div>
-        </div>
-        <button class="more-button" *ngIf="group.eventsToShow.length < group.events.length"
-                (click)="showMore(group.date)">+ more
-        </button>
-      </div>
+          <button class="more-button" *ngIf="group.eventsToShow.length < group.events.length" (click)="showMore(group.date)">+ more</button>
+        </ng-container>
+      </ng-container>
+      <button class="more-button" *ngIf="groupedEvents.length > 3 && maxDaysToShow < 7" (click)="showMoreDays()">Show more days</button>
     </div>
   </ng-container>
 
