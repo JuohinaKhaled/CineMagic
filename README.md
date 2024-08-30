@@ -32,5 +32,8 @@ Filmbewertung: Gesehene Filme können bewertet werden, was anderen Nutzern bei d
 3. Anwendung starten:
 * Öffnen Sie das Terminal in IntelliJ IDEA.
 * Führen Sie folgende Befehle aus:
-  * *ng build*
-  * *node server.js*
+  ```bash
+  ng build
+  node server.js
+
+Die Anwendung ist unter http://localhost:4200 erreichbar.
